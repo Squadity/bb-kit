@@ -97,7 +97,7 @@ public final class Manager implements Module {
 			aScopes = new Scope[] { DEFAULT_SCOPE };
 
 		ServiceScopeConfiguration<S, SF> serviceScopeConfiguration = new ServiceScopeConfiguration<S, SF>(service, serviceFactory, aConfiguration, aScopes);
-		String key = service.getName() + "_" + ScopeUtil.scopesToString(scopes);
+		String key = service.getName() + "_" + ScopeUtil.scopesToString(aScopes);
 		STORAGE.put(key, serviceScopeConfiguration);
 	}
 
