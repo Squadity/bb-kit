@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>bb-gear-common</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>BB.GEAR - Common</name>
+	<description>BB.GEAR Project - Common</description>
+
+	<parent>
+		<groupId>net.bolbat</groupId>
+		<artifactId>bb-parent</artifactId>
+		<version>6</version>
+	</parent>
+
+	<properties>
+		<!-- bb dependencies versions -->
+		<bb-utils.version>0.2.1</bb-utils.version>
+	</properties>
+
+	<dependencies>
+		<!-- BB.Dependencies -->
+		<dependency>
+			<groupId>net.bolbat</groupId>
+			<artifactId>bb-utils</artifactId>
+			<version>${bb-utils.version}</version>
+		</dependency>
+
+		<!-- Testing dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<scm>
+		<connection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBGEAR/common.git</connection>
+		<developerConnection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBGEAR/common.git</developerConnection>
+		<url>http://stash.infra.bolbat.net/scm/BBGEAR/common.git</url>
+	</scm>
+
+</project>

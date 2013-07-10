@@ -1,0 +1,67 @@
+# Maven build directory 
+target/
+target/*
+target/**
+target/**/*
+*/target/
+*/target/*
+*/target/**
+*/target/**/*
+
+# SVN related dir's/files
+.svn/
+.svn/*
+.svn/**
+.svn/**/*
+*/.svn/
+*/.svn/*
+*/.svn/**
+*/.svn/**/*
+
+# Java related dir'sfiles
+*.class
+*.jar
+*.war
+*.ear
+
+# Eclipse related dir's/files
+.settings/
+.settings/*
+.settings/**
+.settings/**/*
+*/.settings/
+*/.settings/*
+*/.settings/**
+*/.settings/**/*
+bin/
+bin/*
+bin/**
+bin/**/*
+*/bin/
+*/bin/*
+*/bin/**
+*/bin/**/*
+tmp/
+tmp/*
+tmp/**
+tmp/**/*
+*/tmp/
+*/tmp/*
+*/tmp/**
+*/tmp/**/*
+
+# IntelliJ related dir's/files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Other temporary dir's/files
+logs/
+logs/*
+logs/**
+logs/**/*
+*/logs/
+*/logs/*
+*/logs/**
+*/logs/**/*
