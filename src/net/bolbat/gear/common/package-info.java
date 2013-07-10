@@ -1,6 +1,5 @@
-package net.bolbat.gear.common;
 /**
- * General classes.
+ * Common functionality.
  */
-
+package net.bolbat.gear.common;
 
