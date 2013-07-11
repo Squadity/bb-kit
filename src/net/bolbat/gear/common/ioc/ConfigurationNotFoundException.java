@@ -1,11 +1,11 @@
 package net.bolbat.gear.common.ioc;
 
 /**
- * {@link Manager} module exception. Module throw it if requested service not configured for given scope/scopes.
+ * {@link Manager} module exception. Module throw it if requested service not configured.
  * 
  * @author Alexandr Bolbat
  */
-public class ServiceScopeConfigurationNotFoundException extends ManagerException {
+public class ConfigurationNotFoundException extends ManagerException {
 
 	/**
 	 * Basic serialVersionUID variable.
@@ -15,7 +15,7 @@ public class ServiceScopeConfigurationNotFoundException extends ManagerException
 	/**
 	 * Default constructor.
 	 */
-	public ServiceScopeConfigurationNotFoundException() {
+	public ConfigurationNotFoundException() {
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class ServiceScopeConfigurationNotFoundException extends ManagerException
 	 * @param message
 	 *            exception message
 	 */
-	public ServiceScopeConfigurationNotFoundException(final String message) {
+	public ConfigurationNotFoundException(final String message) {
 		super(message);
 	}
 
@@ -34,7 +34,7 @@ public class ServiceScopeConfigurationNotFoundException extends ManagerException
 	 * @param cause
 	 *            exception cause
 	 */
-	public ServiceScopeConfigurationNotFoundException(final Throwable cause) {
+	public ConfigurationNotFoundException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -46,7 +46,7 @@ public class ServiceScopeConfigurationNotFoundException extends ManagerException
 	 * @param cause
 	 *            exception cause
 	 */
-	public ServiceScopeConfigurationNotFoundException(final String message, final Throwable cause) {
+	public ConfigurationNotFoundException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

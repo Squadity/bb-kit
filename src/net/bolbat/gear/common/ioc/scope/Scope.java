@@ -1,4 +1,4 @@
-package net.bolbat.gear.common.ioc;
+package net.bolbat.gear.common.ioc.scope;
 
 /**
  * Scope definition interface.

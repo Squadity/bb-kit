@@ -1,14 +1,17 @@
 package net.bolbat.gear.common.ioc;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.bolbat.gear.common.Module;
+import net.bolbat.gear.common.ioc.scope.CustomScope;
+import net.bolbat.gear.common.ioc.scope.Scope;
+import net.bolbat.gear.common.ioc.scope.ScopeUtil;
+import net.bolbat.gear.common.service.Configuration;
 import net.bolbat.gear.common.service.Service;
 import net.bolbat.gear.common.service.ServiceFactory;
 import net.bolbat.gear.common.service.ServiceInstantiationException;
-import net.bolbat.gear.common.service.ServiceLocator;
-import net.bolbat.gear.common.service.ServiceLocatorConfiguration;
 import net.bolbat.utils.reflect.Instantiator;
 
 /**
@@ -21,12 +24,12 @@ public final class Manager implements Module {
 	/**
 	 * Services configuration storage.
 	 */
-	private static final Map<String, ServiceScopeConfiguration<?, ?>> STORAGE = new ConcurrentHashMap<String, ServiceScopeConfiguration<?, ?>>();
+	private static final Map<String, ScopeConfiguration<?, ?>> STORAGE = new ConcurrentHashMap<String, ScopeConfiguration<?, ?>>();
 
 	/**
 	 * Default scope.
 	 */
-	public static final Scope DEFAULT_SCOPE = new ServiceCustomScope("[SYSTEM_DEFAULT_SCOPE]");
+	public static final Scope DEFAULT_SCOPE = CustomScope.get("SYSTEM_DEFAULT_SCOPE");
 
 	/**
 	 * Private constructor for preventing class instantiation.
@@ -40,13 +43,24 @@ public final class Manager implements Module {
 	 * 
 	 * @param service
 	 *            service interface
-	 * @param serviceFactory
+	 * @param factory
+	 *            service factory
+	 */
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory) {
+		register(service, factory, DEFAULT_SCOPE);
+	};
+
+	/**
+	 * Register service.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param factory
 	 *            service factory
 	 * @param scopes
 	 *            service scopes, default scopes will be selected if no one given
 	 */
-	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> serviceFactory, final Scope... scopes) {
-		SF factory = Instantiator.instantiate(serviceFactory);
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Scope... scopes) {
 		register(service, factory, null, scopes);
 	};
 
@@ -55,17 +69,13 @@ public final class Manager implements Module {
 	 * 
 	 * @param service
 	 *            service interface
-	 * @param serviceLocator
-	 *            service locator
-	 * @param configuration
-	 *            service locator configuration, can be <code>null</code>
-	 * @param scopes
-	 *            service scopes, default scopes will be selected if no one given
+	 * @param factory
+	 *            service factory
+	 * @param conf
+	 *            service factory configuration, can be <code>null</code>
 	 */
-	public static <S extends Service, SL extends ServiceLocator<S>> void register(final Class<S> service, final Class<SL> serviceLocator,
-			final ServiceLocatorConfiguration configuration, final Scope... scopes) {
-		SL factory = Instantiator.instantiate(serviceLocator);
-		register(service, factory, configuration, scopes);
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf) {
+		register(service, factory, conf, DEFAULT_SCOPE);
 	};
 
 	/**
@@ -73,31 +83,42 @@ public final class Manager implements Module {
 	 * 
 	 * @param service
 	 *            service interface
-	 * @param serviceFactory
+	 * @param factory
 	 *            service factory
-	 * @param configuration
-	 *            service locator configuration, used if service factory instance of service locator, can be <code>null</code>
+	 * @param conf
+	 *            service factory configuration, can be <code>null</code>
 	 * @param scopes
 	 *            service scopes, default scopes will be selected if no one given
 	 */
-	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF serviceFactory,
-			final ServiceLocatorConfiguration configuration, final Scope... scopes) {
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf,
+			final Scope... scopes) {
+		SF instance = Instantiator.instantiate(factory);
+		register(service, instance, conf, scopes);
+	};
+
+	/**
+	 * Register service.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param factory
+	 *            service factory instance
+	 * @param conf
+	 *            service factory configuration, can be <code>null</code>
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 */
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Configuration conf,
+			final Scope... scopes) {
 		if (service == null)
-			throw new IllegalArgumentException("[service] argument are null");
+			throw new IllegalArgumentException("service argument is null.");
 
-		if (serviceFactory == null)
-			throw new IllegalArgumentException("[serviceFactory] argument are null");
+		if (factory == null)
+			throw new IllegalArgumentException("serviceFactory argument is null.");
 
-		ServiceLocatorConfiguration aConfiguration = configuration;
-		if (aConfiguration == null)
-			aConfiguration = new ServiceLocatorConfiguration();
-
-		Scope[] aScopes = scopes;
-		if (aScopes == null || aScopes.length == 0)
-			aScopes = new Scope[] { DEFAULT_SCOPE };
-
-		ServiceScopeConfiguration<S, SF> serviceScopeConfiguration = new ServiceScopeConfiguration<S, SF>(service, serviceFactory, aConfiguration, aScopes);
+		Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
 		String key = service.getName() + "_" + ScopeUtil.scopesToString(aScopes);
+		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<S, SF>(service, factory, conf, aScopes);
 		STORAGE.put(key, serviceScopeConfiguration);
 	}
 
@@ -113,19 +134,16 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service> S get(final Class<S> service, final Scope... scopes) throws ManagerException {
 		if (service == null)
-			throw new IllegalArgumentException("[service] argument are null");
+			throw new IllegalArgumentException("service argument is null.");
 
-		Scope[] aScopes = scopes;
-		if (aScopes == null || aScopes.length == 0)
-			aScopes = new Scope[] { DEFAULT_SCOPE };
-
+		Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
 		String key = service.getName() + "_" + ScopeUtil.scopesToString(aScopes);
 
 		@SuppressWarnings("unchecked")
-		ServiceScopeConfiguration<S, ServiceFactory<S>> configuration = (ServiceScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
+		ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
 
 		if (configuration == null)
-			throw new ServiceScopeConfigurationNotFoundException();
+			throw new ConfigurationNotFoundException();
 
 		if (configuration.getInstance() != null)
 			return configuration.getInstance();
@@ -143,33 +161,22 @@ public final class Manager implements Module {
 	 */
 	private static synchronized <S extends Service> S getInternally(final String key) throws ManagerException {
 		@SuppressWarnings("unchecked")
-		ServiceScopeConfiguration<S, ServiceFactory<S>> configuration = (ServiceScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
+		ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
 
 		if (configuration.getInstance() != null)
 			return configuration.getInstance();
 
 		ServiceFactory<S> factory = configuration.getServiceFactory();
-		S instance = null;
+		try {
+			S instance = factory.create(configuration.getConfiguration());
 
-		// locator approach instantiation
-		if (factory instanceof ServiceLocator<?>)
-			try {
-				instance = ((ServiceLocator<S>) factory).locate(configuration.getConfiguration());
-			} catch (ServiceInstantiationException e) {
-				throw new ManagerException("Can't locate service", e);
-			}
+			// updating scope configuration with already obtained service instance
+			configuration.setInstance(instance);
 
-		// factory approach instantiation
-		else
-			try {
-				instance = factory.create();
-			} catch (ServiceInstantiationException e) {
-				throw new ManagerException("Can't instantiate service", e);
-			}
-
-		// updating scope configuration with already obtained service instance
-		configuration.setInstance(instance);
-		return instance;
+			return instance;
+		} catch (ServiceInstantiationException e) {
+			throw new ManagerException("Can't instantiate service", e);
+		}
 	}
 
 	/**
@@ -179,4 +186,94 @@ public final class Manager implements Module {
 		STORAGE.clear();
 	}
 
+	/**
+	 * Service scope configuration.
+	 * 
+	 * @author Alexandr Bolbat
+	 * 
+	 * @param <S>
+	 *            service
+	 * @param <SF>
+	 *            service factory
+	 */
+	private static class ScopeConfiguration<S extends Service, SF extends ServiceFactory<S>> {
+
+		/**
+		 * Empty {@link Configuration} instance.
+		 */
+		private static final Configuration EMPTY_CONFIGURATION = Configuration.create();
+
+		/**
+		 * Service interface.
+		 */
+		private final Class<S> service;
+
+		/**
+		 * Service factory.
+		 */
+		private final SF serviceFactory;
+
+		/**
+		 * Service factory configuration.
+		 */
+		private final Configuration configuration;
+
+		/**
+		 * Service scopes.
+		 */
+		private final Scope[] scopes;
+
+		/**
+		 * Service instance.
+		 */
+		private S instance;
+
+		/**
+		 * Default constructor.
+		 * 
+		 * @param aService
+		 *            service interface
+		 * @param aServiceFactory
+		 *            service factory
+		 * @param aConfiguration
+		 *            service factory configuration, can be <code>null</code>
+		 * @param aScopes
+		 *            service scopes
+		 */
+		protected ScopeConfiguration(final Class<S> aService, final SF aServiceFactory, final Configuration aConfiguration, final Scope[] aScopes) {
+			this.service = aService;
+			this.serviceFactory = aServiceFactory;
+			this.configuration = aConfiguration != null ? aConfiguration : EMPTY_CONFIGURATION;
+			this.scopes = aScopes;
+		}
+
+		public S getInstance() {
+			return instance;
+		}
+
+		public void setInstance(S aInstance) {
+			this.instance = aInstance;
+		}
+
+		public SF getServiceFactory() {
+			return serviceFactory;
+		}
+
+		public Configuration getConfiguration() {
+			return configuration;
+		}
+
+		@Override
+		public String toString() {
+			final int maxLen = 10;
+			StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
+			builder.append(" [service=").append(service);
+			builder.append(", serviceFactory=").append(serviceFactory);
+			builder.append(", configuration=").append(configuration);
+			builder.append(", scopes=").append(scopes != null ? Arrays.asList(scopes).subList(0, Math.min(scopes.length, maxLen)) : null);
+			builder.append(", instance=").append(instance != null ? instance.getClass().getName() : null);
+			builder.append("]");
+			return builder.toString();
+		}
+	}
 }

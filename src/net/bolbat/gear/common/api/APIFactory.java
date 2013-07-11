@@ -1,5 +1,6 @@
 package net.bolbat.gear.common.api;
 
+import net.bolbat.gear.common.service.Configuration;
 import net.bolbat.gear.common.service.ServiceFactory;
 
 /**
@@ -14,9 +15,11 @@ public interface APIFactory<T extends API> extends ServiceFactory<T> {
 	/**
 	 * API implementation instantiation method.
 	 * 
+	 * @param configuration
+	 *            factory configuration
 	 * @return <T> instance
 	 * @throws APIInstantiationException
 	 */
-	T create() throws APIInstantiationException;
+	T create(Configuration configuration) throws APIInstantiationException;
 
 }

@@ -33,7 +33,7 @@ public class ExceptionsTest {
 	@Test
 	public void complexTest() {
 		CommonTester.checkExceptionInstantiation(ManagerException.class);
-		CommonTester.checkExceptionInstantiation(ServiceScopeConfigurationNotFoundException.class);
+		CommonTester.checkExceptionInstantiation(ConfigurationNotFoundException.class);
 	}
 
 }

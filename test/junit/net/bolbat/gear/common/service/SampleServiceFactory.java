@@ -8,7 +8,7 @@ package net.bolbat.gear.common.service;
 public class SampleServiceFactory implements ServiceFactory<SampleService> {
 
 	@Override
-	public SampleService create() throws ServiceInstantiationException {
+	public SampleService create(final Configuration configuration) throws ServiceInstantiationException {
 		return new SampleServiceImpl();
 	}
 

@@ -1,11 +1,12 @@
-package net.bolbat.gear.common.ioc;
+package net.bolbat.gear.common.ioc.scope;
+
 
 /**
  * Service type scope.
  * 
  * @author Alexandr Bolbat
  */
-public enum ServiceTypeScope implements Scope {
+public enum TypeScope implements Scope {
 
 	/**
 	 * Persistence services scope.
@@ -30,7 +31,7 @@ public enum ServiceTypeScope implements Scope {
 	/**
 	 * Default scope.
 	 */
-	public static final ServiceTypeScope DEFAULT = BUSINESS_SERVICE;
+	public static final TypeScope DEFAULT = BUSINESS_SERVICE;
 
 	/**
 	 * Scope id.
@@ -40,8 +41,8 @@ public enum ServiceTypeScope implements Scope {
 	/**
 	 * Private constructor.
 	 */
-	private ServiceTypeScope() {
-		this.id = ServiceTypeScope.class.getName() + "." + name();
+	private TypeScope() {
+		this.id = name();
 	}
 
 	@Override
@@ -50,14 +51,14 @@ public enum ServiceTypeScope implements Scope {
 	}
 
 	/**
-	 * Get {@link ServiceTypeScope} by id. Default scope will be returned if scope with given id not found.
+	 * Get {@link TypeScope} by id. Default scope will be returned if scope with given id not found.
 	 * 
 	 * @param aId
 	 *            scope id
-	 * @return {@link ServiceTypeScope}
+	 * @return {@link TypeScope}
 	 */
-	public static final ServiceTypeScope get(final String aId) {
-		for (ServiceTypeScope scope : ServiceTypeScope.values())
+	public static final TypeScope get(final String aId) {
+		for (TypeScope scope : TypeScope.values())
 			if (scope.getId().equalsIgnoreCase(aId))
 				return scope;
 

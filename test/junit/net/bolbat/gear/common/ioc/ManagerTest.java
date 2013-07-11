@@ -1,13 +1,18 @@
 package net.bolbat.gear.common.ioc;
 
+import static net.bolbat.gear.common.ioc.scope.DistributionScope.LOCAL;
+import static net.bolbat.gear.common.ioc.scope.DistributionScope.REMOTE;
+import static net.bolbat.gear.common.ioc.scope.TypeScope.BUSINESS_SERVICE;
+import net.bolbat.gear.common.ioc.scope.CustomScope;
+import net.bolbat.gear.common.ioc.scope.Scope;
+import net.bolbat.gear.common.service.Configuration;
 import net.bolbat.gear.common.service.SampleService;
 import net.bolbat.gear.common.service.SampleServiceException;
 import net.bolbat.gear.common.service.SampleServiceFactory;
 import net.bolbat.gear.common.service.SampleServiceImpl;
-import net.bolbat.gear.common.service.SampleServiceLocator;
+import net.bolbat.gear.common.service.SampleServiceRemoteFactory;
 import net.bolbat.gear.common.service.SampleServiceRemoteImpl;
 import net.bolbat.gear.common.service.ServiceFactory;
-import net.bolbat.gear.common.service.ServiceLocatorConfiguration;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -47,24 +52,23 @@ public class ManagerTest {
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
-			Assert.assertTrue("Right exception instance should be there.", e instanceof ServiceScopeConfigurationNotFoundException);
+			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
 		}
 
 		// configuring local service
-		Manager.register(SampleService.class, SampleServiceFactory.class, ServiceDistributionScope.LOCAL, ServiceTypeScope.BUSINESS_SERVICE);
+		Manager.register(SampleService.class, SampleServiceFactory.class, LOCAL, BUSINESS_SERVICE);
 
 		// defining additional custom scope for remote sample service
-		ServiceCustomScope customScope = new ServiceCustomScope("SAMPLE");
+		CustomScope customScope = CustomScope.get("SAMPLE");
 
 		// configuring remote service with obtaining trough service locator with custom configuration
-		ServiceLocatorConfiguration configuration = new ServiceLocatorConfiguration();
-		configuration.addParameter("PARAM1", "configured parameter");
-		Manager.register(SampleService.class, SampleServiceLocator.class, configuration, customScope, ServiceDistributionScope.REMOTE,
-				ServiceTypeScope.BUSINESS_SERVICE);
+		Configuration configuration = Configuration.create();
+		configuration.set(SampleServiceRemoteFactory.PARAM_TEST, "configured parameter");
+		Manager.register(SampleService.class, SampleServiceRemoteFactory.class, configuration, customScope, REMOTE, BUSINESS_SERVICE);
 
 		// checking local service
 		try {
-			SampleService localInstance = Manager.get(SampleService.class, ServiceTypeScope.BUSINESS_SERVICE, ServiceDistributionScope.LOCAL, null);
+			SampleService localInstance = Manager.get(SampleService.class, BUSINESS_SERVICE, LOCAL, null);
 			Assert.assertTrue(localInstance instanceof SampleServiceImpl);
 			Assert.assertEquals("CREATED", localInstance.getCreationMethod());
 		} catch (ManagerException e) {
@@ -75,8 +79,7 @@ public class ManagerTest {
 
 		// checking remote service
 		try {
-			SampleService remoteInstance = Manager.get(SampleService.class, ServiceTypeScope.BUSINESS_SERVICE, null, customScope,
-					ServiceDistributionScope.REMOTE);
+			SampleService remoteInstance = Manager.get(SampleService.class, BUSINESS_SERVICE, null, customScope, REMOTE);
 			Assert.assertTrue(remoteInstance instanceof SampleServiceRemoteImpl);
 			Assert.assertEquals("LOCATED. PARAMETER: configured parameter", remoteInstance.getCreationMethod());
 		} catch (ManagerException e) {
@@ -93,23 +96,23 @@ public class ManagerTest {
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
-			Assert.assertTrue("Right exception instance should be there.", e instanceof ServiceScopeConfigurationNotFoundException);
+			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
 		}
 
 		// checking clean configuration, local scope
 		try {
-			Manager.get(SampleService.class, ServiceTypeScope.BUSINESS_SERVICE, null, ServiceDistributionScope.LOCAL);
+			Manager.get(SampleService.class, BUSINESS_SERVICE, null, LOCAL);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
-			Assert.assertTrue("Right exception instance should be there.", e instanceof ServiceScopeConfigurationNotFoundException);
+			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
 		}
 
 		// checking clean configuration, remote scope
 		try {
-			Manager.get(SampleService.class, ServiceTypeScope.BUSINESS_SERVICE, ServiceDistributionScope.REMOTE, null, customScope);
+			Manager.get(SampleService.class, BUSINESS_SERVICE, REMOTE, null, customScope);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
-			Assert.assertTrue("Right exception instance should be there.", e instanceof ServiceScopeConfigurationNotFoundException);
+			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
 		}
 	}
 
@@ -123,21 +126,21 @@ public class ManagerTest {
 			Manager.register(SampleService.class, factory, null, new Scope[] {});
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (IllegalArgumentException e) {
-			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("[serviceFactory]"));
+			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("serviceFactory"));
 		}
 
 		try {
 			Manager.register(null, new SampleServiceFactory(), null, new Scope[] {});
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (IllegalArgumentException e) {
-			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("[service]"));
+			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("service"));
 		}
 
 		try {
 			Manager.get(null);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (IllegalArgumentException e) {
-			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("[service]"));
+			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("service"));
 		} catch (ManagerException e) {
 			Assert.fail("No exception should be on this step.");
 		}

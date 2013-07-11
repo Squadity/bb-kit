@@ -1,4 +1,4 @@
-package net.bolbat.gear.common.ioc;
+package net.bolbat.gear.common.ioc.scope;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +36,14 @@ public final class ScopeUtil {
 
 		Collections.sort(scopesIds);
 
-		StringBuilder sb = new StringBuilder();
-		for (String scopeId : scopesIds)
-			sb.append("<" + scopeId + ">");
+		StringBuilder sb = new StringBuilder("[");
+		for (String scopeId : scopesIds) {
+			if (sb.length() > 1)
+				sb.append(",");
+
+			sb.append(scopeId);
+		}
+		sb.append("]");
 
 		return sb.toString();
 	}

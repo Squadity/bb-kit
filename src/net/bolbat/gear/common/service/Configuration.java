@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Generic configuration store implementation for {@link ServiceLocator}.
+ * {@link ServiceFactory} configuration.
  * 
  * @author Alexandr Bolbat
  */
-public final class ServiceLocatorConfiguration implements Serializable {
+public final class Configuration implements Serializable {
 
 	/**
 	 * Basic serialVersionUID variable.
@@ -21,24 +21,32 @@ public final class ServiceLocatorConfiguration implements Serializable {
 	/**
 	 * Configuration parameters store.
 	 */
-	private final Map<String, Serializable> parameters;
+	private final Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
 	/**
 	 * Default constructor.
 	 */
-	public ServiceLocatorConfiguration() {
-		this.parameters = new HashMap<String, Serializable>();
+	private Configuration() {
 	}
 
 	/**
-	 * Add parameter.
+	 * Create new configuration.
+	 * 
+	 * @return {@link Configuration} instance
+	 */
+	public static Configuration create() {
+		return new Configuration();
+	}
+
+	/**
+	 * Set parameter.
 	 * 
 	 * @param key
 	 *            parameter key
 	 * @param value
 	 *            parameter value
 	 */
-	public void addParameter(final String key, final Serializable value) {
+	public void set(final String key, final Serializable value) {
 		parameters.put(key, value);
 	}
 
@@ -48,7 +56,7 @@ public final class ServiceLocatorConfiguration implements Serializable {
 	 * @param key
 	 *            parameter key
 	 */
-	public void removeParameter(final String key) {
+	public void remove(final String key) {
 		parameters.remove(key);
 	}
 
@@ -57,7 +65,7 @@ public final class ServiceLocatorConfiguration implements Serializable {
 	 * 
 	 * @return {@link Set}
 	 */
-	public Set<String> getParametersKeys() {
+	public Set<String> getKeys() {
 		return new HashSet<String>(parameters.keySet());
 	}
 
@@ -68,8 +76,20 @@ public final class ServiceLocatorConfiguration implements Serializable {
 	 *            parameter key
 	 * @return {@link Serializable}
 	 */
-	public Serializable getParameterValue(final String key) {
+	public Serializable get(final String key) {
 		return parameters.get(key);
+	}
+
+	/**
+	 * Get parameter value as {@link String}.
+	 * 
+	 * @param key
+	 *            parameter key
+	 * @return {@link String} or <code>null</code>
+	 */
+	public String getString(final String key) {
+		Serializable result = get(key);
+		return result != null ? String.valueOf(result) : null;
 	}
 
 	/**

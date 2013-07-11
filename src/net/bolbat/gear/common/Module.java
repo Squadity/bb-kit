@@ -1,6 +1,5 @@
 package net.bolbat.gear.common;
 
-
 /**
  * General module interface.
  * 

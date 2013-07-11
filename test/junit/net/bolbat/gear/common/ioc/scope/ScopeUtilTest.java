@@ -1,4 +1,4 @@
-package net.bolbat.gear.common.ioc;
+package net.bolbat.gear.common.ioc.scope;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -31,13 +31,13 @@ public class ScopeUtilTest {
 	 */
 	@Test
 	public void scopesToStringTest() {
-		String scopesStringEtalon = "<" + ServiceDistributionScope.LOCAL.getId() + "><" + ServiceTypeScope.BUSINESS_SERVICE.getId() + ">";
+		String scopesStringEtalon = "[" + TypeScope.BUSINESS_SERVICE.getId() + "," + DistributionScope.LOCAL.getId() + "]";
 
-		String scopesString = ScopeUtil.scopesToString(ServiceDistributionScope.LOCAL, ServiceTypeScope.BUSINESS_SERVICE);
+		String scopesString = ScopeUtil.scopesToString(DistributionScope.LOCAL, TypeScope.BUSINESS_SERVICE);
 		Assert.assertNotNull(scopesString);
 		Assert.assertEquals("Should be the same", scopesStringEtalon, scopesString);
 
-		String reverseScopesString = ScopeUtil.scopesToString(ServiceTypeScope.BUSINESS_SERVICE, ServiceDistributionScope.LOCAL);
+		String reverseScopesString = ScopeUtil.scopesToString(TypeScope.BUSINESS_SERVICE, DistributionScope.LOCAL);
 		Assert.assertNotNull(reverseScopesString);
 		Assert.assertEquals("Should be the same", scopesStringEtalon, reverseScopesString);
 		Assert.assertEquals("Should be the same", scopesString, reverseScopesString);
@@ -46,7 +46,7 @@ public class ScopeUtilTest {
 		Assert.assertEquals("", emptyScopesString1);
 		Scope someNullScope = null;
 		String emptyScopesString2 = ScopeUtil.scopesToString(someNullScope);
-		Assert.assertEquals("", emptyScopesString2);
+		Assert.assertEquals("[]", emptyScopesString2);
 		String emptyScopesString3 = ScopeUtil.scopesToString(new Scope[] {});
 		Assert.assertEquals("", emptyScopesString3);
 	}

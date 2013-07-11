@@ -1,4 +1,4 @@
-package net.bolbat.gear.common.ioc;
+package net.bolbat.gear.common.ioc.scope;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -10,7 +10,7 @@ import org.junit.Test;
  * 
  * @author Alexandr Bolbat
  */
-public class ScopeComplexTest {
+public class ScopeTest {
 
 	/**
 	 * Initialization executed before each test.
@@ -27,37 +27,36 @@ public class ScopeComplexTest {
 	}
 
 	/**
-	 * {@link ServiceCustomScope} test.
+	 * {@link CustomScope} test.
 	 */
 	@Test
 	public void serviceCustomScopeTest() {
-		ServiceCustomScope customScope = new ServiceCustomScope("SAMPLE");
+		CustomScope customScope = CustomScope.get("SAMPLE");
 		Assert.assertSame("Should be the same", customScope, customScope);
 		Assert.assertEquals("Should be equal", customScope, customScope);
 		Assert.assertFalse("Should be not equal", customScope.equals(null));
 
-		ServiceCustomScope sameIdCustomScope = new ServiceCustomScope("SAMPLE");
-		Assert.assertNotSame("Should be not the same", customScope, sameIdCustomScope);
+		CustomScope sameIdCustomScope = CustomScope.get("SAMPLE");
 		Assert.assertEquals("Should be equal", customScope, sameIdCustomScope);
 
-		ServiceCustomScope anotherCustomScope = new ServiceCustomScope("ANOTHER_SAMPLE");
+		CustomScope anotherCustomScope = CustomScope.get("ANOTHER_SAMPLE");
 		Assert.assertFalse("Should be not equal", customScope.equals(anotherCustomScope));
 	}
 
 	/**
-	 * {@link ServiceDistributionScope} test.
+	 * {@link DistributionScope} test.
 	 */
 	@Test
 	public void serviceDistributionScopeTest() {
-		Scope local = ServiceDistributionScope.LOCAL;
-		Assert.assertEquals(local, ServiceDistributionScope.get(local.getId()));
+		Scope local = DistributionScope.LOCAL;
+		Assert.assertEquals(local, DistributionScope.get(local.getId()));
 
-		Scope remote = ServiceDistributionScope.REMOTE;
-		Assert.assertEquals(remote, ServiceDistributionScope.get(remote.getId()));
+		Scope remote = DistributionScope.REMOTE;
+		Assert.assertEquals(remote, DistributionScope.get(remote.getId()));
 
-		Scope defult = ServiceDistributionScope.DEFAULT;
-		Assert.assertEquals(defult, ServiceDistributionScope.get(defult.getId()));
-		Assert.assertEquals(defult, ServiceDistributionScope.get("WRONG_ID"));
+		Scope defult = DistributionScope.DEFAULT;
+		Assert.assertEquals(defult, DistributionScope.get(defult.getId()));
+		Assert.assertEquals(defult, DistributionScope.get("WRONG_ID"));
 
 		Assert.assertEquals(local, defult);
 		Assert.assertSame(local, defult);
@@ -70,25 +69,25 @@ public class ScopeComplexTest {
 	}
 
 	/**
-	 * {@link ServiceTypeScope} test.
+	 * {@link TypeScope} test.
 	 */
 	@Test
 	public void serviceTypeScopeTest() {
-		Scope businessService = ServiceTypeScope.BUSINESS_SERVICE;
-		Assert.assertEquals(businessService, ServiceTypeScope.get(businessService.getId()));
+		Scope businessService = TypeScope.BUSINESS_SERVICE;
+		Assert.assertEquals(businessService, TypeScope.get(businessService.getId()));
 
-		Scope persistenceService = ServiceTypeScope.PERSISTENCE_SERVICE;
-		Assert.assertEquals(persistenceService, ServiceTypeScope.get(persistenceService.getId()));
+		Scope persistenceService = TypeScope.PERSISTENCE_SERVICE;
+		Assert.assertEquals(persistenceService, TypeScope.get(persistenceService.getId()));
 
-		Scope api = ServiceTypeScope.API;
-		Assert.assertEquals(api, ServiceTypeScope.get(api.getId()));
+		Scope api = TypeScope.API;
+		Assert.assertEquals(api, TypeScope.get(api.getId()));
 
-		Scope apiExternal = ServiceTypeScope.API_EXTERNAL;
-		Assert.assertEquals(apiExternal, ServiceTypeScope.get(apiExternal.getId()));
+		Scope apiExternal = TypeScope.API_EXTERNAL;
+		Assert.assertEquals(apiExternal, TypeScope.get(apiExternal.getId()));
 
-		Scope defult = ServiceTypeScope.DEFAULT;
-		Assert.assertEquals(defult, ServiceTypeScope.get(defult.getId()));
-		Assert.assertEquals(defult, ServiceTypeScope.get("WRONG_ID"));
+		Scope defult = TypeScope.DEFAULT;
+		Assert.assertEquals(defult, TypeScope.get(defult.getId()));
+		Assert.assertEquals(defult, TypeScope.get("WRONG_ID"));
 
 		Assert.assertEquals(businessService, defult);
 		Assert.assertSame(businessService, defult);

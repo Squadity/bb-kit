@@ -12,9 +12,11 @@ public interface ServiceFactory<T extends Service> {
 	/**
 	 * Service implementation instantiation method.
 	 * 
+	 * @param configuration
+	 *            factory configuration
 	 * @return <T> instance
 	 * @throws ServiceInstantiationException
 	 */
-	T create() throws ServiceInstantiationException;
+	T create(Configuration configuration) throws ServiceInstantiationException;
 
 }
