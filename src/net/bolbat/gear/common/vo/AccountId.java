@@ -18,6 +18,11 @@ public class AccountId implements Serializable, Cloneable {
 	private static final long serialVersionUID = 347872401754968026L;
 
 	/**
+	 * {@link AccountId} with empty raw identifier.
+	 */
+	public static final AccountId EMPTY_ID = new AccountId();
+
+	/**
 	 * Empty raw identifier.
 	 */
 	public static final String EMPTY_RAW_ID = "";
