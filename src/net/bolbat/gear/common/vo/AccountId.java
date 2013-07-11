@@ -101,7 +101,7 @@ public class AccountId implements Serializable, Cloneable {
 		try {
 			return AccountId.class.cast(super.clone());
 		} catch (final CloneNotSupportedException e) {
-			throw new AssertionError("Can't clone account id[" + this + "]", e);
+			throw new AssertionError("Can't clone [" + this + "]", e);
 		}
 	}
 
