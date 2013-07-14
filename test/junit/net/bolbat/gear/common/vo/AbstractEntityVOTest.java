@@ -19,9 +19,17 @@ public class AbstractEntityVOTest {
 		Assert.assertEquals(0, empty.getCreated());
 		Assert.assertEquals(0, empty.getUpdated());
 
+		empty.setCreated(123);
+		empty.setUpdated(456);
+		Assert.assertEquals(123, empty.getCreated());
+		Assert.assertEquals(456, empty.getUpdated());
+
 		AbstractEntityVO clone = empty.clone();
 		Assert.assertEquals(empty, clone);
 		Assert.assertNotSame(empty, clone);
+
+		Assert.assertEquals(123, clone.getCreated());
+		Assert.assertEquals(456, clone.getUpdated());
 	}
 
 }
