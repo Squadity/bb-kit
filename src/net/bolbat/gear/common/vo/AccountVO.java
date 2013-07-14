@@ -79,7 +79,7 @@ public class AccountVO extends AbstractEntityVO {
 	 * Set account type.
 	 * 
 	 * @param aType
-	 *            account type, length can't be more then permitted (check <code>TYPE_MAX_LENGTH<code> constant)
+	 *            account type, length can't be more then permitted (check <code>TYPE_MAX_LENGTH</code> constant)
 	 */
 	public void setType(final String aType) {
 		if (aType.length() > TYPE_MAX_LENGTH)
@@ -110,7 +110,7 @@ public class AccountVO extends AbstractEntityVO {
 	 * Add status to account statuses.
 	 * 
 	 * @param status
-	 *            account status, can't be empty and length more then permitted (check <code>STATUS_MAX_LENGTH<code> constant)
+	 *            account status, can't be empty and length more then permitted (check <code>STATUS_MAX_LENGTH</code> constant)
 	 */
 	public void addStatus(final String status) {
 		if (StringUtils.isEmpty(status))
