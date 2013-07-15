@@ -10,7 +10,7 @@ import net.bolbat.utils.lang.StringUtils;
  * 
  * @author Alexandr Bolbat
  */
-public class AccountVO extends AbstractEntityVO {
+public class AccountVO extends EntityVO {
 
 	/**
 	 * Generated SerialVersionUID.

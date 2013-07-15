@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 
  * @author Alexandr Bolbat
  */
-public class AbstractEntityVO implements Serializable, Cloneable {
+public class EntityVO implements Serializable, Cloneable {
 
 	/**
 	 * Generated SerialVersionUID.
@@ -55,9 +55,9 @@ public class AbstractEntityVO implements Serializable, Cloneable {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof AbstractEntityVO))
+		if (!(obj instanceof EntityVO))
 			return false;
-		AbstractEntityVO other = (AbstractEntityVO) obj;
+		EntityVO other = (EntityVO) obj;
 		if (created != other.created)
 			return false;
 		if (updated != other.updated)
@@ -74,9 +74,9 @@ public class AbstractEntityVO implements Serializable, Cloneable {
 	}
 
 	@Override
-	protected AbstractEntityVO clone() {
+	protected EntityVO clone() {
 		try {
-			return AbstractEntityVO.class.cast(super.clone());
+			return EntityVO.class.cast(super.clone());
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError("Can't clone [" + this + "]", e);
 		}
