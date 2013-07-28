@@ -1,7 +1,5 @@
-package net.bolbat.kit.api;
+package net.bolbat.kit.service.ui;
 
-import net.bolbat.kit.api.APIException;
-import net.bolbat.kit.api.APIInstantiationException;
 import net.bolbat.utils.test.CommonTester;
 
 import org.junit.After;
@@ -34,8 +32,8 @@ public class ExceptionsTest {
 	 */
 	@Test
 	public void complexTest() {
-		CommonTester.checkExceptionInstantiation(APIException.class);
-		CommonTester.checkExceptionInstantiation(APIInstantiationException.class);
+		CommonTester.checkExceptionInstantiation(UIServiceException.class);
+		CommonTester.checkExceptionInstantiation(UIServiceInstantiationException.class);
 	}
 
 }

@@ -2,7 +2,7 @@ package net.bolbat.kit.ioc;
 
 import static net.bolbat.kit.ioc.scope.DistributionScope.LOCAL;
 import static net.bolbat.kit.ioc.scope.DistributionScope.REMOTE;
-import static net.bolbat.kit.ioc.scope.TypeScope.BUSINESS_SERVICE;
+import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
 import net.bolbat.kit.ioc.ConfigurationNotFoundException;
 import net.bolbat.kit.ioc.Manager;
 import net.bolbat.kit.ioc.ManagerException;
@@ -59,7 +59,7 @@ public class ManagerTest {
 		}
 
 		// configuring local service
-		Manager.register(SampleService.class, SampleServiceFactory.class, LOCAL, BUSINESS_SERVICE);
+		Manager.register(SampleService.class, SampleServiceFactory.class, LOCAL, SERVICE);
 
 		// defining additional custom scope for remote sample service
 		CustomScope customScope = CustomScope.get("SAMPLE");
@@ -67,11 +67,11 @@ public class ManagerTest {
 		// configuring remote service with obtaining trough service locator with custom configuration
 		Configuration configuration = Configuration.create();
 		configuration.set(SampleServiceRemoteFactory.PARAM_TEST, "configured parameter");
-		Manager.register(SampleService.class, SampleServiceRemoteFactory.class, configuration, customScope, REMOTE, BUSINESS_SERVICE);
+		Manager.register(SampleService.class, SampleServiceRemoteFactory.class, configuration, customScope, REMOTE, SERVICE);
 
 		// checking local service
 		try {
-			SampleService localInstance = Manager.get(SampleService.class, BUSINESS_SERVICE, LOCAL, null);
+			SampleService localInstance = Manager.get(SampleService.class, SERVICE, LOCAL, null);
 			Assert.assertTrue(localInstance instanceof SampleServiceImpl);
 			Assert.assertEquals("CREATED", localInstance.getCreationMethod());
 		} catch (ManagerException e) {
@@ -82,7 +82,7 @@ public class ManagerTest {
 
 		// checking remote service
 		try {
-			SampleService remoteInstance = Manager.get(SampleService.class, BUSINESS_SERVICE, null, customScope, REMOTE);
+			SampleService remoteInstance = Manager.get(SampleService.class, SERVICE, null, customScope, REMOTE);
 			Assert.assertTrue(remoteInstance instanceof SampleServiceRemoteImpl);
 			Assert.assertEquals("LOCATED. PARAMETER: configured parameter", remoteInstance.getCreationMethod());
 		} catch (ManagerException e) {
@@ -104,7 +104,7 @@ public class ManagerTest {
 
 		// checking clean configuration, local scope
 		try {
-			Manager.get(SampleService.class, BUSINESS_SERVICE, null, LOCAL);
+			Manager.get(SampleService.class, SERVICE, null, LOCAL);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
@@ -112,7 +112,7 @@ public class ManagerTest {
 
 		// checking clean configuration, remote scope
 		try {
-			Manager.get(SampleService.class, BUSINESS_SERVICE, REMOTE, null, customScope);
+			Manager.get(SampleService.class, SERVICE, REMOTE, null, customScope);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);

@@ -36,13 +36,13 @@ public class ScopeUtilTest {
 	 */
 	@Test
 	public void scopesToStringTest() {
-		String scopesStringEtalon = "[" + TypeScope.BUSINESS_SERVICE.getId() + "," + DistributionScope.LOCAL.getId() + "]";
+		String scopesStringEtalon = "[" + DistributionScope.LOCAL.getId() + "," + TypeScope.SERVICE.getId() + "]";
 
-		String scopesString = ScopeUtil.scopesToString(DistributionScope.LOCAL, TypeScope.BUSINESS_SERVICE);
+		String scopesString = ScopeUtil.scopesToString(DistributionScope.LOCAL, TypeScope.SERVICE);
 		Assert.assertNotNull(scopesString);
 		Assert.assertEquals("Should be the same", scopesStringEtalon, scopesString);
 
-		String reverseScopesString = ScopeUtil.scopesToString(TypeScope.BUSINESS_SERVICE, DistributionScope.LOCAL);
+		String reverseScopesString = ScopeUtil.scopesToString(TypeScope.SERVICE, DistributionScope.LOCAL);
 		Assert.assertNotNull(reverseScopesString);
 		Assert.assertEquals("Should be the same", scopesStringEtalon, reverseScopesString);
 		Assert.assertEquals("Should be the same", scopesString, reverseScopesString);

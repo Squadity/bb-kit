@@ -1,13 +1,13 @@
-package net.bolbat.kit.api;
+package net.bolbat.kit.service.ui;
 
 import net.bolbat.kit.service.ServiceInstantiationException;
 
 /**
- * {@link APIInstantiationException} exception, can be used on {@link API} implementation instantiation phase.
+ * {@link UIServiceInstantiationException} exception, can be used on {@link UIService} implementation instantiation phase.
  * 
  * @author Alexandr Bolbat
  */
-public class APIInstantiationException extends ServiceInstantiationException {
+public class UIServiceInstantiationException extends ServiceInstantiationException {
 
 	/**
 	 * Basic serialVersionUID variable.
@@ -17,7 +17,7 @@ public class APIInstantiationException extends ServiceInstantiationException {
 	/**
 	 * Default constructor.
 	 */
-	public APIInstantiationException() {
+	public UIServiceInstantiationException() {
 	}
 
 	/**
@@ -26,7 +26,7 @@ public class APIInstantiationException extends ServiceInstantiationException {
 	 * @param message
 	 *            exception message
 	 */
-	public APIInstantiationException(final String message) {
+	public UIServiceInstantiationException(final String message) {
 		super(message);
 	}
 
@@ -36,7 +36,7 @@ public class APIInstantiationException extends ServiceInstantiationException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public APIInstantiationException(final Throwable cause) {
+	public UIServiceInstantiationException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -48,7 +48,7 @@ public class APIInstantiationException extends ServiceInstantiationException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public APIInstantiationException(final String message, final Throwable cause) {
+	public UIServiceInstantiationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

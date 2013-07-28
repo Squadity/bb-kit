@@ -1,6 +1,5 @@
 package net.bolbat.kit.ioc.scope;
 
-
 /**
  * Service type scope.
  * 
@@ -14,24 +13,24 @@ public enum TypeScope implements Scope {
 	PERSISTENCE_SERVICE,
 
 	/**
-	 * Business services scope.
+	 * {@link net.bolbat.kit.service.Service} scope.
 	 */
-	BUSINESS_SERVICE,
+	SERVICE,
 
 	/**
-	 * API scope.
+	 * {@link net.bolbat.kit.service.ui.UIService} scope.
 	 */
-	API,
+	UI_SERVICE,
 
 	/**
-	 * API (external) scope.
+	 * External API scope.
 	 */
 	API_EXTERNAL;
 
 	/**
 	 * Default scope.
 	 */
-	public static final TypeScope DEFAULT = BUSINESS_SERVICE;
+	public static final TypeScope DEFAULT = SERVICE;
 
 	/**
 	 * Scope id.

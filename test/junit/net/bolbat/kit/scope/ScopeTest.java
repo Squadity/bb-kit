@@ -78,13 +78,13 @@ public class ScopeTest {
 	 */
 	@Test
 	public void serviceTypeScopeTest() {
-		Scope businessService = TypeScope.BUSINESS_SERVICE;
+		Scope businessService = TypeScope.SERVICE;
 		Assert.assertEquals(businessService, TypeScope.get(businessService.getId()));
 
 		Scope persistenceService = TypeScope.PERSISTENCE_SERVICE;
 		Assert.assertEquals(persistenceService, TypeScope.get(persistenceService.getId()));
 
-		Scope api = TypeScope.API;
+		Scope api = TypeScope.UI_SERVICE;
 		Assert.assertEquals(api, TypeScope.get(api.getId()));
 
 		Scope apiExternal = TypeScope.API_EXTERNAL;

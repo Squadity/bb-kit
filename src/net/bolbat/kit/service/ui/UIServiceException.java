@@ -1,13 +1,13 @@
-package net.bolbat.kit.api;
+package net.bolbat.kit.service.ui;
 
 import net.bolbat.kit.service.ServiceException;
 
 /**
- * Basic {@link API} exception.
+ * Basic {@link UIService} exception.
  * 
  * @author Alexandr Bolbat
  */
-public class APIException extends ServiceException {
+public class UIServiceException extends ServiceException {
 
 	/**
 	 * Basic serialVersionUID variable.
@@ -17,7 +17,7 @@ public class APIException extends ServiceException {
 	/**
 	 * Default constructor.
 	 */
-	public APIException() {
+	public UIServiceException() {
 	}
 
 	/**
@@ -26,7 +26,7 @@ public class APIException extends ServiceException {
 	 * @param message
 	 *            exception message
 	 */
-	public APIException(final String message) {
+	public UIServiceException(final String message) {
 		super(message);
 	}
 
@@ -36,7 +36,7 @@ public class APIException extends ServiceException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public APIException(final Throwable cause) {
+	public UIServiceException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -48,7 +48,7 @@ public class APIException extends ServiceException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public APIException(final String message, final Throwable cause) {
+	public UIServiceException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
