@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>bb-gear-common</artifactId>
+	<artifactId>bb-kit</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>BB.GEAR - Common</name>
-	<description>BB.GEAR Project - Common</description>
+	<name>BB.Kit</name>
+	<description>BB.Kit Project</description>
 
 	<parent>
 		<groupId>net.bolbat</groupId>
@@ -33,9 +33,9 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBGEAR/common.git</connection>
-		<developerConnection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBGEAR/common.git</developerConnection>
-		<url>http://stash.infra.bolbat.net/scm/BBGEAR/common.git</url>
+		<connection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</connection>
+		<developerConnection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</developerConnection>
+		<url>http://stash.infra.bolbat.net/scm/BBKIT/main.git</url>
 	</scm>
 
 </project>

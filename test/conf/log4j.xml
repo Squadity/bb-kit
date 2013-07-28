@@ -14,7 +14,7 @@
 
 	<!-- File Appender for debug and higher -->
 	<appender name="DebugAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/bolbat-gear-common-debug.log" />
+		<param name="File" value="logs/bolbat-kit-debug.log" />
 		<param name="Threshold" value="DEBUG" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
@@ -23,7 +23,7 @@
 		</layout>
 	</appender>
 	<appender name="InfoAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/bolbat-gear-common-info.log" />
+		<param name="File" value="logs/bolbat-kit-info.log" />
 		<param name="Threshold" value="INFO" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
@@ -32,7 +32,7 @@
 		</layout>
 	</appender>
 	<appender name="WarnAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/bolbat-gear-common-warn.log" />
+		<param name="File" value="logs/bolbat-kit-warn.log" />
 		<param name="Threshold" value="WARN" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
@@ -41,7 +41,7 @@
 		</layout>
 	</appender>
 	<appender name="ErrorAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/bolbat-gear-common-error.log" />
+		<param name="File" value="logs/bolbat-kit-error.log" />
 		<param name="Threshold" value="ERROR" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
@@ -50,7 +50,7 @@
 		</layout>
 	</appender>
 	<appender name="FatalAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/bolbat-gear-common-fatal.log" />
+		<param name="File" value="logs/bolbat-kit-fatal.log" />
 		<param name="Threshold" value="FATAL" />
 		<param name="MaxFileSize" value="100MB" />
 		<param name="MaxBackupIndex" value="5" />
@@ -59,7 +59,7 @@
 		</layout>
 	</appender>
 
-	<logger name="net.bolbat.gear.common" additivity="false">
+	<logger name="net.bolbat.kit" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="DebugAppender" />
 		<appender-ref ref="InfoAppender" />
