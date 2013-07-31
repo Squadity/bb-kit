@@ -43,9 +43,10 @@ public class EntityVO implements Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
+		final int modifier = 32;
 		int result = 1;
-		result = prime * result + (int) (created ^ (created >>> 32));
-		result = prime * result + (int) (updated ^ (updated >>> 32));
+		result = prime * result + (int) (created ^ (created >>> modifier));
+		result = prime * result + (int) (updated ^ (updated >>> modifier));
 		return result;
 	}
 
