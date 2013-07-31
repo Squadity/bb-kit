@@ -2,13 +2,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bb-kit</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>BB.Kit</name>
-	<description>BB.Kit Project</description>
+	<name>Common Kit</name>
+	<description>Common Development Kit</description>
+	<url>http://confluence.infra.bolbat.net/display/BBKIT</url>
 
 	<parent>
 		<groupId>net.bolbat</groupId>
 		<artifactId>bb-parent</artifactId>
-		<version>6</version>
+		<version>7-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -28,7 +29,12 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>compile</scope>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
