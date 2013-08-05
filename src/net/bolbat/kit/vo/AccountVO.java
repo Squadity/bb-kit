@@ -185,7 +185,7 @@ public class AccountVO extends EntityVO {
 	}
 
 	@Override
-	protected AccountVO clone() {
+	public AccountVO clone() {
 		final AccountVO result = AccountVO.class.cast(super.clone());
 		result.id = id.clone();
 		result.type = type;

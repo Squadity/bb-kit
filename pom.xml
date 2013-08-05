@@ -15,6 +15,10 @@
 	<properties>
 		<!-- bb dependencies versions -->
 		<bb-utils.version>0.2.3-SNAPSHOT</bb-utils.version>
+
+		<!-- general configuration properties -->
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
 
 	<dependencies>

@@ -79,7 +79,7 @@ public class EntityVO implements Serializable, Cloneable {
 		try {
 			return EntityVO.class.cast(super.clone());
 		} catch (CloneNotSupportedException e) {
-			throw new AssertionError("Can't clone [" + this + "]", e);
+			throw new AssertionError("Can't clone [" + this + "]");
 		}
 	}
 
