@@ -41,32 +41,6 @@ public class EntityVO implements Serializable, Cloneable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		final int modifier = 32;
-		int result = 1;
-		result = prime * result + (int) (created ^ (created >>> modifier));
-		result = prime * result + (int) (updated ^ (updated >>> modifier));
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof EntityVO))
-			return false;
-		EntityVO other = (EntityVO) obj;
-		if (created != other.created)
-			return false;
-		if (updated != other.updated)
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(", created=").append(created);
