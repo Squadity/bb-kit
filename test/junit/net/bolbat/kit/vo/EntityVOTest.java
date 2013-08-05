@@ -1,7 +1,5 @@
 package net.bolbat.kit.vo;
 
-import net.bolbat.kit.vo.EntityVO;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,7 +25,8 @@ public class EntityVOTest {
 		Assert.assertEquals(456, empty.getUpdated());
 
 		EntityVO clone = empty.clone();
-		Assert.assertEquals(empty, clone);
+		Assert.assertEquals(empty.getCreated(), clone.getCreated());
+		Assert.assertEquals(empty.getUpdated(), clone.getUpdated());
 		Assert.assertNotSame(empty, clone);
 
 		Assert.assertEquals(123, clone.getCreated());
