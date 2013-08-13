@@ -49,7 +49,7 @@ public class EntityVO implements Serializable, Cloneable {
 	}
 
 	@Override
-	protected EntityVO clone() {
+	public EntityVO clone() {
 		try {
 			return EntityVO.class.cast(super.clone());
 		} catch (CloneNotSupportedException e) {
