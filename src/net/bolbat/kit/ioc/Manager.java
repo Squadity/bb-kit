@@ -179,7 +179,9 @@ public final class Manager implements Module {
 			throw new ManagerException("Can't instantiate service", e);
 		} catch (final UIServiceInstantiationException e) {
 			throw new ManagerException("Can't instantiate service", e);
+			// CHECKSTYLE:OFF
 		} catch (final RuntimeException e) {
+			// CHECKSTYLE:ON
 			throw new ManagerException("Can't instantiate service", e);
 		}
 	}
