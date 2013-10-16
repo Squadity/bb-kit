@@ -18,8 +18,7 @@ public interface UIServiceFactory<T extends UIService> extends ServiceFactory<T>
 	 * @param configuration
 	 *            factory configuration
 	 * @return <T> instance
-	 * @throws UIServiceInstantiationException
 	 */
-	T create(Configuration configuration) throws UIServiceInstantiationException;
+	T create(Configuration configuration);
 
 }

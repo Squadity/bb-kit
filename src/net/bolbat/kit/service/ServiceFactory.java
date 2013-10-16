@@ -15,8 +15,7 @@ public interface ServiceFactory<T extends Service> {
 	 * @param configuration
 	 *            factory configuration
 	 * @return <T> instance
-	 * @throws ServiceInstantiationException
 	 */
-	T create(Configuration configuration) throws ServiceInstantiationException;
+	T create(Configuration configuration);
 
 }

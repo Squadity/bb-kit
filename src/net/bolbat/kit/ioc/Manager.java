@@ -12,6 +12,7 @@ import net.bolbat.kit.service.Configuration;
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
 import net.bolbat.kit.service.ServiceInstantiationException;
+import net.bolbat.kit.service.ui.UIServiceInstantiationException;
 import net.bolbat.utils.reflect.Instantiator;
 
 /**
@@ -174,7 +175,11 @@ public final class Manager implements Module {
 			configuration.setInstance(instance);
 
 			return instance;
-		} catch (ServiceInstantiationException e) {
+		} catch (final ServiceInstantiationException e) {
+			throw new ManagerException("Can't instantiate service", e);
+		} catch (final UIServiceInstantiationException e) {
+			throw new ManagerException("Can't instantiate service", e);
+		} catch (final RuntimeException e) {
 			throw new ManagerException("Can't instantiate service", e);
 		}
 	}

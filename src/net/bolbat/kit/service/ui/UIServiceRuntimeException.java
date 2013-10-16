@@ -1,21 +1,23 @@
 package net.bolbat.kit.service.ui;
 
+import net.bolbat.kit.service.ServiceRuntimeException;
+
 /**
- * {@link UIServiceInstantiationException} exception, can be used on {@link UIService} implementation instantiation phase.
+ * Basic {@link UIService} runtime exception.
  * 
  * @author Alexandr Bolbat
  */
-public class UIServiceInstantiationException extends UIServiceRuntimeException {
+public class UIServiceRuntimeException extends ServiceRuntimeException {
 
 	/**
 	 * Basic serialVersionUID variable.
 	 */
-	private static final long serialVersionUID = -7062713063376441637L;
+	private static final long serialVersionUID = 2893804308365594004L;
 
 	/**
 	 * Default constructor.
 	 */
-	public UIServiceInstantiationException() {
+	public UIServiceRuntimeException() {
 	}
 
 	/**
@@ -24,7 +26,7 @@ public class UIServiceInstantiationException extends UIServiceRuntimeException {
 	 * @param message
 	 *            exception message
 	 */
-	public UIServiceInstantiationException(final String message) {
+	public UIServiceRuntimeException(final String message) {
 		super(message);
 	}
 
@@ -34,7 +36,7 @@ public class UIServiceInstantiationException extends UIServiceRuntimeException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public UIServiceInstantiationException(final Throwable cause) {
+	public UIServiceRuntimeException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -46,7 +48,7 @@ public class UIServiceInstantiationException extends UIServiceRuntimeException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public UIServiceInstantiationException(final String message, final Throwable cause) {
+	public UIServiceRuntimeException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

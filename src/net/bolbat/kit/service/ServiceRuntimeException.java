@@ -1,21 +1,21 @@
 package net.bolbat.kit.service;
 
 /**
- * {@link ServiceInstantiationException} exception, can be used on {@link Service} implementation instantiation phase.
+ * Basic {@link Service} runtime exception.
  * 
  * @author Alexandr Bolbat
  */
-public class ServiceInstantiationException extends ServiceRuntimeException {
+public class ServiceRuntimeException extends RuntimeException {
 
 	/**
 	 * Basic serialVersionUID variable.
 	 */
-	private static final long serialVersionUID = 4795705372357225467L;
+	private static final long serialVersionUID = -4068076226349642855L;
 
 	/**
 	 * Default constructor.
 	 */
-	public ServiceInstantiationException() {
+	public ServiceRuntimeException() {
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class ServiceInstantiationException extends ServiceRuntimeException {
 	 * @param message
 	 *            exception message
 	 */
-	public ServiceInstantiationException(final String message) {
+	public ServiceRuntimeException(final String message) {
 		super(message);
 	}
 
@@ -34,7 +34,7 @@ public class ServiceInstantiationException extends ServiceRuntimeException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public ServiceInstantiationException(final Throwable cause) {
+	public ServiceRuntimeException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -46,7 +46,7 @@ public class ServiceInstantiationException extends ServiceRuntimeException {
 	 * @param cause
 	 *            exception cause
 	 */
-	public ServiceInstantiationException(final String message, final Throwable cause) {
+	public ServiceRuntimeException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
