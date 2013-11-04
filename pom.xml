@@ -14,7 +14,7 @@
 
 	<properties>
 		<!-- bb dependencies versions -->
-		<bb-utils.version>0.2.3</bb-utils.version>
+		<bb-utils.version>0.2.4-SNAPSHOT</bb-utils.version>
 
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
@@ -62,7 +62,7 @@
 		<connection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</connection>
 		<developerConnection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</developerConnection>
 		<url>http://stash.infra.bolbat.net/scm/BBKIT/main.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 </project>
