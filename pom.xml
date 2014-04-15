@@ -19,6 +19,7 @@
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
 		<reflections.version>0.9.9-RC1</reflections.version>
+        <quartz-scheduler.version>2.2.1</quartz-scheduler.version>
 
 		<!-- general configuration properties -->
 		<maven.compiler.source>1.6</maven.compiler.source>
@@ -44,6 +45,11 @@
 			<artifactId>reflections</artifactId>
 			<version>${reflections.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz-scheduler.version}</version>
+        </dependency>
 
 		<!-- Testing dependencies -->
 		<dependency>
