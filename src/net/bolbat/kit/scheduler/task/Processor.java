@@ -1,4 +1,4 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler.task;
 
 /**
  * Custom processor interface. Processor invoking for each queued element.

@@ -1,13 +1,15 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.bolbat.kit.scheduler.task.ProcessingException;
+import net.bolbat.kit.scheduler.task.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 /**
- * {@link Processor} testing implementation.
+ * {@link net.bolbat.kit.scheduler.task.Processor} testing implementation.
  *
  * @author ivanbatura
  */

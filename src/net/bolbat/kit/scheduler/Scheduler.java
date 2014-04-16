@@ -1,65 +1,65 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
 /**
  * Interface for scheduled queue.
  *
  * @author ivanbatura
  */
-public interface ScheduledQueue {
+public interface Scheduler {
 
 	/**
 	 * Pause scheduled loading elements.
 	 *
-	 * @throws ScheduledQueueException
+	 * @throws SchedulerException
 	 */
-	void pause() throws ScheduledQueueException;
+	void pause() throws SchedulerException;
 
 	/**
 	 * Resume scheduled loading elements.
 	 *
-	 * @throws ScheduledQueueException
+	 * @throws SchedulerException
 	 */
-	void resume() throws ScheduledQueueException;
+	void resume() throws SchedulerException;
 
 	/**
 	 * Is scheduler started.
 	 *
 	 * @return true if started, otherwise false
 	 */
-	boolean isStarted() throws ScheduledQueueException;
+	boolean isStarted() throws SchedulerException;
 
 	/**
 	 * Is scheduler paused.
 	 *
 	 * @return true if paused, otherwise false
 	 */
-	boolean isPaused() throws ScheduledQueueException;
+	boolean isPaused() throws SchedulerException;
 
 	/**
 	 * Configure scheduler with new schedule based on cron configuration, paused scheduler resume it's work with new schedule.
 	 *
 	 * @param schedule
 	 * 		cron based schedule
-	 * @throws ScheduledQueueException
+	 * @throws SchedulerException
 	 */
-	void schedule(String schedule) throws ScheduledQueueException;
+	void schedule(String schedule) throws SchedulerException;
 
 	/**
 	 * Configure scheduler with new schedule based on repeat interval, paused scheduler resume it's work with new schedule.
 	 *
 	 * @param interval
 	 * 		repeat interval in milliseconds
-	 * @throws ScheduledQueueException
+	 * @throws SchedulerException
 	 */
-	void schedule(long interval) throws ScheduledQueueException;
+	void schedule(long interval) throws SchedulerException;
 
-	/**
-	 * Set mode.
-	 *
-	 * @param mode
-	 * 		processing mode
-	 */
-	void setMode(ProcessingMode mode);
+//	/**
+//	 * Set mode.
+//	 *
+//	 * @param mode
+//	 * 		processing mode
+//	 */
+//	void setMode(ProcessingMode mode);
 
 	/**
 	 * Stop scheduler (loading elements to the queue) and queue (processing elements), future use of this instance is not possible after this action.

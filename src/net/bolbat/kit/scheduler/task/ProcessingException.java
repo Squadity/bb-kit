@@ -1,22 +1,18 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler.task;
+
+import net.bolbat.kit.scheduler.SchedulerException;
 
 /**
- * {@link ScheduledQueue} exception, it can be thrown by {@link Processor} on any process exception.
+ * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown by {@link net.bolbat.kit.scheduler.task.Processor} on any process exception.
  * 
  * @author ivanbatura
  */
-public class ProcessingException extends ScheduledQueueException {
+public class ProcessingException extends SchedulerException {
 
 	/**
 	 * Basic serialVersionUID variable.
 	 */
 	private static final long serialVersionUID = -5872844208440952277L;
-
-	/**
-	 * Default constructor.
-	 */
-	public ProcessingException() {
-	}
 
 	/**
 	 * Public constructor.

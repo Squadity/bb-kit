@@ -1,11 +1,11 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
 /**
- * {@link ScheduledQueue} general exception.
+ * {@link Scheduler} general exception.
  *
  * @author ivanbatura
  */
-public class ScheduledQueueException extends Exception {
+public class SchedulerException extends Exception {
 
 	/**
 	 * Basic serialVersionUID variable.
@@ -13,18 +13,12 @@ public class ScheduledQueueException extends Exception {
 	private static final long serialVersionUID = -2668716096985536670L;
 
 	/**
-	 * Default constructor.
-	 */
-	public ScheduledQueueException() {
-	}
-
-	/**
 	 * Public constructor.
 	 *
 	 * @param message
 	 * 		exception message
 	 */
-	public ScheduledQueueException(final String message) {
+	public SchedulerException(final String message) {
 		super(message);
 	}
 
@@ -34,7 +28,7 @@ public class ScheduledQueueException extends Exception {
 	 * @param cause
 	 * 		exception cause
 	 */
-	public ScheduledQueueException(final Throwable cause) {
+	public SchedulerException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -46,7 +40,7 @@ public class ScheduledQueueException extends Exception {
 	 * @param cause
 	 * 		exception cause
 	 */
-	public ScheduledQueueException(final String message, final Throwable cause) {
+	public SchedulerException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

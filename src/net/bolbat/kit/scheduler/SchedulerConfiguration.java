@@ -1,7 +1,8 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
 import java.io.Serializable;
 
+import net.bolbat.utils.lang.StringUtils;
 import org.configureme.ConfigurationManager;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author ivanbatura
  */
 @ConfigureMe (name = "scheduled-configuration")
-public class ScheduledConfiguration implements Serializable {
+public class SchedulerConfiguration implements Serializable {
 
 	/**
 	 * Generated SerialVersionUID.
@@ -27,7 +28,7 @@ public class ScheduledConfiguration implements Serializable {
 	 * {@link org.slf4j.Logger} instance.
 	 */
 	@DontConfigure
-	public static final Logger LOGGER = LoggerFactory.getLogger(ScheduledConfiguration.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerConfiguration.class);
 
 	/**
 	 * Instance creation lock.
@@ -39,37 +40,37 @@ public class ScheduledConfiguration implements Serializable {
 	 * Default scheduler instance id.
 	 */
 	@DontConfigure
-	public static final String DEFAULT_SCHEDULER_INSTANCE_ID = "AUTO";
+	private static final String DEFAULT_SCHEDULER_INSTANCE_ID = "AUTO";
 
 	/**
 	 * Default scheduler skip update check.
 	 */
 	@DontConfigure
-	public static final boolean DEFAULT_SCHEDULER_SKIP_UPDATE_CHECK = true;
+	private static final boolean DEFAULT_SCHEDULER_SKIP_UPDATE_CHECK = true;
 
 	/**
 	 * Default thread pool class.
 	 */
 	@DontConfigure
-	public static final String DEFAULT_THREAD_POOL_CLASS = "org.quartz.simpl.SimpleThreadPool";
+	private static final String DEFAULT_THREAD_POOL_CLASS = "org.quartz.simpl.SimpleThreadPool";
 
 	/**
 	 * Default thread pool count.
 	 */
 	@DontConfigure
-	public static final int DEFAULT_THREAD_POOL_TREAD_COUNT = 1;
+	private static final int DEFAULT_THREAD_POOL_TREAD_COUNT = 1;
 
 	/**
 	 * Default thread pool count.
 	 */
 	@DontConfigure
-	public static final String DEFAULT_THREAD_JOB_STORE_CLASS = "org.quartz.simpl.RAMJobStore";
+	private static final String DEFAULT_THREAD_JOB_STORE_CLASS = "org.quartz.simpl.RAMJobStore";
 
 	/**
 	 * Configurations cache.
 	 */
 	@DontConfigure
-	private static volatile ScheduledConfiguration instance;
+	private static volatile SchedulerConfiguration instance;
 
 	/**
 	 * Scheduler instance name.
@@ -111,9 +112,12 @@ public class ScheduledConfiguration implements Serializable {
 	/**
 	 * Default constructor.
 	 */
-	private ScheduledConfiguration() {
+	private SchedulerConfiguration(String configurationName) {
 		try {
-			ConfigurationManager.INSTANCE.configure(this);
+			if (StringUtils.isEmpty(configurationName))
+				ConfigurationManager.INSTANCE.configure(this);
+			else
+				ConfigurationManager.INSTANCE.configureBeanAs(this, configurationName);
 			// CHECKSTYLE:OFF
 		} catch (final RuntimeException e) {
 			// CHECKSTYLE:ON
@@ -127,13 +131,13 @@ public class ScheduledConfiguration implements Serializable {
 	/**
 	 * Get configuration instance for given environment.
 	 *
-	 * @return {@link ScheduledConfiguration} instance
+	 * @return {@link SchedulerConfiguration} instance
 	 */
-	public static ScheduledConfiguration getInstance() {
+	public static SchedulerConfiguration getInstance(String configurationName) {
 		if (instance == null)
 			synchronized (LOCK) {
 				if (instance == null)
-					instance = new ScheduledConfiguration();
+					instance = new SchedulerConfiguration(configurationName);
 			}
 		return instance;
 	}

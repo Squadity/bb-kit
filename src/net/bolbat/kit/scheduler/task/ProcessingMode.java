@@ -1,7 +1,7 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler.task;
 
 /**
- * {@link ScheduledQueue} processing mode.
+ * {@link net.bolbat.kit.scheduler.Scheduler} processing mode.
  * 
  * @author ivanbatura
  */

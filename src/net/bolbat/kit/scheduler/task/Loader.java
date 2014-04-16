@@ -1,4 +1,4 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler.task;
 
 import java.util.List;
 

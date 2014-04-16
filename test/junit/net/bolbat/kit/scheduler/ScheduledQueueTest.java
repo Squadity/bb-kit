@@ -1,21 +1,24 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
+import net.bolbat.kit.scheduler.task.ProcessingMode;
+import net.bolbat.kit.scheduler.task.process.ProcessTaskBuilder;
+import net.bolbat.kit.scheduler.task.schedulequeue.ScheduledQueueTaskBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * {@link ScheduledQueue} test.
+ * {@link Scheduler} test.
  *
  * @author ivanbatura
  */
 public class ScheduledQueueTest {
 
 	/**
-	 * Testing {@link ScheduledQueue} instance.
+	 * Testing {@link Scheduler} instance.
 	 */
-	private ScheduledQueue queue;
+	private Scheduler queue;
 
 	/**
 	 * Test loader. It's generating elements on the fly.
@@ -31,7 +34,7 @@ public class ScheduledQueueTest {
 	 * Initialization executed before each test.
 	 */
 	@Before
-	public void before() throws ScheduledQueueException {
+	public void before() throws SchedulerException {
 		//initialization
 		processor = new SystemOutProcessor();
 		loader = new RandomGenerationLoader();
@@ -42,7 +45,7 @@ public class ScheduledQueueTest {
 	 */
 	@After
 	public void after() {
-		if(queue!=null)
+		if (queue != null)
 			queue.tearDown();
 	}
 
@@ -50,10 +53,15 @@ public class ScheduledQueueTest {
 	 * Complex test for interval based schedule.
 	 */
 	@Test
-	public void complexTestForSyncModeIntervalScheduleTest() throws ScheduledQueueException, InterruptedException {
-		queue = ScheduledQueueFactory.create("quartz.properties", loader, processor);
+	public void complexTestForSyncModeIntervalScheduleTest() throws SchedulerException, InterruptedException {
+		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
+		builder.setLoader(loader);
+		builder.setProcessor(processor);
+		builder.setProcessingMode(ProcessingMode.SYNC);
+		builder.setConfiguration("quartz.properties");
+		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		queue = SchedulerFactory.create(builder.build());
 
-		queue.setMode(ProcessingMode.SYNC);
 		queue.schedule(1L);
 		Assert.assertTrue(queue.isStarted()); // should be already started
 
@@ -76,10 +84,16 @@ public class ScheduledQueueTest {
 	 * Complex test for cron based schedule.
 	 */
 	@Test
-	public void complexTestForSyncModeCronScheduleTest() throws ScheduledQueueException, InterruptedException {
-		queue = ScheduledQueueFactory.create("quartz.properties", loader, processor);
+	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
+		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
+		builder.setLoader(loader);
+		builder.setProcessor(processor);
+		builder.setProcessingMode(ProcessingMode.SYNC);
+		builder.setConfiguration("quartz.properties");
+		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		queue = SchedulerFactory.create(builder.build());
 
-		queue.setMode(ProcessingMode.SYNC);
+
 		queue.schedule("0/1 * * * * ?");
 		Assert.assertTrue(queue.isStarted()); // should be already started
 
@@ -102,10 +116,13 @@ public class ScheduledQueueTest {
 	 * Complex test for interval based schedule.
 	 */
 	@Test
-	public void withoutLoaderScheduleTest() throws ScheduledQueueException, InterruptedException {
-		queue = ScheduledQueueFactory.create("quartz.properties", processor);
+	public void withoutLoaderScheduleTest() throws SchedulerException, InterruptedException {
+		ProcessTaskBuilder builder = new ProcessTaskBuilder();
+		builder.setProcessor(processor);
+		builder.setConfiguration("quartz.properties");
+		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		queue = SchedulerFactory.create(builder.build());
 
-		queue.setMode(ProcessingMode.SYNC);
 		queue.schedule(1L);
 		Assert.assertTrue(queue.isStarted()); // should be already started
 
@@ -125,10 +142,13 @@ public class ScheduledQueueTest {
 	 * Complex test for schedule without file configuration
 	 */
 	@Test
-	public void withoutConfigScheduleTest() throws ScheduledQueueException, InterruptedException {
-		queue = ScheduledQueueFactory.create(loader, processor);
+	public void withoutConfigScheduleTest() throws SchedulerException, InterruptedException {
+		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
+		builder.setLoader(loader);
+		builder.setProcessor(processor);
+		builder.setProcessingMode(ProcessingMode.SYNC);
+		queue = SchedulerFactory.create(builder.build());
 
-		queue.setMode(ProcessingMode.SYNC);
 		queue.schedule("0/1 * * * * ?");
 		Assert.assertTrue(queue.isStarted()); // should be already started
 
@@ -145,15 +165,6 @@ public class ScheduledQueueTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-	}
-
-	/**
-	 * Complex test for schedule without file configuration
-	 */
-	@Test
-	public void configTest() throws ScheduledQueueException, InterruptedException {
-		String threadCount = ScheduledConfigurationFactory.getConfiguration().getProperty(ScheduledConfigurationFactory.PARAM_THREAD_POOL_TREAD_COUNT);
-		Assert.assertEquals("Incorrect config thread count value", 2, Integer.parseInt(threadCount));
 	}
 
 }

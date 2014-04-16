@@ -1,22 +1,18 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler.task;
+
+import net.bolbat.kit.scheduler.SchedulerException;
 
 /**
- * {@link ScheduledQueue} exception, it can be thrown by {@link Loader} on any loading exception.
+ * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown by {@link net.bolbat.kit.scheduler.task.Loader} on any loading exception.
  *
  * @author ivanbatura
  */
-public class LoadingException extends ScheduledQueueException {
+public class LoadingException extends SchedulerException {
 
 	/**
 	 * Basic serialVersionUID variable.
 	 */
 	private static final long serialVersionUID = 3757212518629624050L;
-
-	/**
-	 * Default constructor.
-	 */
-	public LoadingException() {
-	}
 
 	/**
 	 * Public constructor.

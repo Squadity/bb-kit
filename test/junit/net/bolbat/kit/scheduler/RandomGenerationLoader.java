@@ -1,11 +1,14 @@
-package net.bolbat.kit.scheduledqueue;
+package net.bolbat.kit.scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.bolbat.kit.scheduler.task.Loader;
+import net.bolbat.kit.scheduler.task.LoadingException;
+
 /**
- * {@link Loader} testing implementation.
+ * {@link net.bolbat.kit.scheduler.task.Loader} testing implementation.
  * 
  * @author ivanbatura
  */
@@ -14,7 +17,7 @@ public class RandomGenerationLoader implements Loader {
 	/**
 	 * Maximum elements to load.
 	 */
-	public static final int MAX_TO_LOAD = 100;
+	private static final int MAX_TO_LOAD = 100;
 
 	/**
 	 * Loaded elements amount.
