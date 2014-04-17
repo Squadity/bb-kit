@@ -89,7 +89,8 @@ public class SchedulerConfigurationFactory {
 	private static Properties getConfigureMeConfiguration(String fileName) {
 		Properties properties = new Properties();
 		SchedulerConfiguration config = SchedulerConfiguration.getInstance(fileName);
-		properties.put(PARAM_SCHEDULER_INSTANCE_NAME, UUID.randomUUID());
+
+		properties.put(PARAM_SCHEDULER_INSTANCE_NAME, config.getSchedulerInstanceName() != null ? config.getSchedulerInstanceName() : UUID.randomUUID());
 		properties.put(PARAM_SCHEDULER_INSTANCE_ID, config.getSchedulerInstanceId());
 		properties.put(PARAM_SCHEDULER_SKIP_UPDATE_CHECK, String.valueOf(config.isSchedulerSkipUpdateCheck()));
 		properties.put(PARAM_THREAD_POOL_CLASS, config.getThreadPoolClass());

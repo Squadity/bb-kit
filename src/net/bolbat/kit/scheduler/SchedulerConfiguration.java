@@ -1,6 +1,8 @@
 package net.bolbat.kit.scheduler;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.bolbat.utils.lang.StringUtils;
 import org.configureme.ConfigurationManager;
@@ -15,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author ivanbatura
  */
-@ConfigureMe (name = "scheduled-configuration")
+@ConfigureMe
 public class SchedulerConfiguration implements Serializable {
 
 	/**
@@ -31,10 +33,16 @@ public class SchedulerConfiguration implements Serializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerConfiguration.class);
 
 	/**
+	 * Configurations cache.
+	 */
+	@DontConfigure
+	private static final Map<String, SchedulerConfiguration> CACHE = new HashMap<String, SchedulerConfiguration>();
+
+	/**
 	 * Instance creation lock.
 	 */
 	@DontConfigure
-	private static final Object LOCK = new Object();
+	private static final Object CACHE_LOCK = new Object();
 
 	/**
 	 * Default scheduler instance id.
@@ -65,12 +73,6 @@ public class SchedulerConfiguration implements Serializable {
 	 */
 	@DontConfigure
 	private static final String DEFAULT_THREAD_JOB_STORE_CLASS = "org.quartz.simpl.RAMJobStore";
-
-	/**
-	 * Configurations cache.
-	 */
-	@DontConfigure
-	private static volatile SchedulerConfiguration instance;
 
 	/**
 	 * Scheduler instance name.
@@ -129,17 +131,27 @@ public class SchedulerConfiguration implements Serializable {
 	}
 
 	/**
-	 * Get configuration instance for given environment.
+	 * Get configuration instance.
 	 *
+	 * @param configuration
+	 * 		configuration name, can't be empty
 	 * @return {@link SchedulerConfiguration} instance
 	 */
-	public static SchedulerConfiguration getInstance(String configurationName) {
-		if (instance == null)
-			synchronized (LOCK) {
-				if (instance == null)
-					instance = new SchedulerConfiguration(configurationName);
-			}
-		return instance;
+	public static SchedulerConfiguration getInstance(final String configuration) {
+		final String cacheKey = String.valueOf(configuration);
+		final SchedulerConfiguration cached = CACHE.get(cacheKey);
+		if (cached != null)
+			return cached;
+
+		synchronized (CACHE_LOCK) {
+			final SchedulerConfiguration secondCheck = CACHE.get(cacheKey);
+			if (secondCheck != null)
+				return secondCheck;
+
+			final SchedulerConfiguration config = new SchedulerConfiguration(configuration);
+			CACHE.put(cacheKey, config);
+			return config;
+		}
 	}
 
 	public String getSchedulerInstanceName() {

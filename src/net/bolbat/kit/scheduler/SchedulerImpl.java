@@ -1,6 +1,5 @@
 package net.bolbat.kit.scheduler;
 
-import net.bolbat.kit.scheduler.task.queue.ProcessingMode;
 import net.bolbat.utils.logging.LoggingUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -22,11 +21,6 @@ public class SchedulerImpl implements Scheduler {
 	 * {@link Logger} instance.
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerImpl.class);
-
-	/**
-	 * Processing mode.
-	 */
-	private volatile ProcessingMode mode = ProcessingMode.DEFAULT;
 
 	/**
 	 * Configured scheduler.
