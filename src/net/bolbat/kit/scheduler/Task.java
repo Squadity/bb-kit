@@ -7,5 +7,5 @@ import org.quartz.Job;
  *
  * @author ivanbatura
  */
-public interface ScheduledJob extends Job {
+public interface Task extends Job {
 }

@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.bolbat.kit.scheduler.task.Loader;
 import net.bolbat.kit.scheduler.task.LoadingException;
+import net.bolbat.kit.scheduler.task.queue.QueueLoader;
 
 /**
- * {@link net.bolbat.kit.scheduler.task.Loader} testing implementation.
- * 
+ * {@link net.bolbat.kit.scheduler.task.queue.QueueLoader} testing implementation.
+ *
  * @author ivanbatura
  */
-public class RandomGenerationLoader implements Loader {
+public class RandomGenerationLoader implements QueueLoader {
+	/**
+	 * Test serial UID.
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Maximum elements to load.

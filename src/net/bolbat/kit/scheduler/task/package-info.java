@@ -1,5 +1,5 @@
 /**
- * Scheduled task.
+ * Scheduled task common implementations.
  *
  * @author ivanbatura
  */

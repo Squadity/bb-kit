@@ -1,4 +1,4 @@
-package net.bolbat.kit.scheduler.task;
+package net.bolbat.kit.scheduler.task.queue;
 
 /**
  * {@link net.bolbat.kit.scheduler.Scheduler} processing mode.

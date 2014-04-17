@@ -1,18 +1,18 @@
-package net.bolbat.kit.scheduler.task;
+package net.bolbat.kit.scheduler.task.queue;
 
 /**
  * Scheduler job constants.
  *
  * @author ivanbatura
  */
-public final class ScheduledConstants {
+public final class QueueConstants {
 	/**
-	 * Configured {@link Processor}.
+	 * Configured {@link QueueProcessor}.
 	 */
 	public static final String LOADER = "loader";
 
 	/**
-	 * Configured {@link Processor}.
+	 * Configured {@link QueueProcessor}.
 	 */
 	public static final String PROCESSOR = "processor";
 
@@ -24,7 +24,7 @@ public final class ScheduledConstants {
 	/**
 	 * Default constructor with preventing instantiations of this class.
 	 */
-	private ScheduledConstants() {
+	private QueueConstants() {
 		throw new IllegalAccessError("Shouldn't be instantiated.");
 	}
 }

@@ -53,14 +53,6 @@ public interface Scheduler {
 	 */
 	void schedule(long interval) throws SchedulerException;
 
-//	/**
-//	 * Set mode.
-//	 *
-//	 * @param mode
-//	 * 		processing mode
-//	 */
-//	void setMode(ProcessingMode mode);
-
 	/**
 	 * Stop scheduler (loading elements to the queue) and queue (processing elements), future use of this instance is not possible after this action.
 	 */

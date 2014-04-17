@@ -23,39 +23,39 @@ public class SchedulerConfigurationFactory {
 	/**
 	 * Parameter for scheduler - instance name.
 	 */
-	public static final String PARAM_SCHEDULER_INSTANCE_NAME = "org.quartz.scheduler.instanceName";
+	private static final String PARAM_SCHEDULER_INSTANCE_NAME = "org.quartz.scheduler.instanceName";
 
 	/**
 	 * Parameter for scheduler - instance id generation .
 	 */
-	public static final String PARAM_SCHEDULER_INSTANCE_ID = "org.quartz.scheduler.instanceId";
+	private static final String PARAM_SCHEDULER_INSTANCE_ID = "org.quartz.scheduler.instanceId";
 
 	/**
 	 * Parameter for scheduler - skip update check.
 	 */
-	public static final String PARAM_SCHEDULER_SKIP_UPDATE_CHECK = "org.quartz.scheduler.skipUpdateCheck";
+	private static final String PARAM_SCHEDULER_SKIP_UPDATE_CHECK = "org.quartz.scheduler.skipUpdateCheck";
 
 	/**
 	 * Parameter for scheduler - thread pool class.
 	 */
-	public static final String PARAM_THREAD_POOL_CLASS = "org.quartz.threadPool.class";
+	private static final String PARAM_THREAD_POOL_CLASS = "org.quartz.threadPool.class";
 
 	/**
 	 * Parameter for scheduler - thread pool tread count.
 	 */
-	public static final String PARAM_THREAD_POOL_TREAD_COUNT = "org.quartz.threadPool.threadCount";
+	private static final String PARAM_THREAD_POOL_TREAD_COUNT = "org.quartz.threadPool.threadCount";
 
 	/**
 	 * Parameter for scheduler - job store class.
 	 */
-	public static final String PARAM_THREAD_JOB_STORE_CLASS = "org.quartz.jobStore.class";
+	private static final String PARAM_THREAD_JOB_STORE_CLASS = "org.quartz.jobStore.class";
 
 	/**
 	 * Get default quartz configuration.
 	 *
 	 * @return {@link Properties} with configuration
 	 */
-	public static Scheduler getConfiguration(ScheduledTask task) throws SchedulerException {
+	public static Scheduler getConfiguration(TaskConfiguration task) throws SchedulerException {
 		if (task == null)
 			throw new IllegalArgumentException("Parameter task is null");
 		try {

@@ -1,8 +1,6 @@
 package net.bolbat.kit.scheduler;
 
-import java.util.Map;
-
-import net.bolbat.kit.scheduler.task.ProcessingMode;
+import net.bolbat.kit.scheduler.task.queue.ProcessingMode;
 import net.bolbat.utils.logging.LoggingUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -49,19 +47,18 @@ public class SchedulerImpl implements Scheduler {
 	 * Default constructor.
 	 *
 	 * @param task
-	 * 		{@link ScheduledTask}
+	 * 		{@link TaskConfiguration}
 	 * @throws SchedulerException
 	 */
-	protected SchedulerImpl(final ScheduledTask task) throws SchedulerException {
+	protected SchedulerImpl(final TaskConfiguration task) throws SchedulerException {
 		// scheduler initialization
 		try {
 			scheduler = SchedulerConfigurationFactory.getConfiguration(task);
 			scheduler.start();
-			jobDetail = JobBuilder.newJob(task.getJobClass()).withIdentity("ScheduledQueueJob", "Scheduler").build();
+			jobDetail = JobBuilder.newJob(task.getJobClass()).withIdentity("QueueTask", "Scheduler").build();
 			if (task.getParameters() == null)
 				return;
-			for (Map.Entry<String, Object> entry : task.getParameters().entrySet())
-				jobDetail.getJobDataMap().put(entry.getKey(), entry.getValue());
+			jobDetail.getJobDataMap().putAll(task.getParameters());
 		} catch (org.quartz.SchedulerException e) {
 			String message = "SchedulerImpl(...) scheduler initialization fail.";
 			LOGGER.error(LoggingUtils.FATAL, message, e);
@@ -165,15 +162,6 @@ public class SchedulerImpl implements Scheduler {
 			throw new SchedulerException(message, e);
 		}
 	}
-
-//	@Override
-//	public synchronized void setMode(final ProcessingMode aMode) {
-//		if (aMode == null)
-//			throw new IllegalArgumentException("aProcessingMode argument is empty");
-//
-//		mode = aMode;
-//		jobDetail.getJobDataMap().put(ScheduledConstants.PROCESSING_MODE, mode);
-//	}
 
 	@Override
 	public void tearDown() {

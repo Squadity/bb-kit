@@ -1,50 +1,45 @@
-package net.bolbat.kit.scheduler.task.schedulequeue;
+package net.bolbat.kit.scheduler.task.queue;
 
 import java.util.List;
 
-import net.bolbat.kit.scheduler.ScheduledJob;
-import net.bolbat.kit.scheduler.task.Loader;
+import net.bolbat.kit.scheduler.Task;
 import net.bolbat.kit.scheduler.task.LoadingException;
 import net.bolbat.kit.scheduler.task.ProcessingException;
-import net.bolbat.kit.scheduler.task.ProcessingMode;
-import net.bolbat.kit.scheduler.task.Processor;
-import net.bolbat.kit.scheduler.task.ScheduledConstants;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Quartz job implementation for {@link net.bolbat.kit.scheduler.task.Loader} execution.
+ * Quartz job implementation for {@link Task} execution.
  *
  * @author ivanbatura
  */
-public final class ScheduledQueueJob implements ScheduledJob {
+public final class QueueTask implements Task {
 
 	/**
 	 * {@link Logger} instance.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledQueueJob.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueueTask.class);
 
 	@Override
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-		Object loaderObj = context.getJobDetail().getJobDataMap().get(ScheduledConstants.LOADER);
-		if (!(loaderObj instanceof Loader)) {
-			LOGGER.error("execute(context) fail. No configured Loader.");
+		Object loaderObj = context.getJobDetail().getJobDataMap().get(QueueConstants.LOADER);
+		if (!(loaderObj instanceof QueueLoader)) {
+			LOGGER.error("execute(context) fail. No configured QueueLoader.");
 			return;
 		}
-		Loader loader = Loader.class.cast(loaderObj);
+		QueueLoader loader = QueueLoader.class.cast(loaderObj);
 
-
-		Object processorObj = context.getJobDetail().getJobDataMap().get(ScheduledConstants.PROCESSOR);
-		if (!(processorObj instanceof Processor)) {
-			LOGGER.error("execute(context) fail. No configured Processor.");
+		Object processorObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR);
+		if (!(processorObj instanceof QueueProcessor)) {
+			LOGGER.error("execute(context) fail. No configured QueueProcessor.");
 			return;
 		}
-		Processor processor = Processor.class.cast(processorObj);
+		QueueProcessor processor = QueueProcessor.class.cast(processorObj);
 
 		ProcessingMode processingMode;
-		Object processingModeObj = context.getJobDetail().getJobDataMap().get(ScheduledConstants.PROCESSING_MODE);
+		Object processingModeObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSING_MODE);
 		if (!(processingModeObj instanceof ProcessingMode)) {
 			LOGGER.warn("execute(context) fail. No configured ProcessingMode.");
 			return;
@@ -52,7 +47,7 @@ public final class ScheduledQueueJob implements ScheduledJob {
 		processingMode = ProcessingMode.class.cast(processingModeObj);
 
 		try {
-			debug("executing " + ScheduledQueueJob.class);
+			debug("executing " + QueueTask.class);
 			List<Object> result = loader.load();
 			debug("loaded " + (result != null ? result.size() : 0) + " elements");
 

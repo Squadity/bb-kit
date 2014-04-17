@@ -3,4 +3,4 @@
  *
  * @author ivanbatura
  */
-package net.bolbat.kit.scheduler.task.schedulequeue;
+package net.bolbat.kit.scheduler.task.queue;

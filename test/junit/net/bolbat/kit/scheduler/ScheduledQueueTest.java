@@ -1,8 +1,8 @@
 package net.bolbat.kit.scheduler;
 
-import net.bolbat.kit.scheduler.task.ProcessingMode;
-import net.bolbat.kit.scheduler.task.process.ProcessTaskBuilder;
-import net.bolbat.kit.scheduler.task.schedulequeue.ScheduledQueueTaskBuilder;
+import net.bolbat.kit.scheduler.task.execution.ExecutionTaskBuilder;
+import net.bolbat.kit.scheduler.task.queue.ProcessingMode;
+import net.bolbat.kit.scheduler.task.queue.QueueTaskBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,12 +54,12 @@ public class ScheduledQueueTest {
 	 */
 	@Test
 	public void complexTestForSyncModeIntervalScheduleTest() throws SchedulerException, InterruptedException {
-		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
-		builder.setLoader(loader);
-		builder.setProcessor(processor);
-		builder.setProcessingMode(ProcessingMode.SYNC);
-		builder.setConfiguration("quartz.properties");
-		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		QueueTaskBuilder builder = new QueueTaskBuilder();
+		builder.loader(loader);
+		builder.processor(processor);
+		builder.processingMode(ProcessingMode.SYNC);
+		builder.configuration("quartz.properties");
+		builder.configurationType(SchedulerConfigurationType.PROPERTY);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule(1L);
@@ -85,12 +85,8 @@ public class ScheduledQueueTest {
 	 */
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
-		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
-		builder.setLoader(loader);
-		builder.setProcessor(processor);
-		builder.setProcessingMode(ProcessingMode.SYNC);
-		builder.setConfiguration("quartz.properties");
-		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		QueueTaskBuilder builder = new QueueTaskBuilder();
+		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
 		queue = SchedulerFactory.create(builder.build());
 
 
@@ -117,10 +113,8 @@ public class ScheduledQueueTest {
 	 */
 	@Test
 	public void withoutLoaderScheduleTest() throws SchedulerException, InterruptedException {
-		ProcessTaskBuilder builder = new ProcessTaskBuilder();
-		builder.setProcessor(processor);
-		builder.setConfiguration("quartz.properties");
-		builder.setConfigurationType(SchedulerConfigurationType.PROPERTY);
+		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
+		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule(1L);
@@ -143,10 +137,8 @@ public class ScheduledQueueTest {
 	 */
 	@Test
 	public void withoutConfigScheduleTest() throws SchedulerException, InterruptedException {
-		ScheduledQueueTaskBuilder builder = new ScheduledQueueTaskBuilder();
-		builder.setLoader(loader);
-		builder.setProcessor(processor);
-		builder.setProcessingMode(ProcessingMode.SYNC);
+		QueueTaskBuilder builder = new QueueTaskBuilder();
+		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");

@@ -3,7 +3,7 @@ package net.bolbat.kit.scheduler.task;
 import net.bolbat.kit.scheduler.SchedulerException;
 
 /**
- * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown by {@link net.bolbat.kit.scheduler.task.Loader} on any loading exception.
+ * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown by {@link net.bolbat.kit.scheduler.task.queue.QueueLoader} on any loading exception.
  *
  * @author ivanbatura
  */
