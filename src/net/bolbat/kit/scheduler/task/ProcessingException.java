@@ -3,8 +3,8 @@ package net.bolbat.kit.scheduler.task;
 import net.bolbat.kit.scheduler.SchedulerException;
 
 /**
- * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown by {@link net.bolbat.kit.scheduler.task.queue.QueueProcessor} on any process exception.
- * 
+ * {@link net.bolbat.kit.scheduler.Scheduler} exception, it can be thrown on any process exception.
+ *
  * @author ivanbatura
  */
 public class ProcessingException extends SchedulerException {
@@ -16,9 +16,9 @@ public class ProcessingException extends SchedulerException {
 
 	/**
 	 * Public constructor.
-	 * 
+	 *
 	 * @param message
-	 *            - exception message
+	 * 		exception message
 	 */
 	public ProcessingException(final String message) {
 		super(message);
@@ -26,9 +26,9 @@ public class ProcessingException extends SchedulerException {
 
 	/**
 	 * Public constructor.
-	 * 
+	 *
 	 * @param cause
-	 *            - exception cause
+	 * 		exception cause
 	 */
 	public ProcessingException(final Throwable cause) {
 		super(cause);
@@ -36,11 +36,11 @@ public class ProcessingException extends SchedulerException {
 
 	/**
 	 * Public constructor.
-	 * 
+	 *
 	 * @param message
-	 *            - exception message
+	 * 		exception message
 	 * @param cause
-	 *            - exception cause
+	 * 		exception cause
 	 */
 	public ProcessingException(final String message, final Throwable cause) {
 		super(message, cause);

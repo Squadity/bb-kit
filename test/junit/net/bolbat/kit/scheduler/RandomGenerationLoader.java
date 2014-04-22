@@ -12,7 +12,7 @@ import net.bolbat.kit.scheduler.task.queue.QueueLoader;
  *
  * @author ivanbatura
  */
-public class RandomGenerationLoader implements QueueLoader {
+public class RandomGenerationLoader implements QueueLoader<String> {
 	/**
 	 * Test serial UID.
 	 */
@@ -34,8 +34,8 @@ public class RandomGenerationLoader implements QueueLoader {
 	private final Object LOCK = new Object();
 
 	@Override
-	public List<Object> load() throws LoadingException {
-		List<Object> result = new ArrayList<Object>();
+	public List<String> load() throws LoadingException {
+		List<String> result = new ArrayList<String>();
 
 		if (loaded.get() < MAX_TO_LOAD) {
 			synchronized (LOCK) {

@@ -8,4 +8,5 @@ import org.quartz.Job;
  * @author ivanbatura
  */
 public interface Task extends Job {
+
 }

@@ -12,7 +12,7 @@ import net.bolbat.kit.scheduler.TaskConfiguration;
 public class ExecutionTaskBuilder implements TaskBuilder {
 
 	/**
-	 * {@link net.bolbat.kit.scheduler.task.queue.QueueProcessor}.
+	 * {@link ExecutionProcessor}.
 	 */
 	private ExecutionProcessor processor;
 
@@ -22,7 +22,7 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	private String configuration;
 
 	/**
-	 * {@link net.bolbat.kit.scheduler.SchedulerConfigurationType}.
+	 * {@link SchedulerConfigurationType}.
 	 */
 	private SchedulerConfigurationType configurationType;
 

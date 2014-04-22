@@ -8,14 +8,14 @@ package net.bolbat.kit.scheduler;
 public interface Scheduler {
 
 	/**
-	 * Pause scheduled loading elements.
+	 * Pause scheduler elements.
 	 *
 	 * @throws SchedulerException
 	 */
 	void pause() throws SchedulerException;
 
 	/**
-	 * Resume scheduled loading elements.
+	 * Resume scheduler elements.
 	 *
 	 * @throws SchedulerException
 	 */
@@ -54,7 +54,7 @@ public interface Scheduler {
 	void schedule(long interval) throws SchedulerException;
 
 	/**
-	 * Stop scheduler (loading elements to the queue) and queue (processing elements), future use of this instance is not possible after this action.
+	 * Stop scheduler, future use of this instance is not possible after this action.
 	 */
 	void tearDown();
 

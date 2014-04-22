@@ -7,19 +7,21 @@ import net.bolbat.kit.scheduler.TaskConfiguration;
 /**
  * Builder for {@link QueueTask}.
  *
+ * @param <T>
+ * 		type for loader and processor
  * @author ivanbatura
  */
-public class QueueTaskBuilder implements TaskBuilder {
+public class QueueTaskBuilder<T> implements TaskBuilder {
 
 	/**
 	 * {@link QueueLoader}.
 	 */
-	private QueueLoader loader;
+	private QueueLoader<T> loader;
 
 	/**
 	 * {@link QueueProcessor}.
 	 */
-	private QueueProcessor processor;
+	private QueueProcessor<T> processor;
 
 	/**
 	 * {@link ProcessingMode}.
@@ -43,7 +45,7 @@ public class QueueTaskBuilder implements TaskBuilder {
 	 * 		{@link QueueLoader}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder loader(QueueLoader aLoader) {
+	public QueueTaskBuilder<T> loader(QueueLoader<T> aLoader) {
 		this.loader = aLoader;
 		return this;
 	}
@@ -55,7 +57,7 @@ public class QueueTaskBuilder implements TaskBuilder {
 	 * 		{@link QueueProcessor}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder processor(QueueProcessor aProcessor) {
+	public QueueTaskBuilder<T> processor(QueueProcessor<T> aProcessor) {
 		this.processor = aProcessor;
 		return this;
 	}
@@ -67,7 +69,7 @@ public class QueueTaskBuilder implements TaskBuilder {
 	 * 		{@link ProcessingMode}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder processingMode(ProcessingMode aProcessingMode) {
+	public QueueTaskBuilder<T> processingMode(ProcessingMode aProcessingMode) {
 		this.processingMode = aProcessingMode;
 		return this;
 	}
@@ -80,7 +82,7 @@ public class QueueTaskBuilder implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder configuration(String aConfiguration) {
+	public QueueTaskBuilder<T> configuration(String aConfiguration) {
 		this.configuration = aConfiguration;
 		return this;
 	}
@@ -93,7 +95,7 @@ public class QueueTaskBuilder implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder configurationType(SchedulerConfigurationType aConfigurationType) {
+	public QueueTaskBuilder<T> configurationType(SchedulerConfigurationType aConfigurationType) {
 		this.configurationType = aConfigurationType;
 		return this;
 	}

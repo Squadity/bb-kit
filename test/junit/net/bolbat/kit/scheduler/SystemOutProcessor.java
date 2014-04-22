@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author ivanbatura
  */
-public class SystemOutProcessor implements QueueProcessor, ExecutionProcessor {
+public class SystemOutProcessor implements QueueProcessor<String>, ExecutionProcessor {
 
 	/**
 	 * {@link Logger} instance.
@@ -31,8 +31,14 @@ public class SystemOutProcessor implements QueueProcessor, ExecutionProcessor {
 	private final AtomicInteger processed = new AtomicInteger(0);
 
 	@Override
-	public void process(final Object element) throws ProcessingException {
+	public void process(final String element) throws ProcessingException {
 		LOGGER.info("Element[" + element + "], processed at: " + System.currentTimeMillis());
+		processed.incrementAndGet();
+	}
+
+	@Override
+	public void process() throws ProcessingException {
+		LOGGER.info("Processed at: " + System.currentTimeMillis());
 		processed.incrementAndGet();
 	}
 

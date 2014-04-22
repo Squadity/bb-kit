@@ -5,6 +5,7 @@ import java.util.List;
 import net.bolbat.kit.scheduler.Task;
 import net.bolbat.kit.scheduler.task.LoadingException;
 import net.bolbat.kit.scheduler.task.ProcessingException;
+import net.bolbat.utils.logging.LoggingUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -13,9 +14,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Quartz job implementation for {@link Task} execution.
  *
+ * @param <T>
+ * 		type for queue task
  * @author ivanbatura
  */
-public final class QueueTask implements Task {
+public final class QueueTask<T> implements Task {
 
 	/**
 	 * {@link Logger} instance.
@@ -29,14 +32,16 @@ public final class QueueTask implements Task {
 			LOGGER.error("execute(context) fail. No configured QueueLoader.");
 			return;
 		}
-		QueueLoader loader = QueueLoader.class.cast(loaderObj);
+		@SuppressWarnings ("unchecked")
+		QueueLoader<T> loader = QueueLoader.class.cast(loaderObj);
 
 		Object processorObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR);
 		if (!(processorObj instanceof QueueProcessor)) {
 			LOGGER.error("execute(context) fail. No configured QueueProcessor.");
 			return;
 		}
-		QueueProcessor processor = QueueProcessor.class.cast(processorObj);
+		@SuppressWarnings ("unchecked")
+		QueueProcessor<T> processor = QueueProcessor.class.cast(processorObj);
 
 		ProcessingMode processingMode;
 		Object processingModeObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSING_MODE);
@@ -47,17 +52,17 @@ public final class QueueTask implements Task {
 		processingMode = ProcessingMode.class.cast(processingModeObj);
 
 		try {
-			debug("executing " + QueueTask.class);
-			List<Object> result = loader.load();
-			debug("loaded " + (result != null ? result.size() : 0) + " elements");
+			LoggingUtils.debug(LOGGER, "executing " + QueueTask.class);
+			List<T> result = loader.load();
+			LoggingUtils.debug(LOGGER, "loaded " + (result != null ? result.size() : 0) + " elements");
 
 			if (result == null || result.isEmpty())
 				return;
 
 			if (processingMode == ProcessingMode.SYNC) {
-				for (Object element : result) {
+				for (T element : result) {
 					try {
-						debug("processing element[" + element + "]");
+						LoggingUtils.debug(LOGGER, "processing element[" + element + "]");
 						processor.process(element);
 					} catch (ProcessingException e) {
 						LOGGER.error("execute(context) processing fail. Skipping element[" + element + "].", e);
@@ -69,7 +74,7 @@ public final class QueueTask implements Task {
 				}
 			}
 
-			// TODO: put result to queue to process in ASYNC mode
+			// TODO: put result to queue to process in ASYNC mode.
 		} catch (LoadingException e) {
 			String message = "execute(context) loading fail.";
 			LOGGER.error(message, e);
@@ -81,16 +86,4 @@ public final class QueueTask implements Task {
 			throw new JobExecutionException(message, e);
 		}
 	}
-
-	/**
-	 * Writing debug message to log if debug is enabled.
-	 *
-	 * @param message
-	 * 		- message to write
-	 */
-	private static void debug(final String message) {
-		if (LOGGER.isDebugEnabled())
-			LOGGER.debug(message);
-	}
-
 }

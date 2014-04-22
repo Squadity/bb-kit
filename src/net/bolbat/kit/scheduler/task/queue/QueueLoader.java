@@ -7,17 +7,19 @@ import net.bolbat.kit.scheduler.task.LoadingException;
 
 /**
  * Custom loader interface. Scheduler invoke loader by it's schedule and get required elements from it.
- * 
+ *
+ * @param <T>
+ * 		type of loading elements
  * @author ivanbatura
  */
-public interface QueueLoader extends Serializable{
+public interface QueueLoader<T> extends Serializable {
 
 	/**
 	 * Load elements to the queue.
-	 * 
-	 * @return {@link java.util.List} of {@link Object}
-	 * @throws net.bolbat.kit.scheduler.task.LoadingException
+	 *
+	 * @return {@link List} of {@link T}
+	 * @throws LoadingException
 	 */
-	List<Object> load() throws LoadingException;
+	List<T> load() throws LoadingException;
 
 }

@@ -1,7 +1,7 @@
 package net.bolbat.kit.scheduler.task.execution;
 
 /**
- * Scheduler job constants.
+ * Scheduler execution task constants.
  *
  * @author ivanbatura
  */

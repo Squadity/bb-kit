@@ -27,7 +27,7 @@ public class SchedulerConfiguration implements Serializable {
 	private static final long serialVersionUID = 2279985778539670636L;
 
 	/**
-	 * {@link org.slf4j.Logger} instance.
+	 * {@link Logger} instance.
 	 */
 	@DontConfigure
 	private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerConfiguration.class);
