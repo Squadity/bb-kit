@@ -19,11 +19,6 @@ public class ExecutionSchedulerTest {
 	private Scheduler queue;
 
 	/**
-	 * Test loader. It's generating elements on the fly.
-	 */
-	private RandomGenerationLoader loader;
-
-	/**
 	 * Testing processor. It's counting incoming elements and writing it's to system out.
 	 */
 	private SystemOutProcessor processor;
@@ -35,7 +30,6 @@ public class ExecutionSchedulerTest {
 	public void before() throws SchedulerException {
 		//initialization
 		processor = new SystemOutProcessor();
-		loader = new RandomGenerationLoader();
 	}
 
 	/**
@@ -54,7 +48,7 @@ public class ExecutionSchedulerTest {
 	public void executionScheduleModeIntervalTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
 		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
-		;
+
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule(1L);
