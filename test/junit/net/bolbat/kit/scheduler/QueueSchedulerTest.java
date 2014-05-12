@@ -1,6 +1,5 @@
 package net.bolbat.kit.scheduler;
 
-import net.bolbat.kit.scheduler.task.execution.ExecutionTaskBuilder;
 import net.bolbat.kit.scheduler.task.queue.ProcessingMode;
 import net.bolbat.kit.scheduler.task.queue.QueueTaskBuilder;
 import org.junit.After;
@@ -85,8 +84,8 @@ public class QueueSchedulerTest {
 	 */
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
-		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
-		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String> ();
+		builder.processor(processor).loader(loader).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
 		queue = SchedulerFactory.create(builder.build());
 
 
