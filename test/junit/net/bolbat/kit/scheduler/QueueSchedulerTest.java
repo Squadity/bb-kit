@@ -9,11 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * {@link Scheduler} test.
+ * {@link net.bolbat.kit.scheduler.task.queue.QueueTask} test.
  *
  * @author ivanbatura
  */
-public class ScheduledQueueTest {
+public class QueueSchedulerTest {
 
 	/**
 	 * Testing {@link Scheduler} instance.
@@ -85,61 +85,10 @@ public class ScheduledQueueTest {
 	 */
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
-		queue = SchedulerFactory.create(builder.build());
-
-
-		queue.schedule("0/1 * * * * ?");
-		Assert.assertTrue(queue.isStarted()); // should be already started
-
-		Thread.sleep(1000L);
-		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		Thread.sleep(1500L);
-		Assert.assertEquals("Loaded and processed elements amount should be the same.", loader.getLoaded(), processor.getProcessed());
-
-		queue.pause();
-		Assert.assertTrue(queue.isPaused()); // should be paused
-
-		queue.resume();
-		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-	}
-
-	/**
-	 * Complex test for interval based schedule.
-	 */
-	@Test
-	public void withoutLoaderScheduleTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
 		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
 		queue = SchedulerFactory.create(builder.build());
 
-		queue.schedule(1L);
-		Assert.assertTrue(queue.isStarted()); // should be already started
-
-		Thread.sleep(10L);
-		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		queue.pause();
-		Assert.assertTrue(queue.isPaused()); // should be paused
-
-		queue.resume();
-		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-	}
-
-	/**
-	 * Complex test for schedule without file configuration
-	 */
-	@Test
-	public void withoutConfigScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC);
-		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");
 		Assert.assertTrue(queue.isStarted()); // should be already started
@@ -158,5 +107,4 @@ public class ScheduledQueueTest {
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
 	}
-
 }
