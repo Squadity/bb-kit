@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.bolbat.kit.scheduler.task.ConfigurableTask;
 import net.bolbat.kit.scheduler.task.LoadingException;
 import net.bolbat.kit.scheduler.task.queue.QueueLoader;
 
@@ -12,7 +13,7 @@ import net.bolbat.kit.scheduler.task.queue.QueueLoader;
  *
  * @author ivanbatura
  */
-public class RandomGenerationLoader implements QueueLoader<String> {
+public class RandomGenerationLoader implements QueueLoader<String>, ConfigurableTask {
 	/**
 	 * Test serial UID.
 	 */
@@ -33,6 +34,11 @@ public class RandomGenerationLoader implements QueueLoader<String> {
 	 */
 	private final Object LOCK = new Object();
 
+	/**
+	 * {@link TaskParameters}.
+	 */
+	private TaskParameters taskParameters;
+
 	@Override
 	public List<String> load() throws LoadingException {
 		List<String> result = new ArrayList<String>();
@@ -49,8 +55,16 @@ public class RandomGenerationLoader implements QueueLoader<String> {
 		return result;
 	}
 
+	@Override
+	public void configure(TaskParameters parameters) {
+		taskParameters = parameters;
+	}
+
 	public int getLoaded() {
 		return loaded.get();
 	}
 
+	public TaskParameters getParameters() {
+		return taskParameters;
+	}
 }

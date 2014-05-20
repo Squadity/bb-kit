@@ -3,6 +3,7 @@ package net.bolbat.kit.scheduler.task.execution;
 import net.bolbat.kit.scheduler.SchedulerConfigurationType;
 import net.bolbat.kit.scheduler.TaskBuilder;
 import net.bolbat.kit.scheduler.TaskConfiguration;
+import net.bolbat.kit.scheduler.TaskParameters;
 
 /**
  * Builder for {@link ExecutionTask}.
@@ -25,6 +26,11 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	 * {@link SchedulerConfigurationType}.
 	 */
 	private SchedulerConfigurationType configurationType;
+
+	/**
+	 * {@link TaskParameters}.
+	 */
+	private TaskParameters parameters = new TaskParameters();
 
 	/**
 	 * Set {@code processor}.
@@ -64,10 +70,24 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 		return this;
 	}
 
+	/**
+	 * Set {@code parameters}.
+	 *
+	 * @param aTaskParameters
+	 * 		{@link TaskParameters}
+	 * @return {@link ExecutionTaskBuilder}}
+	 */
+	public ExecutionTaskBuilder parameters(final TaskParameters aTaskParameters) {
+		if (aTaskParameters != null)
+			this.parameters = aTaskParameters;
+		return this;
+	}
+
 	@Override
 	public TaskConfiguration build() {
 		ExecutionTaskConfiguration taskConfiguration = new ExecutionTaskConfiguration();
 		taskConfiguration.getParameters().put(ExecutionConstants.PROCESSOR, processor);
+		taskConfiguration.getParameters().put(ExecutionConstants.PARAMETERS, parameters);
 		taskConfiguration.setConfigurationName(configuration);
 		taskConfiguration.setConfigurationType(configurationType);
 		return taskConfiguration;

@@ -13,6 +13,11 @@ public final class ExecutionConstants {
 	public static final String PROCESSOR = "processor";
 
 	/**
+	 * Configured {@link net.bolbat.kit.scheduler.TaskParameters}.
+	 */
+	public static final String PARAMETERS = "parameters";
+
+	/**
 	 * Default constructor with preventing instantiations of this class.
 	 */
 	private ExecutionConstants() {

@@ -2,6 +2,7 @@ package net.bolbat.kit.scheduler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.bolbat.kit.scheduler.task.ConfigurableTask;
 import net.bolbat.kit.scheduler.task.ProcessingException;
 import net.bolbat.kit.scheduler.task.execution.ExecutionProcessor;
 import net.bolbat.kit.scheduler.task.queue.QueueProcessor;
@@ -14,21 +15,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author ivanbatura
  */
-public class SystemOutProcessor implements QueueProcessor<String>, ExecutionProcessor {
+public class SystemOutProcessor implements QueueProcessor<String>, ExecutionProcessor, ConfigurableTask {
 
-	/**
-	 * {@link Logger} instance.
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(SystemOutProcessor.class);
 	/**
 	 * Test serial UID.
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * {@link Logger} instance.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(SystemOutProcessor.class);
+
+	/**
 	 * Processed elements amount.
 	 */
 	private final AtomicInteger processed = new AtomicInteger(0);
+
+	/**
+	 * {@link TaskParameters}.
+	 */
+	private TaskParameters taskParameters;
 
 	@Override
 	public void process(final String element) throws ProcessingException {
@@ -46,4 +53,12 @@ public class SystemOutProcessor implements QueueProcessor<String>, ExecutionProc
 		return processed.get();
 	}
 
+	public TaskParameters getParameters() {
+		return taskParameters;
+	}
+
+	@Override
+	public void configure(TaskParameters parameters) {
+		taskParameters = parameters;
+	}
 }

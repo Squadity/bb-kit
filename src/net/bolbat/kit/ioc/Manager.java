@@ -49,7 +49,7 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory) {
 		register(service, factory, DEFAULT_SCOPE);
-	};
+	}
 
 	/**
 	 * Register service.
@@ -63,7 +63,7 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Scope... scopes) {
 		register(service, factory, null, scopes);
-	};
+	}
 
 	/**
 	 * Register service.
@@ -77,7 +77,7 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf) {
 		register(service, factory, conf, DEFAULT_SCOPE);
-	};
+	}
 
 	/**
 	 * Register service.
@@ -95,7 +95,7 @@ public final class Manager implements Module {
 			final Scope... scopes) {
 		SF instance = Instantiator.instantiate(factory);
 		register(service, instance, conf, scopes);
-	};
+	}
 
 	/**
 	 * Register service.

@@ -24,12 +24,29 @@ public class ExecutionSchedulerTest {
 	private SystemOutProcessor processor;
 
 	/**
+	 * Testing parameters.
+	 */
+	private TaskParameters parameters;
+
+	/**
+	 * Test parameter name.
+	 */
+	private static final String testParameterName = "test";
+
+	/**
+	 * Test parameter.
+	 */
+	private static final String testParameter = "test";
+
+	/**
 	 * Initialization executed before each test.
 	 */
 	@Before
 	public void before() throws SchedulerException {
 		//initialization
 		processor = new SystemOutProcessor();
+		parameters = new TaskParameters();
+		parameters.put(testParameterName, testParameter);
 	}
 
 	/**
@@ -47,7 +64,7 @@ public class ExecutionSchedulerTest {
 	@Test
 	public void executionScheduleModeIntervalTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
-		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
+		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 
 		queue = SchedulerFactory.create(builder.build());
 
@@ -64,6 +81,9 @@ public class ExecutionSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
+
+		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters
+		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 
 	/**
@@ -72,7 +92,7 @@ public class ExecutionSchedulerTest {
 	@Test
 	public void executionScheduleModeCronTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
-		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
+		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");
@@ -91,5 +111,8 @@ public class ExecutionSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
+
+		Assert.assertNotNull("Parameters should exist", processor.getParameters());  //check parameters
+		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 }

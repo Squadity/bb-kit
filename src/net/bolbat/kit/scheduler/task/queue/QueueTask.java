@@ -3,6 +3,8 @@ package net.bolbat.kit.scheduler.task.queue;
 import java.util.List;
 
 import net.bolbat.kit.scheduler.Task;
+import net.bolbat.kit.scheduler.TaskParameters;
+import net.bolbat.kit.scheduler.task.ConfigurableTask;
 import net.bolbat.kit.scheduler.task.LoadingException;
 import net.bolbat.kit.scheduler.task.ProcessingException;
 import net.bolbat.utils.logging.LoggingUtils;
@@ -28,6 +30,15 @@ public final class QueueTask<T> implements Task {
 	@Override
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		Object loaderObj = context.getJobDetail().getJobDataMap().get(QueueConstants.LOADER);
+		// Configure loader parameters
+		if (loaderObj instanceof ConfigurableTask) {
+			final Object parametersObj = context.getJobDetail().getJobDataMap().get(QueueConstants.LOADER_PARAMETERS);
+			if (!(parametersObj instanceof TaskParameters))
+				LOGGER.error("execute(context) fail. No configured Parameters.");
+			else
+				ConfigurableTask.class.cast(loaderObj).configure(TaskParameters.class.cast(parametersObj));
+		}
+
 		if (!(loaderObj instanceof QueueLoader)) {
 			LOGGER.error("execute(context) fail. No configured QueueLoader.");
 			return;
@@ -36,6 +47,15 @@ public final class QueueTask<T> implements Task {
 		QueueLoader<T> loader = QueueLoader.class.cast(loaderObj);
 
 		Object processorObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR);
+		// Configure processor parameters
+		if (processorObj instanceof ConfigurableTask) {
+			final Object parametersObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR_PARAMETERS);
+			if (!(parametersObj instanceof TaskParameters))
+				LOGGER.error("execute(context) fail. No configured Parameters.");
+			else
+				ConfigurableTask.class.cast(processorObj).configure(TaskParameters.class.cast(parametersObj));
+		}
+
 		if (!(processorObj instanceof QueueProcessor)) {
 			LOGGER.error("execute(context) fail. No configured QueueProcessor.");
 			return;

@@ -3,6 +3,7 @@ package net.bolbat.kit.scheduler.task.queue;
 import net.bolbat.kit.scheduler.SchedulerConfigurationType;
 import net.bolbat.kit.scheduler.TaskBuilder;
 import net.bolbat.kit.scheduler.TaskConfiguration;
+import net.bolbat.kit.scheduler.TaskParameters;
 
 /**
  * Builder for {@link QueueTask}.
@@ -37,6 +38,16 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * {@link SchedulerConfigurationType}.
 	 */
 	private SchedulerConfigurationType configurationType;
+
+	/**
+	 * {@link TaskParameters} for.
+	 */
+	private TaskParameters loaderParameters = new TaskParameters();
+
+	/**
+	 * {@link TaskParameters}.
+	 */
+	private TaskParameters processorParameters = new TaskParameters();
 
 	/**
 	 * Set {@code loader}.
@@ -100,6 +111,33 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 		return this;
 	}
 
+	/**
+	 * Set {@code parameters} for loader.
+	 *
+	 * @param aTaskParameters
+	 * 		{@link TaskParameters}
+	 * @return {@link QueueTaskBuilder}}
+	 */
+	public QueueTaskBuilder<T> loaderParameters(final TaskParameters aTaskParameters) {
+		if (aTaskParameters != null)
+			this.loaderParameters = aTaskParameters;
+		return this;
+	}
+
+	/**
+	 * Set {@code parameters} for processor.
+	 *
+	 * @param aTaskParameters
+	 * 		{@link TaskParameters}
+	 * @return {@link QueueTaskBuilder}}
+	 */
+	public QueueTaskBuilder<T> processorParameters(final TaskParameters aTaskParameters) {
+		if (aTaskParameters != null)
+			this.processorParameters = aTaskParameters;
+		return this;
+	}
+
+
 	@Override
 	public TaskConfiguration build() {
 		QueueTaskConfiguration taskConfiguration = new QueueTaskConfiguration();
@@ -107,7 +145,10 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 		taskConfiguration.setConfigurationType(configurationType);
 		taskConfiguration.getParameters().put(QueueConstants.LOADER, loader);
 		taskConfiguration.getParameters().put(QueueConstants.PROCESSOR, processor);
+		taskConfiguration.getParameters().put(QueueConstants.LOADER_PARAMETERS, loaderParameters);
+		taskConfiguration.getParameters().put(QueueConstants.PROCESSOR_PARAMETERS, processorParameters);
 		taskConfiguration.getParameters().put(QueueConstants.PROCESSING_MODE, processingMode);
 		return taskConfiguration;
 	}
+
 }

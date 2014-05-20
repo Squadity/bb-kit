@@ -30,6 +30,21 @@ public class QueueSchedulerTest {
 	private SystemOutProcessor processor;
 
 	/**
+	 * Testing parameters.
+	 */
+	private TaskParameters parameters;
+
+	/**
+	 * Test parameter name.
+	 */
+	private static final String testParameterName = "test";
+
+	/**
+	 * Test parameter.
+	 */
+	private static final String testParameter = "test";
+
+	/**
 	 * Initialization executed before each test.
 	 */
 	@Before
@@ -37,6 +52,9 @@ public class QueueSchedulerTest {
 		//initialization
 		processor = new SystemOutProcessor();
 		loader = new RandomGenerationLoader();
+		parameters = new TaskParameters();
+		parameters.put(testParameterName, testParameter);
+
 	}
 
 	/**
@@ -59,6 +77,8 @@ public class QueueSchedulerTest {
 		builder.processingMode(ProcessingMode.SYNC);
 		builder.configuration("quartz.properties");
 		builder.configurationType(SchedulerConfigurationType.PROPERTY);
+		builder.loaderParameters(parameters);
+		builder.processorParameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule(1L);
@@ -77,6 +97,9 @@ public class QueueSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
+
+		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters in processor
+		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value in processor
 	}
 
 	/**
@@ -84,8 +107,8 @@ public class QueueSchedulerTest {
 	 */
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String> ();
-		builder.processor(processor).loader(loader).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY);
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
+		builder.processor(processor).loader(loader).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).loaderParameters(parameters).processorParameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 
 
@@ -105,5 +128,8 @@ public class QueueSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
+
+		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters
+		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 }
