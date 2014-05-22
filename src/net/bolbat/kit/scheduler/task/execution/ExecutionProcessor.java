@@ -2,6 +2,7 @@ package net.bolbat.kit.scheduler.task.execution;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import net.bolbat.kit.scheduler.task.ProcessingException;
 
 /**
@@ -9,6 +10,7 @@ import net.bolbat.kit.scheduler.task.ProcessingException;
  *
  * @author ivanbatura
  */
+@JsonTypeInfo (use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface ExecutionProcessor extends Serializable {
 
 	/**

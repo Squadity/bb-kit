@@ -13,9 +13,9 @@ import net.bolbat.kit.scheduler.TaskParameters;
 public class ExecutionTaskBuilder implements TaskBuilder {
 
 	/**
-	 * {@link ExecutionProcessor}.
+	 * Class extends {@link ExecutionProcessor}.
 	 */
-	private ExecutionProcessor processor;
+	private Class<? extends ExecutionProcessor> processorClass;
 
 	/**
 	 * Config file name.
@@ -35,12 +35,12 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	/**
 	 * Set {@code processor}.
 	 *
-	 * @param aProcessor
-	 * 		{@link ExecutionProcessor}
+	 * @param aProcessorClass
+	 * 		Class of {@link ExecutionProcessor}
 	 * @return {@link ExecutionTaskBuilder}
 	 */
-	public ExecutionTaskBuilder processor(ExecutionProcessor aProcessor) {
-		this.processor = aProcessor;
+	public ExecutionTaskBuilder processorClass(Class<? extends ExecutionProcessor> aProcessorClass) {
+		this.processorClass = aProcessorClass;
 		return this;
 	}
 
@@ -85,11 +85,6 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 
 	@Override
 	public TaskConfiguration build() {
-		ExecutionTaskConfiguration taskConfiguration = new ExecutionTaskConfiguration();
-		taskConfiguration.getParameters().put(ExecutionConstants.PROCESSOR, processor);
-		taskConfiguration.getParameters().put(ExecutionConstants.PARAMETERS, parameters);
-		taskConfiguration.setConfigurationName(configuration);
-		taskConfiguration.setConfigurationType(configurationType);
-		return taskConfiguration;
+		return new ExecutionTaskConfiguration(processorClass, parameters, configuration, configurationType);
 	}
 }

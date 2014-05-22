@@ -9,7 +9,7 @@ import net.bolbat.kit.scheduler.TaskParameters;
  * Builder for {@link QueueTask}.
  *
  * @param <T>
- * 		type for loader and processor
+ * 		type for loaderClass and processorClass
  * @author ivanbatura
  */
 public class QueueTaskBuilder<T> implements TaskBuilder {
@@ -17,12 +17,12 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	/**
 	 * {@link QueueLoader}.
 	 */
-	private QueueLoader<T> loader;
+	private Class<? extends QueueLoader<T>> loaderClass;
 
 	/**
-	 * {@link QueueProcessor}.
+	 * Class if {@link QueueProcessor}.
 	 */
-	private QueueProcessor<T> processor;
+	private Class<? extends QueueProcessor<T>> processorClass;
 
 	/**
 	 * {@link ProcessingMode}.
@@ -40,36 +40,31 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	private SchedulerConfigurationType configurationType;
 
 	/**
-	 * {@link TaskParameters} for.
+	 * {@link TaskParameters} for loader and processor.
 	 */
-	private TaskParameters loaderParameters = new TaskParameters();
+	private TaskParameters parameters = new TaskParameters();
 
 	/**
-	 * {@link TaskParameters}.
-	 */
-	private TaskParameters processorParameters = new TaskParameters();
-
-	/**
-	 * Set {@code loader}.
+	 * Set {@code loaderClass}.
 	 *
-	 * @param aLoader
-	 * 		{@link QueueLoader}
+	 * @param aLoaderClass
+	 * 		class extends {@link QueueLoader}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> loader(QueueLoader<T> aLoader) {
-		this.loader = aLoader;
+	public QueueTaskBuilder<T> loaderClass(Class<? extends QueueLoader<T>> aLoaderClass) {
+		this.loaderClass = aLoaderClass;
 		return this;
 	}
 
 	/**
-	 * Set {@code processor}.
+	 * Set {@code processorClass}.
 	 *
-	 * @param aProcessor
-	 * 		{@link QueueProcessor}
+	 * @param aProcessorClass
+	 * 		Class of {@link QueueProcessor}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> processor(QueueProcessor<T> aProcessor) {
-		this.processor = aProcessor;
+	public QueueTaskBuilder<T> processorClass(Class<? extends QueueProcessor<T>> aProcessorClass) {
+		this.processorClass = aProcessorClass;
 		return this;
 	}
 
@@ -112,43 +107,22 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	}
 
 	/**
-	 * Set {@code parameters} for loader.
+	 * Set {@code parameters} for processor and loader.
 	 *
-	 * @param aTaskParameters
+	 * @param aParameters
 	 * 		{@link TaskParameters}
 	 * @return {@link QueueTaskBuilder}}
 	 */
-	public QueueTaskBuilder<T> loaderParameters(final TaskParameters aTaskParameters) {
-		if (aTaskParameters != null)
-			this.loaderParameters = aTaskParameters;
-		return this;
-	}
-
-	/**
-	 * Set {@code parameters} for processor.
-	 *
-	 * @param aTaskParameters
-	 * 		{@link TaskParameters}
-	 * @return {@link QueueTaskBuilder}}
-	 */
-	public QueueTaskBuilder<T> processorParameters(final TaskParameters aTaskParameters) {
-		if (aTaskParameters != null)
-			this.processorParameters = aTaskParameters;
+	public QueueTaskBuilder<T> parameters(final TaskParameters aParameters) {
+		if (aParameters != null)
+			this.parameters = aParameters;
 		return this;
 	}
 
 
 	@Override
 	public TaskConfiguration build() {
-		QueueTaskConfiguration taskConfiguration = new QueueTaskConfiguration();
-		taskConfiguration.setConfigurationName(configuration);
-		taskConfiguration.setConfigurationType(configurationType);
-		taskConfiguration.getParameters().put(QueueConstants.LOADER, loader);
-		taskConfiguration.getParameters().put(QueueConstants.PROCESSOR, processor);
-		taskConfiguration.getParameters().put(QueueConstants.LOADER_PARAMETERS, loaderParameters);
-		taskConfiguration.getParameters().put(QueueConstants.PROCESSOR_PARAMETERS, processorParameters);
-		taskConfiguration.getParameters().put(QueueConstants.PROCESSING_MODE, processingMode);
-		return taskConfiguration;
+		return new QueueTaskConfiguration<T>(loaderClass, processorClass, processingMode, parameters, configuration, configurationType);
 	}
 
 }

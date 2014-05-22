@@ -2,12 +2,13 @@ package net.bolbat.kit.scheduler.task.queue;
 
 import java.util.List;
 
+import net.bolbat.kit.scheduler.SchedulerConstants;
 import net.bolbat.kit.scheduler.Task;
-import net.bolbat.kit.scheduler.TaskParameters;
 import net.bolbat.kit.scheduler.task.ConfigurableTask;
 import net.bolbat.kit.scheduler.task.LoadingException;
 import net.bolbat.kit.scheduler.task.ProcessingException;
 import net.bolbat.utils.logging.LoggingUtils;
+import net.bolbat.utils.reflect.Instantiator;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -29,47 +30,26 @@ public final class QueueTask<T> implements Task {
 
 	@Override
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-		Object loaderObj = context.getJobDetail().getJobDataMap().get(QueueConstants.LOADER);
+		final Object taskConfiguration = context.getJobDetail().getJobDataMap().get(SchedulerConstants.PARAM_NAME_TASK_CONFIGURATION);
+		if (!(taskConfiguration instanceof QueueTaskConfiguration)) {
+			LOGGER.error("execute(context) fail. No configured QueueTaskConfiguration.");
+			return;
+		}
+		@SuppressWarnings ("unchecked")
+		final QueueTaskConfiguration<T> configuration = QueueTaskConfiguration.class.cast(taskConfiguration);
+
+		//loader
+		final QueueLoader<T> loader = Instantiator.instantiate(configuration.getLoaderClass());
 		// Configure loader parameters
-		if (loaderObj instanceof ConfigurableTask) {
-			final Object parametersObj = context.getJobDetail().getJobDataMap().get(QueueConstants.LOADER_PARAMETERS);
-			if (!(parametersObj instanceof TaskParameters))
-				LOGGER.error("execute(context) fail. No configured Parameters.");
-			else
-				ConfigurableTask.class.cast(loaderObj).configure(TaskParameters.class.cast(parametersObj));
-		}
+		if (loader instanceof ConfigurableTask)
+			ConfigurableTask.class.cast(loader).configure(configuration.getParameters());
 
-		if (!(loaderObj instanceof QueueLoader)) {
-			LOGGER.error("execute(context) fail. No configured QueueLoader.");
-			return;
-		}
-		@SuppressWarnings ("unchecked")
-		QueueLoader<T> loader = QueueLoader.class.cast(loaderObj);
-
-		Object processorObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR);
-		// Configure processor parameters
-		if (processorObj instanceof ConfigurableTask) {
-			final Object parametersObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSOR_PARAMETERS);
-			if (!(parametersObj instanceof TaskParameters))
-				LOGGER.error("execute(context) fail. No configured Parameters.");
-			else
-				ConfigurableTask.class.cast(processorObj).configure(TaskParameters.class.cast(parametersObj));
-		}
-
-		if (!(processorObj instanceof QueueProcessor)) {
-			LOGGER.error("execute(context) fail. No configured QueueProcessor.");
-			return;
-		}
-		@SuppressWarnings ("unchecked")
-		QueueProcessor<T> processor = QueueProcessor.class.cast(processorObj);
-
-		ProcessingMode processingMode;
-		Object processingModeObj = context.getJobDetail().getJobDataMap().get(QueueConstants.PROCESSING_MODE);
-		if (!(processingModeObj instanceof ProcessingMode)) {
-			LOGGER.warn("execute(context) fail. No configured ProcessingMode.");
-			return;
-		}
-		processingMode = ProcessingMode.class.cast(processingModeObj);
+		//processor
+		final QueueProcessor<T> processor = Instantiator.instantiate(configuration.getProcessorClass());
+		// Configure loader parameters
+		if (processor instanceof ConfigurableTask)
+			ConfigurableTask.class.cast(processor).configure(configuration.getParameters());
+		ProcessingMode processingMode = configuration.getProcessingMode();
 
 		try {
 			LoggingUtils.debug(LOGGER, "executing " + QueueTask.class);

@@ -52,7 +52,8 @@ public class SchedulerImpl implements Scheduler {
 			jobDetail = JobBuilder.newJob(task.getJobClass()).withIdentity("QueueTask", "Scheduler").build();
 			if (task.getParameters() == null)
 				return;
-			jobDetail.getJobDataMap().putAll(task.getParameters());
+			//TODO: make it in some constant class and use it in all classes that extends Task  class
+			jobDetail.getJobDataMap().put(SchedulerConstants.PARAM_NAME_TASK_CONFIGURATION, task);
 		} catch (org.quartz.SchedulerException e) {
 			String message = "SchedulerImpl(...) scheduler initialization fail.";
 			LOGGER.error(LoggingUtils.FATAL, message, e);

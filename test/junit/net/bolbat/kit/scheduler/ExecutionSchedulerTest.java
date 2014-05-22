@@ -46,7 +46,7 @@ public class ExecutionSchedulerTest {
 		//initialization
 		processor = new SystemOutProcessor();
 		parameters = new TaskParameters();
-		parameters.put(testParameterName, testParameter);
+		parameters.putString(testParameterName, testParameter);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class ExecutionSchedulerTest {
 	@Test
 	public void executionScheduleModeIntervalTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
-		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
+		builder.processorClass(processor.getClass()).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 
 		queue = SchedulerFactory.create(builder.build());
 
@@ -81,9 +81,6 @@ public class ExecutionSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-
-		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters
-		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 
 	/**
@@ -92,7 +89,7 @@ public class ExecutionSchedulerTest {
 	@Test
 	public void executionScheduleModeCronTest() throws SchedulerException, InterruptedException {
 		ExecutionTaskBuilder builder = new ExecutionTaskBuilder();
-		builder.processor(processor).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
+		builder.processorClass(processor.getClass()).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");
@@ -101,9 +98,6 @@ public class ExecutionSchedulerTest {
 		Thread.sleep(1000L);
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
-		Thread.sleep(1500L);
-		Assert.assertTrue("Loaded and processed elements amount should be the same.", processor.getProcessed() > 0);
-
 		queue.pause();
 		Assert.assertTrue(queue.isPaused()); // should be paused
 
@@ -111,8 +105,5 @@ public class ExecutionSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-
-		Assert.assertNotNull("Parameters should exist", processor.getParameters());  //check parameters
-		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 }

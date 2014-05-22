@@ -1,11 +1,11 @@
 package net.bolbat.kit.scheduler.task.execution;
 
+import net.bolbat.kit.scheduler.SchedulerConstants;
 import net.bolbat.kit.scheduler.Task;
-import net.bolbat.kit.scheduler.TaskParameters;
 import net.bolbat.kit.scheduler.task.ConfigurableTask;
 import net.bolbat.kit.scheduler.task.ProcessingException;
-import net.bolbat.kit.scheduler.task.queue.QueueProcessor;
 import net.bolbat.utils.logging.LoggingUtils;
+import net.bolbat.utils.reflect.Instantiator;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -25,23 +25,17 @@ public final class ExecutionTask implements Task {
 
 	@Override
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-		final Object processorObj = context.getJobDetail().getJobDataMap().get(ExecutionConstants.PROCESSOR);
-
-		// Configure parameter
-		if (processorObj instanceof ConfigurableTask) {
-			final Object parametersObj = context.getJobDetail().getJobDataMap().get(ExecutionConstants.PARAMETERS);
-			if (!(parametersObj instanceof TaskParameters))
-				LOGGER.error("execute(context) fail. No configured Parameters.");
-			else
-				ConfigurableTask.class.cast(processorObj).configure(TaskParameters.class.cast(parametersObj));
-
-		}
-
-		if (!(processorObj instanceof QueueProcessor)) {
-			LOGGER.error("execute(context) fail. No configured Processor.");
+		final Object taskConfiguration = context.getJobDetail().getJobDataMap().get(SchedulerConstants.PARAM_NAME_TASK_CONFIGURATION);
+		if (!(taskConfiguration instanceof ExecutionTaskConfiguration)) {
+			LOGGER.error("execute(context) fail. No configured ExecutionTaskConfiguration.");
 			return;
 		}
-		final ExecutionProcessor processor = ExecutionProcessor.class.cast(processorObj);
+		final ExecutionTaskConfiguration configuration = ExecutionTaskConfiguration.class.cast(taskConfiguration);
+
+		final ExecutionProcessor processor = Instantiator.instantiate(configuration.getProcessorClass());
+		// Configure parameter
+		if (processor instanceof ConfigurableTask)
+			ConfigurableTask.class.cast(processor).configure(configuration.getParameters());
 
 		LoggingUtils.debug(LOGGER, "executing " + ExecutionTask.class);
 		try {

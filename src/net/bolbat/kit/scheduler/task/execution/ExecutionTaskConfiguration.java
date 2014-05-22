@@ -18,6 +18,11 @@ public class ExecutionTaskConfiguration implements TaskConfiguration {
 	private static final long serialVersionUID = 2710162474917798895L;
 
 	/**
+	 * Class extends the {@link ExecutionProcessor}.
+	 */
+	private Class<? extends ExecutionProcessor> processorClass;
+
+	/**
 	 * {@link TaskParameters}.
 	 */
 	private TaskParameters parameters;
@@ -31,6 +36,35 @@ public class ExecutionTaskConfiguration implements TaskConfiguration {
 	 * {@link SchedulerConfigurationType}.
 	 */
 	private SchedulerConfigurationType configurationType;
+
+	/**
+	 * Default constructor.
+	 */
+	public ExecutionTaskConfiguration() {
+	}
+
+	/**
+	 * Constrictor.
+	 *
+	 * @param processorClass
+	 * 		Class extends the {@link ExecutionProcessor}
+	 * @param parameters
+	 * 		{@link TaskParameters}
+	 * @param configurationName
+	 * 		configuration name
+	 * @param configurationType
+	 * 		{@link SchedulerConfigurationType}
+	 */
+	public ExecutionTaskConfiguration(Class<? extends ExecutionProcessor> processorClass, TaskParameters parameters, String configurationName, SchedulerConfigurationType configurationType) {
+		this.processorClass = processorClass;
+		this.parameters = parameters!=null ? parameters : new TaskParameters();
+		this.configurationName = configurationName;
+		this.configurationType = configurationType;
+	}
+
+	public void setProcessorClass(Class<? extends ExecutionProcessor> processorClass) {
+		this.processorClass = processorClass;
+	}
 
 	public void setParameters(TaskParameters parameters) {
 		this.parameters = parameters;
@@ -51,8 +85,6 @@ public class ExecutionTaskConfiguration implements TaskConfiguration {
 
 	@Override
 	public TaskParameters getParameters() {
-		if (parameters == null)
-			parameters = new TaskParameters();
 		return parameters;
 	}
 
@@ -65,4 +97,9 @@ public class ExecutionTaskConfiguration implements TaskConfiguration {
 	public SchedulerConfigurationType getConfigType() {
 		return configurationType;
 	}
+
+	public Class<? extends ExecutionProcessor> getProcessorClass() {
+		return processorClass;
+	}
+
 }

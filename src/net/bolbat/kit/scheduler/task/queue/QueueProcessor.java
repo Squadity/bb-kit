@@ -2,6 +2,7 @@ package net.bolbat.kit.scheduler.task.queue;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import net.bolbat.kit.scheduler.task.ProcessingException;
 
 /**
@@ -11,6 +12,7 @@ import net.bolbat.kit.scheduler.task.ProcessingException;
  * 		type of processing elements
  * @author ivanbatura
  */
+@JsonTypeInfo (use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface QueueProcessor<T> extends Serializable {
 
 	/**

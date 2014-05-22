@@ -35,7 +35,7 @@ public class SystemOutProcessor implements QueueProcessor<String>, ExecutionProc
 	/**
 	 * {@link TaskParameters}.
 	 */
-	private TaskParameters taskParameters;
+	private volatile TaskParameters taskParameters;
 
 	@Override
 	public void process(final String element) throws ProcessingException {

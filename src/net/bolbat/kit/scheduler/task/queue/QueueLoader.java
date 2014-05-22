@@ -3,6 +3,7 @@ package net.bolbat.kit.scheduler.task.queue;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import net.bolbat.kit.scheduler.task.LoadingException;
 
 /**
@@ -12,6 +13,7 @@ import net.bolbat.kit.scheduler.task.LoadingException;
  * 		type of loading elements
  * @author ivanbatura
  */
+@JsonTypeInfo (use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface QueueLoader<T> extends Serializable {
 
 	/**

@@ -54,7 +54,7 @@ public class ConfigurationSchedulerTest {
 	@Test
 	public void withoutConfigScheduleTest() throws SchedulerException, InterruptedException {
 		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC);
+		builder.loaderClass(loader.getClass()).processorClass(processor.getClass()).processingMode(ProcessingMode.SYNC);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");
@@ -81,7 +81,7 @@ public class ConfigurationSchedulerTest {
 	@Test
 	public void jsonConfigScheduleTest() throws SchedulerException, InterruptedException {
 		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.loader(loader).processor(processor).processingMode(ProcessingMode.SYNC).configurationType(SchedulerConfigurationType.CONFIGURE_ME).configuration("scheduled-configuration");
+		builder.loaderClass(loader.getClass()).processorClass(processor.getClass()).processingMode(ProcessingMode.SYNC).configurationType(SchedulerConfigurationType.CONFIGURE_ME).configuration("scheduled-configuration");
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule("0/1 * * * * ?");
@@ -89,9 +89,6 @@ public class ConfigurationSchedulerTest {
 
 		Thread.sleep(1000L);
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		Thread.sleep(1500L);
-		Assert.assertTrue("Loaded and processed elements amount should be the same.", processor.getProcessed() > 0);
 
 		queue.pause();
 		Assert.assertTrue(queue.isPaused()); // should be paused

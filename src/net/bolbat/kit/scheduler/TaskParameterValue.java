@@ -1,14 +1,14 @@
 package net.bolbat.kit.scheduler;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.quartz.Job;
 
 /**
- * Scheduled job.
+ * Task parameter value.
  *
  * @author ivanbatura
  */
 @JsonTypeInfo (use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public interface Task extends Job {
-
+public interface TaskParameterValue extends Serializable {
 }

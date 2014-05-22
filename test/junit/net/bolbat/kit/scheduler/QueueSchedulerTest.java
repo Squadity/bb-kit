@@ -53,7 +53,7 @@ public class QueueSchedulerTest {
 		processor = new SystemOutProcessor();
 		loader = new RandomGenerationLoader();
 		parameters = new TaskParameters();
-		parameters.put(testParameterName, testParameter);
+		parameters.putString(testParameterName, testParameter);
 
 	}
 
@@ -72,13 +72,12 @@ public class QueueSchedulerTest {
 	@Test
 	public void complexTestForSyncModeIntervalScheduleTest() throws SchedulerException, InterruptedException {
 		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.loader(loader);
-		builder.processor(processor);
+		builder.loaderClass(loader.getClass());
+		builder.processorClass(processor.getClass());
 		builder.processingMode(ProcessingMode.SYNC);
 		builder.configuration("quartz.properties");
 		builder.configurationType(SchedulerConfigurationType.PROPERTY);
-		builder.loaderParameters(parameters);
-		builder.processorParameters(parameters);
+		builder.parameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 
 		queue.schedule(1L);
@@ -87,9 +86,6 @@ public class QueueSchedulerTest {
 		Thread.sleep(10L);
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
-		Thread.sleep(300L);
-		Assert.assertEquals("Loaded and processed elements amount should be the same.", loader.getLoaded(), processor.getProcessed());
-
 		queue.pause();
 		Assert.assertTrue(queue.isPaused()); // should be paused
 
@@ -97,9 +93,6 @@ public class QueueSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-
-		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters in processor
-		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value in processor
 	}
 
 	/**
@@ -108,18 +101,14 @@ public class QueueSchedulerTest {
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
 		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
-		builder.processor(processor).loader(loader).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).loaderParameters(parameters).processorParameters(parameters);
+		builder.processorClass(processor.getClass()).loaderClass(loader.getClass()).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
-
 
 		queue.schedule("0/1 * * * * ?");
 		Assert.assertTrue(queue.isStarted()); // should be already started
 
 		Thread.sleep(1000L);
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
-
-		Thread.sleep(1500L);
-		Assert.assertEquals("Loaded and processed elements amount should be the same.", loader.getLoaded(), processor.getProcessed());
 
 		queue.pause();
 		Assert.assertTrue(queue.isPaused()); // should be paused
@@ -128,8 +117,5 @@ public class QueueSchedulerTest {
 		Assert.assertFalse(queue.isPaused()); // shouldn't be paused
 
 		Assert.assertTrue(queue.isStarted()); // will be false after tear down
-
-		Assert.assertNotNull("Parameters should exist", processor.getParameters()); //check parameters
-		Assert.assertEquals("Incorrect date in parameters", testParameter, processor.getParameters().get(testParameterName)); //check parameters value
 	}
 }
