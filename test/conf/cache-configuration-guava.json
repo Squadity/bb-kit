@@ -1,0 +1,6 @@
+{
+    "initialCapacity": 100,
+    "maximumCapacity": 10000,
+    "expireAfterWrite": 1,
+    "expireAfterWriteTimeUnit": "HOURS"
+}
