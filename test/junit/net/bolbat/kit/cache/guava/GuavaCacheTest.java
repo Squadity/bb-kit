@@ -71,10 +71,21 @@ public class GuavaCacheTest {
 	}
 
 	@Test
-	public void configurationTest() {
+	public void configurationTest() throws LoadException {
 		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<String, String>();
 		Cache<String, String> cacheConfigurable = cacheBuilder.build("cache-configuration-guava");
 		Assert.assertNotNull("Result should not be null", cacheConfigurable);
+
+		final String key = "key1";
+		final String value = "value1";
+		cacheConfigurable.put(key, value);
+		//verification
+		String result = cacheConfigurable.get(key);
+		Assert.assertEquals("Result is not correct", value, result);
+		cacheConfigurable.invalidate(key);
+		result = cacheConfigurable.get(key);
+		Assert.assertNull("Result should be null", result);
+
 	}
 
 	@Test

@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.CacheBuilder;
 import net.bolbat.kit.cache.Cache;
-import net.bolbat.kit.cache.LoadFunction;
 import net.bolbat.kit.cache.LoadException;
-import org.configureme.annotations.AfterReConfiguration;
+import net.bolbat.kit.cache.LoadFunction;
+import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 
@@ -129,7 +129,10 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 		this.expireAfterWriteTimeUnit = expireAfterWriteTimeUnit;
 	}
 
-	@AfterReConfiguration
+	/**
+	 * Cache configuration.
+	 */
+	@AfterConfiguration
 	public void configureCache() {
 		//save old cache data
 		Map<K, V> oldCache = null;
@@ -154,7 +157,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	public V get(K key) throws LoadException {
 		V result = originalCache.getIfPresent(key);
 		if (functionLoad != null && result == null) {
-				result = functionLoad.load(key);
+			result = functionLoad.load(key);
 			if (result != null)
 				put(key, result);
 		}
