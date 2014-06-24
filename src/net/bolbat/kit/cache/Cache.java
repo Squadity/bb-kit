@@ -23,7 +23,7 @@ public interface Cache<K, V> {
 	 * 		key
 	 * @return value
 	 */
-	V get(K key) throws LoadException;
+	V get(K key);
 
 	/**
 	 * Put {@code value} by {@code key} to cache.

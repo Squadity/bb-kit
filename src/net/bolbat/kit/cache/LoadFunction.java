@@ -12,11 +12,11 @@ package net.bolbat.kit.cache;
 public interface LoadFunction<K, V> {
 
 	/**
-	 * Load value by {@code key}.
+	 * Load value by {@code key}. For error {@link LoadException}.
 	 *
 	 * @param key
 	 * 		key type {@link K}
 	 * @return value of type {@link V}
 	 */
-	V load(K key) throws LoadException;
+	V load(K key);
 }

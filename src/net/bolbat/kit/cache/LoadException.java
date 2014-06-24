@@ -5,7 +5,7 @@ package net.bolbat.kit.cache;
  *
  * @author ivanbatura
  */
-public class LoadException extends Exception {
+public class LoadException extends RuntimeException {
 
 	/**
 	 * Basic serialVersionUID variable.
