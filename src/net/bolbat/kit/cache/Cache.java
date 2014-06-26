@@ -1,5 +1,6 @@
 package net.bolbat.kit.cache;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +53,14 @@ public interface Cache<K, V> {
 	 * 		{@link java.lang.Iterable}
 	 * @return {@link List} with values
 	 */
-	List<V> get(Iterable<? extends K> keys);
+	Collection<V> get(Iterable<? extends K> keys);
 
 	/**
 	 * Get all values from cache.
 	 *
 	 * @return {@link List} with values
 	 */
-	List<V> getAll();
+	Collection<V> getAll();
 
 	/**
 	 * Get all values from cache as {@link Map}.

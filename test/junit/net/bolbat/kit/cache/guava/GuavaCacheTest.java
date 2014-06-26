@@ -2,6 +2,7 @@ package net.bolbat.kit.cache.guava;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import net.bolbat.kit.cache.Cache;
@@ -55,7 +56,7 @@ public class GuavaCacheTest {
 		final String value2 = "value2";
 		final List<String> keys = new ArrayList<String>(Arrays.asList(key1, key2));
 		//call test method
-		List<String> results = cache.get(keys);
+		Collection<String> results = cache.get(keys);
 		Assert.assertNotNull("Result should not be null", results);
 		Assert.assertEquals("Result should be empty", 0, results.size());
 		cache.put(key1, value1);
@@ -100,7 +101,7 @@ public class GuavaCacheTest {
 				return "value";
 			}
 		});
-		cache = (GuavaCache<String, String>) cacheBuilder.build();
+		cache = cacheBuilder.build();
 
 		final String key1 = "key1";
 		//call test method

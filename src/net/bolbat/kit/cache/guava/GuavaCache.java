@@ -1,14 +1,12 @@
 package net.bolbat.kit.cache.guava;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.CacheBuilder;
 import net.bolbat.kit.cache.Cache;
-import net.bolbat.kit.cache.LoadException;
 import net.bolbat.kit.cache.LoadFunction;
 import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.Configure;
@@ -154,7 +152,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	}
 
 	@Override
-	public V get(K key) throws LoadException {
+	public V get(K key) {
 		V result = originalCache.getIfPresent(key);
 		if (functionLoad != null && result == null) {
 			result = functionLoad.load(key);
@@ -175,18 +173,18 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	}
 
 	@Override
-	public List<V> get(Iterable<? extends K> keys) {
-		return new ArrayList<V>(originalCache.getAllPresent(keys).values());
+	public Collection<V> get(Iterable<? extends K> keys) {
+		return originalCache.getAllPresent(keys).values();
 	}
 
 	@Override
-	public List<V> getAll() {
-		return new ArrayList<V>(originalCache.asMap().values());
+	public Collection<V> getAll() {
+		return originalCache.asMap().values();
 	}
 
 	@Override
 	public Map<K, V> getAllAsMap() {
-		return new HashMap<K, V>(originalCache.asMap());
+		return originalCache.asMap();
 	}
 
 	@Override
