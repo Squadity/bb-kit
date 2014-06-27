@@ -137,9 +137,11 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 		if (originalCache != null && originalCache.size() > 0)
 			oldCache = new HashMap<K, V>(originalCache.asMap());
 
-		final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
-				.initialCapacity(initiateCapacity)
-				.maximumSize(maximumCapacity);
+		final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
+		if (initiateCapacity > 0)
+			cacheBuilder.initialCapacity(initiateCapacity);
+		if (maximumCapacity > 0)
+			cacheBuilder.maximumSize(maximumCapacity);
 		if (expireAfterAccess != null)
 			cacheBuilder.expireAfterAccess(expireAfterAccess, expireAfterAccessTimeUnit);
 		if (expireAfterWrite != null)
