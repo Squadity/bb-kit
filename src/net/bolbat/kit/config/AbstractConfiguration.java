@@ -1,6 +1,5 @@
 package net.bolbat.kit.config;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Alexandr Bolbat
  */
-public abstract class AbstractConfiguration implements Serializable {
+public abstract class AbstractConfiguration implements Configuration {
 
 	/**
 	 * Generated SerialVersionUID.
@@ -24,6 +23,7 @@ public abstract class AbstractConfiguration implements Serializable {
 	/**
 	 * {@link Logger} instance.
 	 */
+	@DontConfigure
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfiguration.class);
 
 	/**
