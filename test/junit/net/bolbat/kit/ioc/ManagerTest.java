@@ -3,9 +3,7 @@ package net.bolbat.kit.ioc;
 import static net.bolbat.kit.ioc.scope.DistributionScope.LOCAL;
 import static net.bolbat.kit.ioc.scope.DistributionScope.REMOTE;
 import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
-import net.bolbat.kit.ioc.ConfigurationNotFoundException;
-import net.bolbat.kit.ioc.Manager;
-import net.bolbat.kit.ioc.ManagerException;
+import net.bolbat.kit.ioc.scope.CompositeScope;
 import net.bolbat.kit.ioc.scope.CustomScope;
 import net.bolbat.kit.ioc.scope.Scope;
 import net.bolbat.kit.service.Configuration;
@@ -116,6 +114,44 @@ public class ManagerTest {
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		}
+	}
+
+	/**
+	 * {@link ScopeLink} functionality test.
+	 */
+	@Test
+	public void scopeLinksTest() {
+		Manager.register(SampleService.class, SampleServiceFactory.class, LOCAL, SERVICE);
+		SampleService instance1 = null;
+		try {
+			instance1 = Manager.get(SampleService.class, LOCAL, SERVICE);
+			Assert.assertNotNull(instance1);
+		} catch (final ManagerException e) {
+			Assert.fail();
+		}
+
+		try {
+			Manager.get(SampleService.class);
+			Assert.fail("Exception shold be thrown before this step.");
+		} catch (ManagerException e) {
+			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		}
+
+		Manager.link(SampleService.class, SERVICE);
+		Manager.link(SampleService.class, SERVICE, CustomScope.get("SOMETHING"));
+		Manager.link(SampleService.class, CustomScope.get("SOMETHING"), CompositeScope.get(LOCAL, SERVICE));
+		SampleService instance2 = null;
+		try {
+			instance2 = Manager.get(SampleService.class);
+			Assert.assertNotNull(instance2);
+			Assert.assertSame(instance1, instance2);
+
+			instance2 = Manager.get(SampleService.class, CustomScope.get("SOMETHING"));
+			Assert.assertNotNull(instance2);
+			Assert.assertSame(instance1, instance2);
+		} catch (final ManagerException e) {
+			Assert.fail();
 		}
 	}
 
