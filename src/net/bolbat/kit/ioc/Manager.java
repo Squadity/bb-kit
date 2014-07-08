@@ -176,7 +176,6 @@ public final class Manager implements Module {
 			final Scope... scopes) {
 		if (service == null)
 			throw new IllegalArgumentException("service argument is null.");
-
 		if (factory == null)
 			throw new IllegalArgumentException("serviceFactory argument is null.");
 
