@@ -132,13 +132,14 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	@Override
 	public Collection<S> getAll() {
 		try {
-			final Bits liveDocs = MultiFields.getLiveDocs(getReader());
+			final IndexReader reader = getReader();
+			final Bits liveDocs = MultiFields.getLiveDocs(reader);
 			final List<S> result = new ArrayList<S>();
-			for (int i = 0; i < getReader().maxDoc(); i++) {
+			for (int i = 0; i < reader.maxDoc(); i++) {
 				if (liveDocs != null && !liveDocs.get(i))
 					continue;
 
-				final Document doc = getReader().document(i);
+				final Document doc = reader.document(i);
 				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
 			}
 
@@ -156,13 +157,14 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			throw new IllegalArgumentException("fieldValue argument is empty");
 
 		try {
+			final IndexSearcher searcher = getSearcher();
 			final BooleanQuery query = new BooleanQuery();
 			query.add(new TermQuery(new Term(fieldName, fieldValue)), BooleanClause.Occur.MUST);
-			final TopDocs topDocs = getSearcher().search(query, 1);
+			final TopDocs topDocs = searcher.search(query, 1);
 			if (topDocs.scoreDocs.length == 0)
 				return null;
 
-			final Document doc = getSearcher().doc(topDocs.scoreDocs[0].doc);
+			final Document doc = searcher.doc(topDocs.scoreDocs[0].doc);
 			return mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType);
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
@@ -339,10 +341,11 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			return Collections.emptyList();
 
 		try {
-			final TopDocs topDocs = getSearcher().search(query, limit);
+			final IndexSearcher searcher = getSearcher();
+			final TopDocs topDocs = searcher.search(query, limit);
 			final List<S> result = new ArrayList<S>();
 			for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
-				final Document doc = getSearcher().doc(scoreDoc.doc);
+				final Document doc = searcher.doc(scoreDoc.doc);
 				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
 			}
 
