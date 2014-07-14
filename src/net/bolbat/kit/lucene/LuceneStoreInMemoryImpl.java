@@ -145,12 +145,6 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			return result;
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
-		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
 		}
 	}
 
@@ -172,12 +166,6 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			return mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType);
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
-		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
 		}
 	}
 
@@ -193,18 +181,13 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		try {
 			final Document doc = toAdd.toDocument();
 			doc.add(new TextField(DOCUMENT_DATA_FIELD_NAME, mapper.writeValueAsString(toAdd), Field.Store.YES));
-			// doc.add(new BinaryDocValuesField(DOCUMENT_DATA_FIELD_NAME, new BytesRef(mapper.writeValueAsBytes(toAdd))));
 
 			writer.addDocument(doc);
 			writer.commit();
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -226,11 +209,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -249,11 +228,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -280,11 +255,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -309,11 +280,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -335,11 +302,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
-			synchronized (lock) {
-				LuceneUtils.close(reader);
-				reader = null;
-				searcher = null;
-			}
+			cleanAfterCommit();
 		}
 	}
 
@@ -404,6 +367,11 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		}
 	}
 
+	/**
+	 * Get {@link IndexReader} instance (with lazy initialization).
+	 * 
+	 * @return {@link IndexReader}
+	 */
 	private IndexReader getReader() {
 		if (reader == null)
 			synchronized (lock) {
@@ -419,6 +387,11 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 		return reader;
 	}
 
+	/**
+	 * Get {@link IndexSearcher} instance (with lazy initialization).
+	 * 
+	 * @return {@link IndexSearcher}
+	 */
 	private IndexSearcher getSearcher() {
 		if (searcher == null)
 			synchronized (lock) {
@@ -427,6 +400,18 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			}
 
 		return searcher;
+	}
+
+	/**
+	 * This method used for clean up {@link IndexReader} and {@link IndexSearcher} after any commit to the {@link Directory}.<br>
+	 * This action required for {@link IndexReader} and {@link IndexSearcher} lazy re-initialization to use new data after {@link IndexWriter} commit.
+	 */
+	private void cleanAfterCommit() {
+		synchronized (lock) {
+			LuceneUtils.close(reader);
+			reader = null;
+			searcher = null;
+		}
 	}
 
 }
