@@ -27,8 +27,7 @@ public class LuceneStoreTest {
 	 */
 	@Before
 	public void before() {
-		LuceneStoreManager.getStore(StorableVO.class).tearDown();
-		LuceneStoreManager.tearDown();
+		LuceneStoreManager.tearDown(StorableVO.class);
 	}
 
 	/**
@@ -36,8 +35,7 @@ public class LuceneStoreTest {
 	 */
 	@After
 	public void after() {
-		LuceneStoreManager.getStore(StorableVO.class).tearDown();
-		LuceneStoreManager.tearDown();
+		LuceneStoreManager.tearDown(StorableVO.class);
 	}
 
 	/**

@@ -61,4 +61,15 @@ public final class LuceneStoreManager implements Module {
 		IN_MEMORY_IMPL_STORAGES.clear();
 	}
 
+	/**
+	 * Tear down {@link LuceneStoreManager} state for given {@link Storable} type.
+	 * 
+	 * @param type
+	 *            {@link Storable} type
+	 */
+	public static <S extends Storable> void tearDown(final Class<S> type) {
+		if (type != null)
+			IN_MEMORY_IMPL_STORAGES.remove(type);
+	}
+
 }
