@@ -27,7 +27,7 @@ public class LuceneStoreTest {
 	 */
 	@Before
 	public void before() {
-		LuceneStoreManager.getStore(StorableVO.class).cleanUp();
+		LuceneStoreManager.getStore(StorableVO.class).tearDown();
 		LuceneStoreManager.tearDown();
 	}
 
@@ -36,7 +36,7 @@ public class LuceneStoreTest {
 	 */
 	@After
 	public void after() {
-		LuceneStoreManager.getStore(StorableVO.class).cleanUp();
+		LuceneStoreManager.getStore(StorableVO.class).tearDown();
 		LuceneStoreManager.tearDown();
 	}
 

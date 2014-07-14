@@ -120,8 +120,8 @@ public interface LuceneStore<S extends Storable> {
 	Collection<S> get(Query query, int limit);
 
 	/**
-	 * Cleanup store.
+	 * Tear down {@link LuceneStore} state.
 	 */
-	void cleanUp();
+	void tearDown();
 
 }

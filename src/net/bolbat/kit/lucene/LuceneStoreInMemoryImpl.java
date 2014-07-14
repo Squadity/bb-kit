@@ -356,7 +356,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	}
 
 	@Override
-	public synchronized void cleanUp() {
+	public synchronized void tearDown() {
 		try {
 			writer.deleteAll();
 			writer.commit();
