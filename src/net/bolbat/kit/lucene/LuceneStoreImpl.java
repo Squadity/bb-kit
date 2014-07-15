@@ -408,6 +408,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		LuceneUtils.close(analyzer);
 		LuceneUtils.close(writer);
 		LuceneUtils.close(directory);
+		LuceneUtils.unlock(directory);
 	}
 
 	/**

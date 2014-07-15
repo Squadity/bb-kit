@@ -87,4 +87,19 @@ public final class LuceneUtils {
 		}
 	}
 
+	/**
+	 * Unlock {@link Directory} instance.
+	 * 
+	 * @param directory
+	 *            {@link Directory}
+	 */
+	public static void unlock(final Directory directory) {
+		try {
+			if (directory != null)
+				IndexWriter.unlock(directory);
+		} catch (final IOException e) {
+			if (LOGGER.isWarnEnabled())
+				LOGGER.warn("Unable to unlock Directory", e);
+		}
+	}
 }
