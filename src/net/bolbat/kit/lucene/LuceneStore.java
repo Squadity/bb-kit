@@ -125,7 +125,7 @@ public interface LuceneStore<S extends Storable> {
 	Collection<S> get(Query query, int limit);
 
 	/**
-	 * Remove all indexed data and tear down {@link LuceneStore} state.
+	 * Tear down {@link LuceneStore} state.
 	 */
 	void tearDown();
 

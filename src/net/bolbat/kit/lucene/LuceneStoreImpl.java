@@ -404,14 +404,10 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	@Override
 	public synchronized void tearDown() {
-		try {
-			removeAll();
-		} finally {
-			LuceneUtils.close(reader);
-			LuceneUtils.close(analyzer);
-			LuceneUtils.close(writer);
-			LuceneUtils.close(directory);
-		}
+		LuceneUtils.close(reader);
+		LuceneUtils.close(analyzer);
+		LuceneUtils.close(writer);
+		LuceneUtils.close(directory);
 	}
 
 	/**

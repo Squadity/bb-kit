@@ -35,6 +35,7 @@ public class LuceneStoreTest {
 	 */
 	@After
 	public void after() {
+		LuceneStoreManager.getStore(StorableVO.class).removeAll();
 		LuceneStoreManager.getStore(StorableVO.class).tearDown();
 		LuceneStoreManager.tearDown(StorableVO.class);
 	}
