@@ -84,6 +84,11 @@ public interface LuceneStore<S extends Storable> {
 	void remove(Collection<S> toRemove);
 
 	/**
+	 * Remove all beans.
+	 */
+	void removeAll();
+
+	/**
 	 * Get all beans count.
 	 * 
 	 * @return bean's count
@@ -120,7 +125,7 @@ public interface LuceneStore<S extends Storable> {
 	Collection<S> get(Query query, int limit);
 
 	/**
-	 * Tear down {@link LuceneStore} state.
+	 * Remove all indexed data and tear down {@link LuceneStore} state.
 	 */
 	void tearDown();
 

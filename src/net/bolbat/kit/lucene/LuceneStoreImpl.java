@@ -344,6 +344,18 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	}
 
 	@Override
+	public void removeAll() {
+		try {
+			writer.deleteAll();
+			writer.commit();
+		} catch (final IOException e) {
+			throw new LuceneStoreRuntimeException(e);
+		} finally {
+			cleanAfterCommit();
+		}
+	}
+
+	@Override
 	public int count() {
 		return getReader().numDocs();
 	}
@@ -393,10 +405,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	@Override
 	public synchronized void tearDown() {
 		try {
-			writer.deleteAll();
-			writer.commit();
-		} catch (final IOException e) {
-			throw new LuceneStoreRuntimeException(e);
+			removeAll();
 		} finally {
 			LuceneUtils.close(reader);
 			LuceneUtils.close(analyzer);
