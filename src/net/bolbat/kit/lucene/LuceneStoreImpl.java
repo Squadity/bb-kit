@@ -2,11 +2,14 @@ package net.bolbat.kit.lucene;
 
 import static net.bolbat.utils.lang.StringUtils.isEmpty;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.bolbat.kit.config.ConfigurationManager;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -27,27 +30,40 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * {@link LuceneStore} in-memory implementation.
+ * {@link LuceneStore} implementation.
  * 
  * @author Alexandr Bolbat
  * 
  * @param <S>
  *            storable bean type
  */
-public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<S> {
+public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
+
+	/**
+	 * {@link Logger} instance.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(LuceneStoreImpl.class);
 
 	/**
 	 * Lucene document field name for serialized bean data.
 	 */
 	private static final String DOCUMENT_DATA_FIELD_NAME = "BEAN_DATA";
+
+	/**
+	 * {@link LuceneStoreConfig} instance.
+	 */
+	private final LuceneStoreConfig config;
 
 	/**
 	 * {@link Version} instance.
@@ -67,7 +83,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	/**
 	 * {@link IndexWriterConfig} instance.
 	 */
-	private final IndexWriterConfig indexWriterConfig;
+	private final IndexWriterConfig writerConfig;
 
 	/**
 	 * {@link IndexWriter} instance.
@@ -80,7 +96,7 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	private volatile IndexReader reader;
 
 	/**
-	 * {@link IndexSearcher} instance;
+	 * {@link IndexSearcher} instance.
 	 */
 	private volatile IndexSearcher searcher;
 
@@ -104,18 +120,37 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	 * 
 	 * @param aBeanType
 	 *            bean type
+	 * @param configuration
+	 *            {@link LuceneStore} configuration name
 	 */
-	protected LuceneStoreInMemoryImpl(final Class<S> aBeanType) {
+	protected LuceneStoreImpl(final Class<S> aBeanType, final String configuration) {
 		if (aBeanType == null)
 			throw new IllegalArgumentException("aBeanType argument is null");
 
+		this.config = ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class, configuration);
+		LOGGER.info("Type[" + aBeanType + "], " + config);
+
 		try {
-			// TODO everything should be configurable
-			this.version = Version.LUCENE_47;
-			this.directory = new RAMDirectory();
+			// version
+			this.version = config.getVersion();
+
+			// directory
+			switch (config.getDirectoryType()) {
+			case FS:
+				this.directory = FSDirectory.open(new File(config.getDirectoryPath()));
+				break;
+			case RAM:
+			default:
+				this.directory = new RAMDirectory();
+			}
+
+			// analyzer
+			// TODO should be configurable somehow in future
 			this.analyzer = new StandardAnalyzer(version);
-			this.indexWriterConfig = new IndexWriterConfig(version, analyzer);
-			this.writer = new IndexWriter(directory, indexWriterConfig);
+
+			// writer config and writer
+			this.writerConfig = new IndexWriterConfig(version, analyzer);
+			this.writer = new IndexWriter(directory, writerConfig);
 			writer.commit();
 
 			this.beanType = aBeanType;
@@ -132,14 +167,14 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 	@Override
 	public Collection<S> getAll() {
 		try {
-			final IndexReader reader = getReader();
-			final Bits liveDocs = MultiFields.getLiveDocs(reader);
+			final IndexReader localReader = getReader();
+			final Bits liveDocs = MultiFields.getLiveDocs(localReader);
 			final List<S> result = new ArrayList<S>();
-			for (int i = 0; i < reader.maxDoc(); i++) {
+			for (int i = 0; i < localReader.maxDoc(); i++) {
 				if (liveDocs != null && !liveDocs.get(i))
 					continue;
 
-				final Document doc = reader.document(i);
+				final Document doc = localReader.document(i);
 				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
 			}
 
@@ -157,14 +192,14 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			throw new IllegalArgumentException("fieldValue argument is empty");
 
 		try {
-			final IndexSearcher searcher = getSearcher();
+			final IndexSearcher localSearcher = getSearcher();
 			final BooleanQuery query = new BooleanQuery();
 			query.add(new TermQuery(new Term(fieldName, fieldValue)), BooleanClause.Occur.MUST);
-			final TopDocs topDocs = searcher.search(query, 1);
+			final TopDocs topDocs = localSearcher.search(query, 1);
 			if (topDocs.scoreDocs.length == 0)
 				return null;
 
-			final Document doc = searcher.doc(topDocs.scoreDocs[0].doc);
+			final Document doc = localSearcher.doc(topDocs.scoreDocs[0].doc);
 			return mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType);
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
@@ -341,11 +376,11 @@ public class LuceneStoreInMemoryImpl<S extends Storable> implements LuceneStore<
 			return Collections.emptyList();
 
 		try {
-			final IndexSearcher searcher = getSearcher();
-			final TopDocs topDocs = searcher.search(query, limit);
+			final IndexSearcher localSearcher = getSearcher();
+			final TopDocs topDocs = localSearcher.search(query, limit);
 			final List<S> result = new ArrayList<S>();
 			for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
-				final Document doc = searcher.doc(scoreDoc.doc);
+				final Document doc = localSearcher.doc(scoreDoc.doc);
 				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
 			}
 

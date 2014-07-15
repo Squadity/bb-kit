@@ -27,7 +27,7 @@ public class LuceneStoreTest {
 	 */
 	@Before
 	public void before() {
-		LuceneStoreManager.tearDown(StorableVO.class);
+		after();
 	}
 
 	/**
@@ -35,6 +35,7 @@ public class LuceneStoreTest {
 	 */
 	@After
 	public void after() {
+		LuceneStoreManager.getStore(StorableVO.class).tearDown();
 		LuceneStoreManager.tearDown(StorableVO.class);
 	}
 
@@ -108,7 +109,7 @@ public class LuceneStoreTest {
 		final StorableVO bean3 = new StorableVO("bean3", "bean3@beans.com");
 
 		store.add(Arrays.asList(bean1, bean2, bean3));
-		Assert.assertTrue(store.count() == 3);
+		Assert.assertEquals(3, store.count());
 
 		// TermQuery
 		Query q = new TermQuery(new Term("email", "bean1@beans.com"));
