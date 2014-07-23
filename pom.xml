@@ -18,7 +18,6 @@
 
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
-		<reflections.version>0.9.9-RC1</reflections.version>
 		<quartz-scheduler.version>2.2.1</quartz-scheduler.version>
 
 		<!-- provided dependencies -->
@@ -44,11 +43,6 @@
 			<groupId>net.anotheria</groupId>
 			<artifactId>configureme</artifactId>
 			<version>${configureme.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>${reflections.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
