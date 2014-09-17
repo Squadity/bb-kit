@@ -24,10 +24,6 @@
 		<jackson.version>2.3.2</jackson.version>
 		<guava.version>17.0</guava.version>
 		<lucene.version>4.7.2</lucene.version>
-
-		<!-- general configuration properties -->
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
 
 	<dependencies>
