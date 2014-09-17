@@ -39,7 +39,7 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	 * 		Class of {@link ExecutionProcessor}
 	 * @return {@link ExecutionTaskBuilder}
 	 */
-	public ExecutionTaskBuilder processorClass(Class<? extends ExecutionProcessor> aProcessorClass) {
+	public ExecutionTaskBuilder processorClass(final Class<? extends ExecutionProcessor> aProcessorClass) {
 		this.processorClass = aProcessorClass;
 		return this;
 	}
@@ -52,7 +52,7 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link ExecutionTaskBuilder}
 	 */
-	public ExecutionTaskBuilder configuration(String aConfiguration) {
+	public ExecutionTaskBuilder configuration(final String aConfiguration) {
 		this.configuration = aConfiguration;
 		return this;
 	}
@@ -65,7 +65,7 @@ public class ExecutionTaskBuilder implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link ExecutionTaskBuilder}
 	 */
-	public ExecutionTaskBuilder configurationType(SchedulerConfigurationType aConfigurationType) {
+	public ExecutionTaskBuilder configurationType(final SchedulerConfigurationType aConfigurationType) {
 		this.configurationType = aConfigurationType;
 		return this;
 	}

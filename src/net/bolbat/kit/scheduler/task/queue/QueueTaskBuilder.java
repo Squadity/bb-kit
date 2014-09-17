@@ -51,7 +51,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * 		class extends {@link QueueLoader}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> loaderClass(Class<? extends QueueLoader<T>> aLoaderClass) {
+	public QueueTaskBuilder<T> loaderClass(final Class<? extends QueueLoader<T>> aLoaderClass) {
 		this.loaderClass = aLoaderClass;
 		return this;
 	}
@@ -63,7 +63,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * 		Class of {@link QueueProcessor}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> processorClass(Class<? extends QueueProcessor<T>> aProcessorClass) {
+	public QueueTaskBuilder<T> processorClass(final Class<? extends QueueProcessor<T>> aProcessorClass) {
 		this.processorClass = aProcessorClass;
 		return this;
 	}
@@ -75,7 +75,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * 		{@link ProcessingMode}
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> processingMode(ProcessingMode aProcessingMode) {
+	public QueueTaskBuilder<T> processingMode(final ProcessingMode aProcessingMode) {
 		this.processingMode = aProcessingMode;
 		return this;
 	}
@@ -88,7 +88,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> configuration(String aConfiguration) {
+	public QueueTaskBuilder<T> configuration(final String aConfiguration) {
 		this.configuration = aConfiguration;
 		return this;
 	}
@@ -101,7 +101,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 	 * 		can be NULL - default will be used
 	 * @return {@link QueueTaskBuilder}
 	 */
-	public QueueTaskBuilder<T> configurationType(SchedulerConfigurationType aConfigurationType) {
+	public QueueTaskBuilder<T> configurationType(final SchedulerConfigurationType aConfigurationType) {
 		this.configurationType = aConfigurationType;
 		return this;
 	}

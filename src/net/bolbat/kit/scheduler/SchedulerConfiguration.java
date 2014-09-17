@@ -114,7 +114,7 @@ public class SchedulerConfiguration implements Serializable {
 	/**
 	 * Default constructor.
 	 */
-	private SchedulerConfiguration(String configurationName) {
+	private SchedulerConfiguration(final String configurationName) {
 		try {
 			if (StringUtils.isEmpty(configurationName))
 				ConfigurationManager.INSTANCE.configure(this);

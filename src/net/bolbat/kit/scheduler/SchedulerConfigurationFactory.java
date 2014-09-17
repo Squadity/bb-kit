@@ -3,6 +3,7 @@ package net.bolbat.kit.scheduler;
 import java.util.Properties;
 import java.util.UUID;
 
+import net.bolbat.utils.lang.StringUtils;
 import net.bolbat.utils.logging.LoggingUtils;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
@@ -55,7 +56,7 @@ public class SchedulerConfigurationFactory {
 	 *
 	 * @return {@link Properties} with configuration
 	 */
-	public static Scheduler getConfiguration(TaskConfiguration task) throws SchedulerException {
+	public static Scheduler getConfiguration(final TaskConfiguration task) throws SchedulerException {
 		if (task == null)
 			throw new IllegalArgumentException("Parameter task is null");
 		try {
@@ -71,7 +72,7 @@ public class SchedulerConfigurationFactory {
 				default:
 					return new StdSchedulerFactory(getConfigureMeConfiguration(task.getConfig())).getScheduler();
 			}
-		} catch (org.quartz.SchedulerException e) {
+		} catch (final org.quartz.SchedulerException e) {
 			String message = "getConfiguration(...) scheduler initialization fail.";
 			LOGGER.error(LoggingUtils.FATAL, message, e);
 			throw new SchedulerException(message, e);
@@ -86,11 +87,11 @@ public class SchedulerConfigurationFactory {
 	 * 		can be NULL,  then default will be used
 	 * @return {@link Properties} with configuration
 	 */
-	private static Properties getConfigureMeConfiguration(String fileName) {
-		Properties properties = new Properties();
+	private static Properties getConfigureMeConfiguration(final String fileName) {
+		final Properties properties = new Properties();
 		SchedulerConfiguration config = SchedulerConfiguration.getInstance(fileName);
 
-		properties.put(PARAM_SCHEDULER_INSTANCE_NAME, config.getSchedulerInstanceName() != null ? config.getSchedulerInstanceName() : UUID.randomUUID());
+		properties.put(PARAM_SCHEDULER_INSTANCE_NAME, StringUtils.isNotEmpty(config.getSchedulerInstanceName()) ? config.getSchedulerInstanceName() : UUID.randomUUID().toString());
 		properties.put(PARAM_SCHEDULER_INSTANCE_ID, config.getSchedulerInstanceId());
 		properties.put(PARAM_SCHEDULER_SKIP_UPDATE_CHECK, String.valueOf(config.isSchedulerSkipUpdateCheck()));
 		properties.put(PARAM_THREAD_POOL_CLASS, config.getThreadPoolClass());

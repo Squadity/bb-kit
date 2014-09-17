@@ -20,8 +20,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link String} value
 	 */
-	public String getString(String key) {
-		TaskParameterValue result = super.get(key);
+	public String getString(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof StringParameterValue)
 			return ((StringParameterValue) result).getValue();
 		return null;
@@ -34,8 +34,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link Integer} value
 	 */
-	public Integer getInteger(String key) {
-		TaskParameterValue result = super.get(key);
+	public Integer getInteger(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof IntegerParameterValue)
 			return ((IntegerParameterValue) result).getValue();
 		return null;
@@ -48,8 +48,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link Long} value
 	 */
-	public Long getLong(String key) {
-		TaskParameterValue result = super.get(key);
+	public Long getLong(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof LongParameterValue)
 			return ((LongParameterValue) result).getValue();
 		return null;
@@ -62,8 +62,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link Float} value
 	 */
-	public Float getFloat(String key) {
-		TaskParameterValue result = super.get(key);
+	public Float getFloat(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof FloatParameterValue)
 			return ((FloatParameterValue) result).getValue();
 		return null;
@@ -76,8 +76,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link Double} value
 	 */
-	public Double getDouble(String key) {
-		TaskParameterValue result = super.get(key);
+	public Double getDouble(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof DoubleParameterValue)
 			return ((DoubleParameterValue) result).getValue();
 		return null;
@@ -90,8 +90,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		key
 	 * @return {@link Boolean} value
 	 */
-	public Boolean getBoolean(String key) {
-		TaskParameterValue result = super.get(key);
+	public Boolean getBoolean(final String key) {
+		final TaskParameterValue result = super.get(key);
 		if (result instanceof BooleanParameterValue)
 			return ((BooleanParameterValue) result).getValue();
 		return null;
@@ -106,7 +106,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link String} value
 	 * @return {@link String} value
 	 */
-	public String putString(String key, String value) {
+	public String putString(final String key, final String value) {
 		final StringParameterValue result = (StringParameterValue) super.put(key, new StringParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
@@ -120,8 +120,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link Integer} value
 	 * @return {@link Integer} value
 	 */
-	public Integer putInteger(String key, Integer value) {
-		IntegerParameterValue result = (IntegerParameterValue) super.put(key, new IntegerParameterValue(value));
+	public Integer putInteger(final String key, final Integer value) {
+		final IntegerParameterValue result = (IntegerParameterValue) super.put(key, new IntegerParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
 
@@ -134,8 +134,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link Long} value
 	 * @return {@link Long} value
 	 */
-	public Long putLong(String key, Long value) {
-		LongParameterValue result = (LongParameterValue) super.put(key, new LongParameterValue(value));
+	public Long putLong(final String key, final Long value) {
+		final LongParameterValue result = (LongParameterValue) super.put(key, new LongParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
 
@@ -148,8 +148,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link Float} value
 	 * @return {@link Float} value
 	 */
-	public Float putFloat(String key, Float value) {
-		FloatParameterValue result = (FloatParameterValue) super.put(key, new FloatParameterValue(value));
+	public Float putFloat(final String key, final Float value) {
+		final FloatParameterValue result = (FloatParameterValue) super.put(key, new FloatParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
 
@@ -162,8 +162,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link Double} value
 	 * @return {@link Double} value
 	 */
-	public Double putDouble(String key, Double value) {
-		DoubleParameterValue result = (DoubleParameterValue) super.put(key, new DoubleParameterValue(value));
+	public Double putDouble(final String key, final Double value) {
+		final DoubleParameterValue result = (DoubleParameterValue) super.put(key, new DoubleParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
 
@@ -176,8 +176,8 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	 * 		{@link Boolean} value
 	 * @return {@link Boolean} value
 	 */
-	public Boolean putBoolean(String key, Boolean value) {
-		BooleanParameterValue result = (BooleanParameterValue) super.put(key, new BooleanParameterValue(value));
+	public Boolean putBoolean(final String key, final Boolean value) {
+		final BooleanParameterValue result = (BooleanParameterValue) super.put(key, new BooleanParameterValue(value));
 		return result != null ? result.getValue() : null;
 	}
 
@@ -206,7 +206,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 		 * @param value
 		 * 		value
 		 */
-		private StringParameterValue(String value) {
+		private StringParameterValue(final String value) {
 			this.value = value;
 		}
 
@@ -413,8 +413,4 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 			this.value = value;
 		}
 	}
-
-
 }
-
-
