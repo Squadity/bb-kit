@@ -49,7 +49,7 @@ public final class QueueTask<T> implements Task {
 		// Configure loader parameters
 		if (processor instanceof ConfigurableTask)
 			ConfigurableTask.class.cast(processor).configure(configuration.getParameters());
-		ProcessingMode processingMode = configuration.getProcessingMode();
+		final ProcessingMode processingMode = configuration.getProcessingMode();
 
 		try {
 			LoggingUtils.debug(LOGGER, "executing " + QueueTask.class);
@@ -64,10 +64,10 @@ public final class QueueTask<T> implements Task {
 					try {
 						LoggingUtils.debug(LOGGER, "processing element[" + element + "]");
 						processor.process(element);
-					} catch (ProcessingException e) {
+					} catch (final ProcessingException e) {
 						LOGGER.error("execute(context) processing fail. Skipping element[" + element + "].", e);
 						//CHECKSTYLE:OFF
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						//CHECKSTYLE:ON
 						LOGGER.error("execute(context) processing fail. Skipping element[" + element + "].", e);
 					}
@@ -75,13 +75,13 @@ public final class QueueTask<T> implements Task {
 			}
 
 			// TODO: put result to queue to process in ASYNC mode.
-		} catch (LoadingException e) {
-			String message = "execute(context) loading fail.";
+		} catch (final LoadingException e) {
+			final String message = "execute(context) loading fail.";
 			LOGGER.error(message, e);
 			//CHECKSTYLE:OFF
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			//CHECKSTYLE:ON
-			String message = "execute(context) fail";
+			final String message = "execute(context) fail";
 			LOGGER.error(message, e);
 			throw new JobExecutionException(message, e);
 		}

@@ -54,8 +54,8 @@ public class SchedulerImpl implements Scheduler {
 				return;
 			//TODO: make it in some constant class and use it in all classes that extends Task  class
 			jobDetail.getJobDataMap().put(SchedulerConstants.PARAM_NAME_TASK_CONFIGURATION, task);
-		} catch (org.quartz.SchedulerException e) {
-			String message = "SchedulerImpl(...) scheduler initialization fail.";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "SchedulerImpl(...) scheduler initialization fail.";
 			LOGGER.error(LoggingUtils.FATAL, message, e);
 			throw new SchedulerException(message, e);
 		}
@@ -70,8 +70,8 @@ public class SchedulerImpl implements Scheduler {
 
 				if (scheduler.isStarted())
 					scheduler.standby();
-			} catch (org.quartz.SchedulerException e) {
-				String message = "pause() fail";
+			} catch (final org.quartz.SchedulerException e) {
+				final String message = "pause() fail";
 				LOGGER.error(message, e);
 				throw new SchedulerException(message, e);
 			}
@@ -87,8 +87,8 @@ public class SchedulerImpl implements Scheduler {
 
 				if (scheduler.isInStandbyMode())
 					scheduler.start();
-			} catch (org.quartz.SchedulerException e) {
-				String message = "resume() fail";
+			} catch (final org.quartz.SchedulerException e) {
+				final String message = "resume() fail";
 				LOGGER.error(message, e);
 				throw new SchedulerException(message, e);
 			}
@@ -99,8 +99,8 @@ public class SchedulerImpl implements Scheduler {
 	public boolean isStarted() throws SchedulerException {
 		try {
 			return !scheduler.isShutdown();
-		} catch (org.quartz.SchedulerException e) {
-			String message = "isStarted() fail";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "isStarted() fail";
 			LOGGER.error(message, e);
 			throw new SchedulerException(message, e);
 		}
@@ -110,8 +110,8 @@ public class SchedulerImpl implements Scheduler {
 	public boolean isPaused() throws SchedulerException {
 		try {
 			return scheduler.isInStandbyMode();
-		} catch (org.quartz.SchedulerException e) {
-			String message = "isStarted() fail";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "isStarted() fail";
 			LOGGER.error(message, e);
 			throw new SchedulerException(message, e);
 		}
@@ -125,21 +125,20 @@ public class SchedulerImpl implements Scheduler {
 
 			if (schedule == null || schedule.trim().isEmpty())
 				return;
-
-			TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
+			final TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
 			triggerBuilder.withIdentity("LoaderTrigger", "Scheduler").startNow();
 			triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(schedule));
 			triggerBuilder.forJob(jobDetail.getKey());
 			configureTrigger(triggerBuilder.build());
-		} catch (org.quartz.SchedulerException e) {
-			String message = "schedule(" + schedule + ") fail";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "schedule(" + schedule + ") fail";
 			LOGGER.error(message, e);
 			throw new SchedulerException(message, e);
 		}
 	}
 
 	@Override
-	public void schedule(long interval) throws SchedulerException {
+	public void schedule(final long interval) throws SchedulerException {
 		try {
 			if (scheduler.isShutdown())
 				throw new IllegalStateException("Scheduler is off");
@@ -147,12 +146,12 @@ public class SchedulerImpl implements Scheduler {
 			if (interval < 1)
 				throw new IllegalArgumentException("interval argument should be more then 0");
 
-			TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
+			final TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
 			triggerBuilder.withIdentity("LoaderTrigger", "Scheduler").startNow();
 			triggerBuilder.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(interval).repeatForever());
 			configureTrigger(triggerBuilder.build());
-		} catch (org.quartz.SchedulerException e) {
-			String message = "schedule(" + interval + ") fail";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "schedule(" + interval + ") fail";
 			LOGGER.error(message, e);
 			throw new SchedulerException(message, e);
 		}
@@ -196,8 +195,8 @@ public class SchedulerImpl implements Scheduler {
 
 			scheduler.scheduleJob(jobDetail, trigger);
 			resume();
-		} catch (org.quartz.SchedulerException e) {
-			String message = "configureTrigger(" + trigger + ") fail";
+		} catch (final org.quartz.SchedulerException e) {
+			final String message = "configureTrigger(" + trigger + ") fail";
 			LOGGER.error(message, e);
 			throw new SchedulerException(message, e);
 		}

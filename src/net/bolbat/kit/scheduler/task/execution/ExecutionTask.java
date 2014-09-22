@@ -40,10 +40,10 @@ public final class ExecutionTask implements Task {
 		LoggingUtils.debug(LOGGER, "executing " + ExecutionTask.class);
 		try {
 			processor.process();
-		} catch (ProcessingException e) {
+		} catch (final ProcessingException e) {
 			LOGGER.error("execute(context) processing fail.", e);
 			//CHECKSTYLE:OFF
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			//CHECKSTYLE:ON
 			LOGGER.error("execute(context) processing fail.", e);
 		}
