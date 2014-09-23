@@ -1,9 +1,11 @@
 package net.bolbat.kit.vo;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.bolbat.utils.lang.StringUtils;
+import net.bolbat.utils.lang.ToStringUtils;
 
 /**
  * Account data.
@@ -16,11 +18,6 @@ public class AccountVO extends EntityVO {
 	 * Generated SerialVersionUID.
 	 */
 	private static final long serialVersionUID = 4957254145120125765L;
-
-	/**
-	 * Default account type.
-	 */
-	public static final String DEFAULT_TYPE = "";
 
 	/**
 	 * Type maximum length.
@@ -38,9 +35,9 @@ public class AccountVO extends EntityVO {
 	private AccountId id = AccountId.EMPTY_ID;
 
 	/**
-	 * Account type.
+	 * Account types.
 	 */
-	private String type = DEFAULT_TYPE;
+	private Set<String> types = new HashSet<String>();
 
 	/**
 	 * Account statuses.
@@ -71,39 +68,54 @@ public class AccountVO extends EntityVO {
 		this.id = aId == null ? AccountId.EMPTY_ID : aId;
 	}
 
-	public String getType() {
-		return type;
+	public Set<String> getTypes() {
+		return Collections.unmodifiableSet(types);
 	}
 
 	/**
-	 * Set account type.
+	 * Add type to account types.
 	 * 
-	 * @param aType
-	 *            account type, length can't be more then permitted (check <code>TYPE_MAX_LENGTH</code> constant)
+	 * @param type
+	 *            account type, can't be empty and length more then permitted (check <code>TYPE_MAX_LENGTH</code> constant)
 	 */
-	public void setType(final String aType) {
-		if (aType.length() > TYPE_MAX_LENGTH)
-			throw new IllegalArgumentException("aType argument too long, maximum length is [" + TYPE_MAX_LENGTH + "] characters.");
+	public void addType(final String type) {
+		if (StringUtils.isEmpty(type))
+			throw new IllegalArgumentException("type argument is empty.");
+		if (type.length() > TYPE_MAX_LENGTH)
+			throw new IllegalArgumentException("type argument too long, maximum length is [" + TYPE_MAX_LENGTH + "] characters.");
 
-		this.type = StringUtils.isNotEmpty(aType) ? aType : DEFAULT_TYPE;
+		types.add(type);
 	}
 
 	/**
-	 * Is account has type equals to given type.
+	 * Remove type from account types.
 	 * 
-	 * @param aType
+	 * @param type
 	 *            account type
-	 * @return <code>true</code> if equals or <code>false</code>
 	 */
-	public boolean hasType(final String aType) {
-		if (StringUtils.isEmpty(aType) || aType.length() > TYPE_MAX_LENGTH)
+	public void removeType(final String type) {
+		if (StringUtils.isEmpty(type) || type.length() > TYPE_MAX_LENGTH)
+			return;
+
+		types.remove(type);
+	}
+
+	/**
+	 * Is type exist in account types.
+	 * 
+	 * @param type
+	 *            account type
+	 * @return <code>true</code> if exist or <code>false</code>
+	 */
+	public boolean hasType(final String type) {
+		if (StringUtils.isEmpty(type) || type.length() > TYPE_MAX_LENGTH)
 			return false;
 
-		return type.equals(aType);
+		return types.contains(type);
 	}
 
 	public Set<String> getStatuses() {
-		return new HashSet<String>(statuses);
+		return Collections.unmodifiableSet(statuses);
 	}
 
 	/**
@@ -177,8 +189,8 @@ public class AccountVO extends EntityVO {
 	public String toString() {
 		StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
 		builder.append(" [id=").append(id);
-		builder.append(", type=").append(type);
-		builder.append(", statuses=").append(statuses);
+		builder.append(", types=").append(ToStringUtils.toString(types));
+		builder.append(", statuses=").append(ToStringUtils.toString(statuses));
 		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();
@@ -188,7 +200,11 @@ public class AccountVO extends EntityVO {
 	public AccountVO clone() {
 		final AccountVO result = AccountVO.class.cast(super.clone());
 		result.id = id.clone();
-		result.type = type;
+
+		result.types = new HashSet<String>();
+		for (final String type : types)
+			result.addType(type);
+
 		result.statuses = new HashSet<String>();
 		for (final String status : statuses)
 			result.addStatus(status);

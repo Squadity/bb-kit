@@ -1,8 +1,5 @@
 package net.bolbat.kit.vo;
 
-import net.bolbat.kit.vo.AccountId;
-import net.bolbat.kit.vo.AccountVO;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,10 +26,16 @@ public class AccountVOTest {
 		Assert.assertEquals(0, empty.getCreated());
 		Assert.assertEquals(0, empty.getUpdated());
 
-		// type
-		empty.setType("system");
-		Assert.assertEquals("system", empty.getType());
-		Assert.assertTrue(empty.hasType("system"));
+		// types
+		Assert.assertNotNull(empty.getTypes());
+		Assert.assertEquals(0, empty.getTypes().size());
+
+		empty.addType("type1");
+		empty.addType("type2");
+		empty.addType("type2");
+		Assert.assertEquals(2, empty.getTypes().size());
+		Assert.assertTrue(empty.hasType("type1"));
+		Assert.assertTrue(empty.hasType("type2"));
 
 		// statuses
 		Assert.assertNotNull(empty.getStatuses());
@@ -50,19 +53,21 @@ public class AccountVOTest {
 		Assert.assertEquals(empty, clone);
 		Assert.assertNotSame(empty, clone);
 		Assert.assertNotSame(empty.getId(), clone.getId());
-		Assert.assertEquals(empty.getType(), clone.getType());
 
-		// type
-		Assert.assertEquals("system", empty.getType());
-		Assert.assertEquals("system", clone.getType());
-		Assert.assertTrue(empty.hasType("system"));
-		Assert.assertTrue(clone.hasType("system"));
+		// types
+		Assert.assertEquals(2, empty.getTypes().size());
+		Assert.assertEquals(2, clone.getTypes().size());
+		Assert.assertTrue(empty.hasType("type1"));
+		Assert.assertTrue(empty.hasType("type2"));
+		Assert.assertTrue(clone.hasType("type1"));
+		Assert.assertTrue(clone.hasType("type2"));
 
-		clone.setType("portal");
-		Assert.assertEquals("system", empty.getType());
-		Assert.assertEquals("portal", clone.getType());
-		Assert.assertTrue(empty.hasType("system"));
-		Assert.assertTrue(clone.hasType("portal"));
+		clone.removeType("type2");
+		Assert.assertEquals(2, empty.getTypes().size());
+		Assert.assertEquals(1, clone.getTypes().size());
+		Assert.assertTrue(empty.hasType("type1"));
+		Assert.assertTrue(empty.hasType("type2"));
+		Assert.assertTrue(clone.hasType("type1"));
 
 		// statuses
 		Assert.assertEquals(2, empty.getStatuses().size());
@@ -87,13 +92,36 @@ public class AccountVOTest {
 	public void errorCases() {
 		AccountVO account = new AccountVO();
 
+		// types
 		try {
-			account.setType(TOO_LONG_STRING);
+			account.addType(null);
 			Assert.fail();
 		} catch (final IllegalArgumentException e) {
-			Assert.assertTrue(e.getMessage().startsWith("aType"));
+			Assert.assertTrue(e.getMessage().startsWith("type"));
 		}
 
+		try {
+			account.addType("");
+			Assert.fail();
+		} catch (final IllegalArgumentException e) {
+			Assert.assertTrue(e.getMessage().startsWith("type"));
+		}
+
+		try {
+			account.addType("   ");
+			Assert.fail();
+		} catch (final IllegalArgumentException e) {
+			Assert.assertTrue(e.getMessage().startsWith("type"));
+		}
+
+		try {
+			account.addType(TOO_LONG_STRING);
+			Assert.fail();
+		} catch (final IllegalArgumentException e) {
+			Assert.assertTrue(e.getMessage().startsWith("type"));
+		}
+
+		// statuses
 		try {
 			account.addStatus(null);
 			Assert.fail();
