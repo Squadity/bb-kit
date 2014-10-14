@@ -290,7 +290,12 @@ public final class Manager implements Module {
 
 			// execute post-construct
 			for (final Object instance : instances)
-				ClassUtils.executePostConstruct(instance);
+				try {
+					ClassUtils.executePostConstruct(instance);
+				} catch (final RuntimeException e) {
+					// CHECKSTYLE:ON
+					throw new ManagerRuntimeException("Can't warm up", e);
+				}
 		}
 	}
 
