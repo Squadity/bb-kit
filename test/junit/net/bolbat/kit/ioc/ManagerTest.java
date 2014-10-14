@@ -195,13 +195,13 @@ public class ManagerTest {
 	 */
 	@Test
 	public void preDestroyTest() throws ManagerException {
-		// initial state
-		Assert.assertEquals(0, SampleServiceImpl.getPreDestroyedAcount());
+		// saving initial state
+		final int currentValue = SampleServiceImpl.getPreDestroyedAcount();
 
 		Manager.register(SampleService.class, SampleServiceFactory.class);
 		Manager.get(SampleService.class); // force initialization
 		Manager.tearDown();
-		Assert.assertEquals(2, SampleServiceImpl.getPreDestroyedAcount());
+		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPreDestroyedAcount());
 	}
 
 }
