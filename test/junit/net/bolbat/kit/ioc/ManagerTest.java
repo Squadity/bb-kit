@@ -17,6 +17,7 @@ import net.bolbat.kit.service.SampleServiceFactory;
 import net.bolbat.kit.service.SampleServiceImpl;
 import net.bolbat.kit.service.SampleServiceRemoteFactory;
 import net.bolbat.kit.service.SampleServiceRemoteImpl;
+import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
 
 import org.junit.After;
@@ -218,6 +219,121 @@ public class ManagerTest {
 		Manager.get(SampleService.class); // force initialization
 		Manager.tearDown();
 		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPreDestroyedAcount());
+	}
+
+	/**
+	 * Test {@link Manager} warm up if there services with relations to each other in post-construct.
+	 * 
+	 * @throws ManagerException
+	 */
+	@Test
+	public void twoWayRelationsTest() throws ManagerException {
+		Manager.register(ServiceOne.class, ServiceOneFactory.class);
+		Manager.register(ServiceTwo.class, ServiceTwoFactory.class);
+		Manager.warmUp();
+	}
+
+	/**
+	 * Mock service.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public interface ServiceOne extends Service {
+
+		/**
+		 * Get message.
+		 * 
+		 * @return {@link String}
+		 */
+		String getMessage();
+
+	}
+
+	/**
+	 * Mock implementation.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceOneImpl implements ServiceOne {
+
+		@PostConstruct
+		private void postConstruct() {
+			try {
+				System.out.println(this.getClass().getSimpleName() + " postConstruct[" + Manager.get(ServiceTwo.class).getMessage() + "] called");
+			} catch (final ManagerException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public String getMessage() {
+			return this.getClass().getSimpleName();
+		}
+
+	}
+
+	/**
+	 * Mock Factory.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceOneFactory implements ServiceFactory<ServiceOne> {
+		@Override
+		public ServiceOne create(final Configuration configuration) {
+			return new ServiceOneImpl();
+		}
+	}
+
+	/**
+	 * Mock service.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public interface ServiceTwo extends Service {
+
+		/**
+		 * Get message.
+		 * 
+		 * @return {@link String}
+		 */
+		String getMessage();
+
+	}
+
+	/**
+	 * Mock implementation.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceTwoImpl implements ServiceTwo {
+
+		@PostConstruct
+		private void postConstruct() {
+			try {
+				System.out.println(this.getClass().getSimpleName() + " postConstruct[" + Manager.get(ServiceOne.class).getMessage() + "] called");
+			} catch (final ManagerException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+
+		@Override
+		public String getMessage() {
+			return this.getClass().getSimpleName();
+		}
+
+	}
+
+	/**
+	 * Mock Factory.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceTwoFactory implements ServiceFactory<ServiceTwo> {
+		@Override
+		public ServiceTwo create(final Configuration configuration) {
+			return new ServiceTwoImpl();
+		}
 	}
 
 }
