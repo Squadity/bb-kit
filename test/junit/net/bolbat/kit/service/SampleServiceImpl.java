@@ -2,6 +2,7 @@ package net.bolbat.kit.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
@@ -10,6 +11,11 @@ import javax.annotation.PreDestroy;
  * @author Alexandr Bolbat
  */
 public class SampleServiceImpl implements SampleService {
+
+	/**
+	 * Amount of post-construct executions.
+	 */
+	private static final AtomicInteger POSTCONSTRUCTED_AMOUNT = new AtomicInteger(0);
 
 	/**
 	 * Amount of pre-destroy executions.
@@ -44,12 +50,76 @@ public class SampleServiceImpl implements SampleService {
 	}
 
 	/**
+	 * Get amount of post-construct method executions.
+	 * 
+	 * @return <code>int</code>
+	 */
+	public static final int getPostConstructedAcount() {
+		return POSTCONSTRUCTED_AMOUNT.get();
+	}
+
+	/**
 	 * Get amount of pre-destroy method executions.
 	 * 
 	 * @return <code>int</code>
 	 */
 	public static final int getPreDestroyedAcount() {
 		return PREDESTROYED_AMOUNT.get();
+	}
+
+	/**
+	 * Execute post-construct.
+	 */
+	@PostConstruct
+	private void postConstruct() {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+	}
+
+	/**
+	 * Execute post-construct from method with {@link RuntimeException}.
+	 * 
+	 * @throws RuntimeException
+	 */
+	@PostConstruct
+	private void postConstructWithRuntimeException() throws RuntimeException {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+	}
+
+	/**
+	 * Not valid post-construct.
+	 * 
+	 * @return {@link Object}
+	 */
+	@PostConstruct
+	private Object postConstructNotVoid() {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+		return new Object();
+	}
+
+	/**
+	 * Not valid post-construct.
+	 */
+	@PostConstruct
+	private static void postConstructWithParams(final Object parameter) {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+	}
+
+	/**
+	 * Not valid post-construct.
+	 */
+	@PostConstruct
+	private static void postConstructStatic() {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+	}
+
+	/**
+	 * Not valid post-construct.
+	 * 
+	 * @throws Exception
+	 */
+	@PostConstruct
+	private static void postConstructWithException() throws Exception {
+		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
 	}
 
 	/**
@@ -86,7 +156,7 @@ public class SampleServiceImpl implements SampleService {
 	 * Not valid pre-destroy.
 	 */
 	@PreDestroy
-	private static void preDestroyWothParams(final Object parameter) {
+	private static void preDestroyWithParams(final Object parameter) {
 		PREDESTROYED_AMOUNT.incrementAndGet();
 	}
 

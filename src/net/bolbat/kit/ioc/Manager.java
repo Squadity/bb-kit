@@ -13,8 +13,6 @@ import net.bolbat.kit.ioc.scope.ScopeUtil;
 import net.bolbat.kit.service.Configuration;
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
-import net.bolbat.kit.service.ServiceInstantiationException;
-import net.bolbat.kit.service.ui.UIServiceInstantiationException;
 import net.bolbat.utils.lang.ToStringUtils;
 import net.bolbat.utils.reflect.ClassUtils;
 import net.bolbat.utils.reflect.Instantiator;
@@ -25,6 +23,11 @@ import net.bolbat.utils.reflect.Instantiator;
  * @author Alexandr Bolbat
  */
 public final class Manager implements Module {
+
+	/**
+	 * Synchronization lock.
+	 */
+	private static final Object LOCK = new Object();
 
 	/**
 	 * Services configuration storage.
@@ -97,11 +100,12 @@ public final class Manager implements Module {
 			sourceId = ScopeUtil.scopesToString(source);
 
 		final String sourceKey = service.getName() + DELIMITER + sourceId;
-
-		if (target instanceof CompositeScope)
-			LINKS.put(sourceKey, CompositeScope.class.cast(target).getScopes());
-		else {
-			LINKS.put(sourceKey, new Scope[] { target });
+		synchronized (LOCK) {
+			if (target instanceof CompositeScope)
+				LINKS.put(sourceKey, CompositeScope.class.cast(target).getScopes());
+			else {
+				LINKS.put(sourceKey, new Scope[] { target });
+			}
 		}
 	}
 
@@ -185,7 +189,10 @@ public final class Manager implements Module {
 		final Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
 		final String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
 		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<S, SF>(service, factory, conf, aScopes);
-		STORAGE.put(key, serviceScopeConfiguration);
+
+		synchronized (LOCK) {
+			STORAGE.put(key, serviceScopeConfiguration);
+		}
 	}
 
 	/**
@@ -243,14 +250,13 @@ public final class Manager implements Module {
 		try {
 			final S instance = factory.create(configuration.getConfiguration());
 
+			// execute post-construct
+			ClassUtils.executePostConstruct(instance);
+
 			// updating scope configuration with already obtained service instance
 			configuration.setInstance(instance);
 
 			return instance;
-		} catch (final ServiceInstantiationException e) {
-			throw new ManagerException("Can't instantiate service", e);
-		} catch (final UIServiceInstantiationException e) {
-			throw new ManagerException("Can't instantiate service", e);
 			// CHECKSTYLE:OFF
 		} catch (final RuntimeException e) {
 			// CHECKSTYLE:ON
@@ -259,17 +265,39 @@ public final class Manager implements Module {
 	}
 
 	/**
-	 * Tear down {@link Manager} state.
+	 * Warm up {@link Manager} state.<br>
+	 * For registered and not instantiated services 'post-construct' will be processed.
 	 */
-	public static synchronized void tearDown() {
-		final List<ScopeConfiguration<?, ?>> values = new ArrayList<>(STORAGE.values());
-		STORAGE.clear();
-		LINKS.clear();
+	public static void warmUp() {
+		synchronized (LOCK) {
+			for (final ScopeConfiguration<?, ?> conf : STORAGE.values()) {
+				if (conf.getInstance() != null)
+					continue;
 
-		// execute pre-destroy
-		for (final ScopeConfiguration<?, ?> conf : values)
-			if (conf.getInstance() != null)
-				ClassUtils.executePreDestroy(conf.getInstance());
+				try {
+					getInternally(conf.toKey());
+				} catch (final ManagerException e) {
+					throw new ManagerRuntimeException("Can't warm up", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Tear down {@link Manager} state.<br>
+	 * For registered and instantiated services 'pre-destroy' will be processed.
+	 */
+	public static void tearDown() {
+		synchronized (LOCK) {
+			final List<ScopeConfiguration<?, ?>> values = new ArrayList<>(STORAGE.values());
+			STORAGE.clear();
+			LINKS.clear();
+
+			// execute pre-destroy
+			for (final ScopeConfiguration<?, ?> conf : values)
+				if (conf.getInstance() != null)
+					ClassUtils.executePreDestroy(conf.getInstance());
+		}
 	}
 
 	/**
@@ -333,20 +361,24 @@ public final class Manager implements Module {
 			this.scopes = aScopes;
 		}
 
-		public S getInstance() {
-			return instance;
-		}
-
-		public void setInstance(S aInstance) {
-			this.instance = aInstance;
-		}
-
 		public SF getServiceFactory() {
 			return serviceFactory;
 		}
 
 		public Configuration getConfiguration() {
 			return configuration;
+		}
+
+		public S getInstance() {
+			return instance;
+		}
+
+		public void setInstance(final S aInstance) {
+			this.instance = aInstance;
+		}
+
+		public String toKey() {
+			return service.getName() + DELIMITER + ScopeUtil.scopesToString(scopes);
 		}
 
 		@Override
@@ -360,5 +392,6 @@ public final class Manager implements Module {
 			builder.append("]");
 			return builder.toString();
 		}
+
 	}
 }

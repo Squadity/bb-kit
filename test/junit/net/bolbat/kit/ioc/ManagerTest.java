@@ -4,6 +4,7 @@ import static net.bolbat.kit.ioc.scope.DistributionScope.LOCAL;
 import static net.bolbat.kit.ioc.scope.DistributionScope.REMOTE;
 import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import net.bolbat.kit.ioc.scope.CompositeScope;
@@ -186,6 +187,21 @@ public class ManagerTest {
 		} catch (ManagerException e) {
 			Assert.fail("No exception should be on this step.");
 		}
+	}
+
+	/**
+	 * {@link PostConstruct} test.
+	 * 
+	 * @throws ManagerException
+	 */
+	@Test
+	public void postConstructTest() throws ManagerException {
+		// saving initial state
+		final int currentValue = SampleServiceImpl.getPostConstructedAcount();
+
+		Manager.register(SampleService.class, SampleServiceFactory.class);
+		Manager.warmUp();
+		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPostConstructedAcount());
 	}
 
 	/**
