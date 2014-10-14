@@ -3,6 +3,9 @@ package net.bolbat.kit.ioc;
 import static net.bolbat.kit.ioc.scope.DistributionScope.LOCAL;
 import static net.bolbat.kit.ioc.scope.DistributionScope.REMOTE;
 import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
+
+import javax.annotation.PreDestroy;
+
 import net.bolbat.kit.ioc.scope.CompositeScope;
 import net.bolbat.kit.ioc.scope.CustomScope;
 import net.bolbat.kit.ioc.scope.Scope;
@@ -183,6 +186,22 @@ public class ManagerTest {
 		} catch (ManagerException e) {
 			Assert.fail("No exception should be on this step.");
 		}
+	}
+
+	/**
+	 * {@link PreDestroy} test.
+	 * 
+	 * @throws ManagerException
+	 */
+	@Test
+	public void preDestroyTest() throws ManagerException {
+		// initial state
+		Assert.assertEquals(0, SampleServiceImpl.getPreDestroyedAcount());
+
+		Manager.register(SampleService.class, SampleServiceFactory.class);
+		Manager.get(SampleService.class); // force initialization
+		Manager.tearDown();
+		Assert.assertEquals(2, SampleServiceImpl.getPreDestroyedAcount());
 	}
 
 }

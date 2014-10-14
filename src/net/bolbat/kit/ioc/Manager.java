@@ -1,5 +1,7 @@
 package net.bolbat.kit.ioc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +16,7 @@ import net.bolbat.kit.service.ServiceFactory;
 import net.bolbat.kit.service.ServiceInstantiationException;
 import net.bolbat.kit.service.ui.UIServiceInstantiationException;
 import net.bolbat.utils.lang.ToStringUtils;
+import net.bolbat.utils.reflect.ClassUtils;
 import net.bolbat.utils.reflect.Instantiator;
 
 /**
@@ -156,7 +159,7 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf,
 			final Scope... scopes) {
-		SF instance = Instantiator.instantiate(factory);
+		final SF instance = Instantiator.instantiate(factory);
 		register(service, instance, conf, scopes);
 	}
 
@@ -179,8 +182,8 @@ public final class Manager implements Module {
 		if (factory == null)
 			throw new IllegalArgumentException("serviceFactory argument is null.");
 
-		Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
-		String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
+		final Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
+		final String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
 		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<S, SF>(service, factory, conf, aScopes);
 		STORAGE.put(key, serviceScopeConfiguration);
 	}
@@ -231,14 +234,14 @@ public final class Manager implements Module {
 	 */
 	private static synchronized <S extends Service> S getInternally(final String key) throws ManagerException {
 		@SuppressWarnings("unchecked")
-		ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
+		final ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
 
 		if (configuration.getInstance() != null)
 			return configuration.getInstance();
 
-		ServiceFactory<S> factory = configuration.getServiceFactory();
+		final ServiceFactory<S> factory = configuration.getServiceFactory();
 		try {
-			S instance = factory.create(configuration.getConfiguration());
+			final S instance = factory.create(configuration.getConfiguration());
 
 			// updating scope configuration with already obtained service instance
 			configuration.setInstance(instance);
@@ -259,8 +262,14 @@ public final class Manager implements Module {
 	 * Tear down {@link Manager} state.
 	 */
 	public static synchronized void tearDown() {
+		final List<ScopeConfiguration<?, ?>> values = new ArrayList<>(STORAGE.values());
 		STORAGE.clear();
 		LINKS.clear();
+
+		// execute pre-destroy
+		for (final ScopeConfiguration<?, ?> conf : values)
+			if (conf.getInstance() != null)
+				ClassUtils.executePreDestroy(conf.getInstance());
 	}
 
 	/**
