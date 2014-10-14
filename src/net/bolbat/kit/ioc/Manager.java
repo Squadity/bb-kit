@@ -228,7 +228,7 @@ public final class Manager implements Module {
 		if (configuration.getInstance() != null)
 			return configuration.getInstance();
 
-		return getInternally(key);
+		return getInternally(key, true);
 	}
 
 	/**
@@ -236,31 +236,37 @@ public final class Manager implements Module {
 	 * 
 	 * @param key
 	 *            service scope configuration storage key
+	 * @param postConstruct
+	 *            is post-construct should be executed
 	 * @return service instance
 	 * @throws ManagerException
 	 */
-	private static synchronized <S extends Service> S getInternally(final String key) throws ManagerException {
-		@SuppressWarnings("unchecked")
-		final ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
+	private static <S extends Service> S getInternally(final String key, final boolean postConstruct) throws ManagerException {
+		synchronized (LOCK) {
+			@SuppressWarnings("unchecked")
+			final ScopeConfiguration<S, ServiceFactory<S>> configuration = (ScopeConfiguration<S, ServiceFactory<S>>) STORAGE.get(key);
 
-		if (configuration.getInstance() != null)
-			return configuration.getInstance();
+			if (configuration.getInstance() != null)
+				return configuration.getInstance();
 
-		final ServiceFactory<S> factory = configuration.getServiceFactory();
-		try {
-			final S instance = factory.create(configuration.getConfiguration());
+			final ServiceFactory<S> factory = configuration.getServiceFactory();
 
-			// execute post-construct
-			ClassUtils.executePostConstruct(instance);
+			try {
+				final S instance = factory.create(configuration.getConfiguration());
 
-			// updating scope configuration with already obtained service instance
-			configuration.setInstance(instance);
+				// execute post-construct
+				if (postConstruct)
+					ClassUtils.executePostConstruct(instance);
 
-			return instance;
-			// CHECKSTYLE:OFF
-		} catch (final RuntimeException e) {
-			// CHECKSTYLE:ON
-			throw new ManagerException("Can't instantiate service", e);
+				// updating scope configuration with already obtained service instance
+				configuration.setInstance(instance);
+
+				return instance;
+				// CHECKSTYLE:OFF
+			} catch (final RuntimeException e) {
+				// CHECKSTYLE:ON
+				throw new ManagerException("Can't instantiate service", e);
+			}
 		}
 	}
 
@@ -270,16 +276,21 @@ public final class Manager implements Module {
 	 */
 	public static void warmUp() {
 		synchronized (LOCK) {
+			final List<Object> instances = new ArrayList<>();
 			for (final ScopeConfiguration<?, ?> conf : STORAGE.values()) {
 				if (conf.getInstance() != null)
 					continue;
 
 				try {
-					getInternally(conf.toKey());
+					instances.add(getInternally(conf.toKey(), false));
 				} catch (final ManagerException e) {
 					throw new ManagerRuntimeException("Can't warm up", e);
 				}
 			}
+
+			// execute post-construct
+			for (final Object instance : instances)
+				ClassUtils.executePostConstruct(instance);
 		}
 	}
 
