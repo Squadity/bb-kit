@@ -42,7 +42,7 @@ public class EntityVO implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append(", created=").append(created);
 		builder.append(", updated=").append(updated);
 		return builder.toString();
@@ -52,7 +52,7 @@ public class EntityVO implements Serializable, Cloneable {
 	public EntityVO clone() {
 		try {
 			return EntityVO.class.cast(super.clone());
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			throw new AssertionError("Can't clone [" + this + "]");
 		}
 	}
