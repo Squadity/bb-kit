@@ -10,8 +10,6 @@ import org.apache.lucene.util.Version;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 import org.configureme.annotations.DontConfigure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link LuceneStore} configuration.
@@ -26,12 +24,6 @@ public class LuceneStoreConfig extends AbstractConfiguration {
 	 */
 	@DontConfigure
 	private static final long serialVersionUID = 858856402007800753L;
-
-	/**
-	 * Default instance.
-	 */
-	@DontConfigure
-	private static final Logger LOGGER = LoggerFactory.getLogger(LuceneStoreConfig.class);
 
 	/**
 	 * Default configuration name.

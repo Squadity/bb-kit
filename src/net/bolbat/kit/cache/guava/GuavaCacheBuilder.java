@@ -6,7 +6,10 @@ import net.bolbat.kit.cache.Cache;
 import net.bolbat.kit.cache.CacheBuilder;
 import net.bolbat.kit.cache.LoadFunction;
 import net.bolbat.utils.lang.StringUtils;
+
 import org.configureme.ConfigurationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link CacheBuilder} implementation for guava.
@@ -19,6 +22,11 @@ import org.configureme.ConfigurationManager;
  */
 
 public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
+	
+	/**
+	 * {@link Logger} instance.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(GuavaCacheBuilder.class);
 
 	/**
 	 * Initiate capacity for cache.
@@ -147,7 +155,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 
 	@Override
 	public Cache<K, V> build(String configuration) {
-		Cache<K, V> cache = build();
+		final Cache<K, V> cache = build();
 		if (StringUtils.isEmpty(configuration))
 			return cache;
 
@@ -156,6 +164,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 			// CHECKSTYLE:OFF
 		} catch (final RuntimeException e) {
 			// CHECKSTYLE:ON
+			LOGGER.warn("build(" + configuration + ") fail. Can't configure cache[" + cache + "], skipping.");
 		}
 		return cache;
 	}
