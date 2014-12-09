@@ -300,7 +300,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			return;
 
 		try {
-			final List<Document> docs = new ArrayList<Document>();
+			final List<Document> docs = new ArrayList<>();
 			for (final S bean : toAdd) {
 				if (bean == null || isEmpty(bean.idFieldName()) || isEmpty(bean.idFieldValue()))
 					continue;
