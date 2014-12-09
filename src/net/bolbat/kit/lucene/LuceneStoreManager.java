@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.bolbat.kit.Module;
+import net.bolbat.kit.config.ConfigurationManager;
 
 /**
  * {@link LuceneStore} manager.
@@ -55,20 +56,38 @@ public final class LuceneStoreManager implements Module {
 	 *            {@link LuceneStoreConfig} name
 	 * @return {@link LuceneStore} instance
 	 */
-	@SuppressWarnings("unchecked")
 	public static <S extends Storable> LuceneStore<S> getStore(final Class<S> type, final String configuration) {
 		if (type == null)
 			throw new IllegalArgumentException("type argument is null");
 
 		final String conf = isEmpty(configuration) ? LuceneStoreConfig.DEFAULT_CONFIGURATION_NAME : configuration;
-		final String storeKey = type.getName() + "_" + conf;
+		return getStore(type, ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class,conf));
+	}
+
+	/**
+	 * Get {@link LuceneStore} by {@link Storable} type with with given configuration.
+	 *
+	 * @param type
+	 *            {@link Storable} type
+	 * @param configuration
+	 *            {@link LuceneStoreConfig}
+	 * @return {@link LuceneStore} instance
+	 */
+	@SuppressWarnings("unchecked")
+	public static <S extends Storable> LuceneStore<S> getStore(final Class<S> type, final LuceneStoreConfig configuration) {
+		if (type == null)
+			throw new IllegalArgumentException("type argument is null");
+		if (configuration == null)
+			throw new IllegalArgumentException("configuration argument is null");
+
+		final String storeKey = type.getName() + "_" + configuration.hashCode();
 
 		LuceneStore<?> result = STORAGE.get(storeKey); // first check
 		if (result == null)
 			synchronized (LOCK) {
 				result = STORAGE.get(storeKey); // second check
 				if (result == null) {
-					result = new LuceneStoreImpl<>(type, conf);
+					result = new LuceneStoreImpl<>(type, configuration);
 					STORAGE.put(storeKey, result);
 				}
 			}
@@ -130,8 +149,27 @@ public final class LuceneStoreManager implements Module {
 			return;
 
 		final String conf = isEmpty(configuration) ? LuceneStoreConfig.DEFAULT_CONFIGURATION_NAME : configuration;
-		final String storeKey = type.getName() + "_" + conf;
+		tearDown(type, ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class, conf));
+	}
+
+	/**
+	 * Tear down {@link LuceneStoreManager} state for given {@link Storable} type.<br>
+	 * This is just for removing initialized {@link LuceneStore} instance from internal storage.<br>
+	 * Tear down/cleanup for initialized {@link LuceneStore} instance should be done separately.
+	 *
+	 * @param type
+	 * 		{@link Storable} type
+	 * @param configuration
+	 * 		{@link LuceneStoreConfig} name
+	 */
+	public static <S extends Storable> void tearDown(final Class<S> type, final LuceneStoreConfig configuration) {
+		if (type == null)
+			return;
+		if (configuration == null)
+			return;
+		final String storeKey = type.getName() + "_" + configuration.hashCode();
 		STORAGE.remove(storeKey);
 	}
+
 
 }

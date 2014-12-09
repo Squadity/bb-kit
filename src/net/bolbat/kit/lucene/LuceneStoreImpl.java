@@ -120,15 +120,25 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	 * @param aBeanType
 	 * 		bean type
 	 * @param configuration
-	 * 		{@link LuceneStore} configuration name
+	 * 		{@link LuceneStoreConfig} configuration name
 	 */
 	protected LuceneStoreImpl(final Class<S> aBeanType, final String configuration) {
+		this(aBeanType, ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class, configuration));
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param aBeanType
+	 * 		bean type
+	 * @param configuration
+	 * 		{@link LuceneStoreConfig} instance
+	 */
+	protected LuceneStoreImpl(final Class<S> aBeanType, final LuceneStoreConfig configuration) {
 		if (aBeanType == null)
 			throw new IllegalArgumentException("aBeanType argument is null");
-
-		this.config = ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class, configuration);
-		LOGGER.info("Type[" + aBeanType + "], " + config);
-
+		this.config=configuration;
+		LOGGER.info("Type[" + aBeanType + "], " + configuration.toString());
 		try {
 			// version
 			this.version = config.getVersion();

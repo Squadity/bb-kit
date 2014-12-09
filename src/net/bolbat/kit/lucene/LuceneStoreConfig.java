@@ -17,7 +17,7 @@ import org.configureme.annotations.DontConfigure;
  * @author Alexandr Bolbat
  */
 @ConfigureMe
-public class LuceneStoreConfig extends AbstractConfiguration {
+public final class LuceneStoreConfig extends AbstractConfiguration {
 
 	/**
 	 * Generated SerialVersionUID.
