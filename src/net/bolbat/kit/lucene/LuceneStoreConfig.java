@@ -110,7 +110,7 @@ public class LuceneStoreConfig extends AbstractConfiguration {
 		/**
 		 * {@link FSDirectory}.
 		 */
-		FS;
+		FS
 
 	}
 

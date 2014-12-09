@@ -42,11 +42,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link LuceneStore} implementation.
- * 
- * @author Alexandr Bolbat
- * 
+ *
  * @param <S>
- *            storable bean type
+ * 		storable bean type
+ * @author Alexandr Bolbat
  */
 public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
@@ -117,11 +116,11 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	/**
 	 * Protected constructor.
-	 * 
+	 *
 	 * @param aBeanType
-	 *            bean type
+	 * 		bean type
 	 * @param configuration
-	 *            {@link LuceneStore} configuration name
+	 * 		{@link LuceneStore} configuration name
 	 */
 	protected LuceneStoreImpl(final Class<S> aBeanType, final String configuration) {
 		if (aBeanType == null)
@@ -136,12 +135,12 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 			// directory
 			switch (config.getDirectoryType()) {
-			case FS:
-				this.directory = FSDirectory.open(new File(config.getDirectoryPath()));
-				break;
-			case RAM:
-			default:
-				this.directory = new RAMDirectory();
+				case FS:
+					this.directory = FSDirectory.open(new File(config.getDirectoryPath()));
+					break;
+				case RAM:
+				default:
+					this.directory = new RAMDirectory();
 			}
 
 			// analyzer
@@ -167,15 +166,26 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	@Override
 	public Collection<S> getAll() {
 		try {
+			final List<S> result = new ArrayList<>();
+			final Collection<Document> documents = getAllDocuments();
+			for (final Document doc : documents)
+				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
+			return result;
+		} catch (final IOException e) {
+			throw new LuceneStoreRuntimeException(e);
+		}
+	}
+
+	@Override
+	public Collection<Document> getAllDocuments() {
+		try {
 			final IndexReader localReader = getReader();
 			final Bits liveDocs = MultiFields.getLiveDocs(localReader);
-			final List<S> result = new ArrayList<S>();
+			final List<Document> result = new ArrayList<>();
 			for (int i = 0; i < localReader.maxDoc(); i++) {
 				if (liveDocs != null && !liveDocs.get(i))
 					continue;
-
-				final Document doc = localReader.document(i);
-				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
+				result.add(localReader.document(i));
 			}
 
 			return result;
@@ -184,13 +194,28 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		}
 	}
 
+
 	@Override
 	public S get(final String fieldName, final String fieldValue) {
 		if (isEmpty(fieldName))
 			throw new IllegalArgumentException("fieldName argument is empty");
 		if (isEmpty(fieldValue))
 			throw new IllegalArgumentException("fieldValue argument is empty");
+		try {
+			final Document doc = getDocument(fieldName, fieldValue);
+			return doc != null ? mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType) : null;
+		} catch (final IOException e) {
+			throw new LuceneStoreRuntimeException(e);
+		}
+	}
 
+
+	@Override
+	public Document getDocument(final String fieldName, final String fieldValue) {
+		if (isEmpty(fieldName))
+			throw new IllegalArgumentException("fieldName argument is empty");
+		if (isEmpty(fieldValue))
+			throw new IllegalArgumentException("fieldValue argument is empty");
 		try {
 			final IndexSearcher localSearcher = getSearcher();
 			final BooleanQuery query = new BooleanQuery();
@@ -198,9 +223,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			final TopDocs topDocs = localSearcher.search(query, 1);
 			if (topDocs.scoreDocs.length == 0)
 				return null;
-
-			final Document doc = localSearcher.doc(topDocs.scoreDocs[0].doc);
-			return mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType);
+			return localSearcher.doc(topDocs.scoreDocs[0].doc);
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		}
@@ -380,6 +403,15 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		return get(query, Integer.MAX_VALUE);
 	}
 
+
+	@Override
+	public Collection<Document> getDocuments(final Query query) {
+		if (query == null)
+			throw new IllegalArgumentException("query argument is null");
+
+		return getDocuments(query, Integer.MAX_VALUE);
+	}
+
 	@Override
 	public Collection<S> get(final Query query, final int limit) {
 		if (query == null)
@@ -388,14 +420,31 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			return Collections.emptyList();
 
 		try {
+			Collection<Document> docs = getDocuments(query, limit);
+			final List<S> result = new ArrayList<>(docs.size());
+			for (final Document doc : docs) {
+				if (doc != null)
+					result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
+			}
+			return result;
+		} catch (final IOException e) {
+			throw new LuceneStoreRuntimeException(e);
+		}
+	}
+
+	@Override
+	public Collection<Document> getDocuments(final Query query, final int limit) {
+		if (query == null)
+			throw new IllegalArgumentException("query argument is null");
+		if (limit < 1)
+			return Collections.emptyList();
+
+		try {
 			final IndexSearcher localSearcher = getSearcher();
 			final TopDocs topDocs = localSearcher.search(query, limit);
-			final List<S> result = new ArrayList<S>();
-			for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
-				final Document doc = localSearcher.doc(scoreDoc.doc);
-				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));
-			}
-
+			final List<Document> result = new ArrayList<>();
+			for (final ScoreDoc scoreDoc : topDocs.scoreDocs)
+				result.add(localSearcher.doc(scoreDoc.doc));
 			return result;
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
@@ -413,7 +462,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	/**
 	 * Get {@link IndexReader} instance (with lazy initialization).
-	 * 
+	 *
 	 * @return {@link IndexReader}
 	 */
 	private IndexReader getReader() {
@@ -433,7 +482,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	/**
 	 * Get {@link IndexSearcher} instance (with lazy initialization).
-	 * 
+	 *
 	 * @return {@link IndexSearcher}
 	 */
 	private IndexSearcher getSearcher() {

@@ -2,6 +2,7 @@ package net.bolbat.kit.lucene;
 
 import java.util.Collection;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 
 /**
@@ -15,22 +16,40 @@ import org.apache.lucene.search.Query;
 public interface LuceneStore<S extends Storable> {
 
 	/**
-	 * Get all bean's.
+	 * Get all beans.
 	 * 
 	 * @return {@link Collection} of <S>
 	 */
 	Collection<S> getAll();
 
 	/**
+	 * Get all {@link Document} instances.
+	 *
+	 * @return {@link Document} collection
+	 */
+	Collection<Document> getAllDocuments();
+
+	/**
 	 * Get bean.
-	 * 
+	 *
 	 * @param fieldName
 	 *            identifier field name
 	 * @param fieldValue
 	 *            identifier field value
-	 * @return <S> bean of found or <code>null</code>
+	 * @return <S> bean if found or <code>null</code>
 	 */
 	S get(String fieldName, String fieldValue);
+
+	/**
+	 * Get {@link Document} with selected properties.
+	 *
+	 * @param fieldName
+	 *            identifier field name
+	 * @param fieldValue
+	 *            identifier field value
+	 * @return {@link Document} if found or <code>null</code>
+	 */
+	Document getDocument(String fieldName, String fieldValue);
 
 	/**
 	 * Add bean.
@@ -114,7 +133,16 @@ public interface LuceneStore<S extends Storable> {
 	Collection<S> get(Query query);
 
 	/**
-	 * Search bean's.
+	 * Search documents.
+	 *
+	 * @param query
+	 *            {@link Query}
+	 * @return {@link Document} collection
+	 */
+	Collection<Document> getDocuments(Query query);
+
+	/**
+	 * Search beans.
 	 * 
 	 * @param query
 	 *            {@link Query}
@@ -123,6 +151,17 @@ public interface LuceneStore<S extends Storable> {
 	 * @return {@link Collection} of <S>
 	 */
 	Collection<S> get(Query query, int limit);
+
+	/**
+	 * Search documents.
+	 *
+	 * @param query
+	 * 		{@link Query}
+	 * @param limit
+	 * 		max amount of documents in result
+	 * @return {@link Document} collection
+	 */
+	Collection<Document> getDocuments(Query query, int limit);
 
 	/**
 	 * Tear down {@link LuceneStore} state.

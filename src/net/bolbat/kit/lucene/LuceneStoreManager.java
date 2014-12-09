@@ -19,9 +19,9 @@ import net.bolbat.kit.Module;
 public final class LuceneStoreManager implements Module {
 
 	/**
-	 * Storages instances.
+	 * Storage instances.
 	 */
-	private static final Map<String, LuceneStore<?>> STORAGE = new ConcurrentHashMap<String, LuceneStore<?>>();
+	private static final Map<String, LuceneStore<?>> STORAGE = new ConcurrentHashMap<>();
 
 	/**
 	 * Synchronization lock.
@@ -37,10 +37,10 @@ public final class LuceneStoreManager implements Module {
 
 	/**
 	 * Get {@link LuceneStore} by {@link Storable} type with default configuration.
-	 * 
+	 *
 	 * @param type
-	 *            {@link Storable} type
-	 * @return {@link LuceneCache} instance
+	 * 		{@link Storable} type
+	 * @return {@link LuceneStore} instance
 	 */
 	public static <S extends Storable> LuceneStore<S> getStore(final Class<S> type) {
 		return getStore(type, LuceneStoreConfig.DEFAULT_CONFIGURATION_NAME);
@@ -53,7 +53,7 @@ public final class LuceneStoreManager implements Module {
 	 *            {@link Storable} type
 	 * @param configuration
 	 *            {@link LuceneStoreConfig} name
-	 * @return {@link LuceneCache} instance
+	 * @return {@link LuceneStore} instance
 	 */
 	@SuppressWarnings("unchecked")
 	public static <S extends Storable> LuceneStore<S> getStore(final Class<S> type, final String configuration) {
@@ -68,7 +68,7 @@ public final class LuceneStoreManager implements Module {
 			synchronized (LOCK) {
 				result = STORAGE.get(storeKey); // second check
 				if (result == null) {
-					result = new LuceneStoreImpl<S>(type, conf);
+					result = new LuceneStoreImpl<>(type, conf);
 					STORAGE.put(storeKey, result);
 				}
 			}
@@ -82,7 +82,7 @@ public final class LuceneStoreManager implements Module {
 	 * @return {@link Set} with {@link LuceneStore} identifiers
 	 */
 	public static Set<String> getStoresIds() {
-		return new HashSet<String>(STORAGE.keySet());
+		return new HashSet<>(STORAGE.keySet());
 	}
 
 	/**
@@ -91,7 +91,7 @@ public final class LuceneStoreManager implements Module {
 	 * @return {@link List} with {@link LuceneStore}
 	 */
 	public static List<LuceneStore<?>> getStores() {
-		return new ArrayList<LuceneStore<?>>(STORAGE.values());
+		return new ArrayList<>(STORAGE.values());
 	}
 
 	/**

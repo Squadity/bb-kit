@@ -3,6 +3,7 @@ package net.bolbat.kit.lucene;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -15,7 +16,7 @@ import org.junit.Test;
 
 /**
  * {@link LuceneStore} module test.
- * 
+ *
  * @author Alexandr Bolbat
  */
 // TODO this test can be improved with additional asserts in all test cases
@@ -74,12 +75,15 @@ public class LuceneStoreTest {
 		store.update(Arrays.asList(bean1, bean2));
 
 		Assert.assertNotNull(store.get("id", "bean1"));
+		Assert.assertNotNull(store.getDocument("id", "bean1"));
 		Assert.assertEquals("bean1-changed@beans.com", store.get("id", "bean1").getEmail());
 		Assert.assertNotNull(store.get("id", "bean2"));
+		Assert.assertNotNull(store.getDocument("id", "bean2"));
 		Assert.assertEquals("bean2-changed@beans.com", store.get("id", "bean2").getEmail());
 
 		Assert.assertTrue(store.count() == 2);
 		Assert.assertNotNull(store.getAll());
+		Assert.assertNotNull(store.getAllDocuments());
 		Assert.assertTrue(store.getAll().contains(bean1));
 		Assert.assertTrue(store.getAll().contains(bean2));
 
@@ -119,6 +123,13 @@ public class LuceneStoreTest {
 		Assert.assertEquals(1, result.size());
 		Assert.assertTrue(result.contains(bean1));
 
+
+		// TermQuery
+		q = new TermQuery(new Term("email", "bean1@beans.com"));
+		Collection<Document> docResult = store.getDocuments(q);
+		Assert.assertNotNull(docResult);
+		Assert.assertEquals(1, docResult.size());
+
 		// PrefixQuery
 		q = new PrefixQuery(new Term("email", "bean"));
 		result = store.get(q);
@@ -153,62 +164,75 @@ public class LuceneStoreTest {
 
 		try {
 			store.add(nullStorable);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toAdd"));
 		}
 		try {
 			store.add(nullCollection);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toAdd"));
 		}
 
 		try {
 			store.update(nullStorable);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toUpdate"));
 		}
 		try {
 			store.update(nullCollection);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toUpdate"));
 		}
 
 		try {
 			store.remove(nullStorable);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toRemove"));
 		}
 		try {
 			store.remove(nullCollection);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("toRemove"));
 		}
 
 		try {
 			store.get(nullQuery);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
+		} catch (final IllegalArgumentException e) {
+			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
+		}
+		try {
+			store.getDocuments(nullQuery);
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
 		}
 		try {
 			store.get(nullQuery, 0);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
+		} catch (final IllegalArgumentException e) {
+			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
+		}
+		try {
+			store.getDocuments(nullQuery, 0);
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
 		}
 
 		try {
 			store.count(nullQuery);
-			Assert.fail("Exception shold be thrown before this step.");
+			Assert.fail("Exception should be thrown before this step.");
 		} catch (final IllegalArgumentException e) {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
 		}
 	}
+
 
 }
