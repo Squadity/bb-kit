@@ -13,7 +13,7 @@ public class CustomScope implements Scope {
 	/**
 	 * Internal cache.
 	 */
-	private static final Map<String, CustomScope> CACHE = new ConcurrentHashMap<String, CustomScope>();
+	private static final Map<String, CustomScope> CACHE = new ConcurrentHashMap<>();
 
 	/**
 	 * Scope unique id.

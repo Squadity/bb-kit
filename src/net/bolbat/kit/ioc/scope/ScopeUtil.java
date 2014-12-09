@@ -29,7 +29,7 @@ public final class ScopeUtil {
 		if (scopes == null || scopes.length == 0)
 			return "";
 
-		List<String> scopesIds = new ArrayList<String>();
+		final List<String> scopesIds = new ArrayList<>();
 		for (Scope scope : scopes)
 			if (scope != null)
 				scopesIds.add(scope.getId());

@@ -23,7 +23,7 @@ public class GuavaCacheTest {
 	@Test
 	public void crudOperationsTest() throws LoadException {
 		//preparation
-		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<String, String>();
+		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<>();
 		cacheBuilder.initiateCapacity(10);
 		cacheBuilder.maximumCapacity(100);
 		cache = cacheBuilder.build();
@@ -45,7 +45,7 @@ public class GuavaCacheTest {
 	@Test
 	public void bulkOperationsTest() {
 		//preparation
-		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<String, String>();
+		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<>();
 		cacheBuilder.initiateCapacity(10);
 		cacheBuilder.maximumCapacity(100);
 		cache = cacheBuilder.build();
@@ -54,7 +54,7 @@ public class GuavaCacheTest {
 		final String value1 = "value1";
 		final String key2 = "key2";
 		final String value2 = "value2";
-		final List<String> keys = new ArrayList<String>(Arrays.asList(key1, key2));
+		final List<String> keys = new ArrayList<>(Arrays.asList(key1, key2));
 		//call test method
 		Collection<String> results = cache.get(keys);
 		Assert.assertNotNull("Result should not be null", results);
@@ -73,7 +73,7 @@ public class GuavaCacheTest {
 
 	@Test
 	public void configurationTest() throws LoadException {
-		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<String, String>();
+		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<>();
 		Cache<String, String> cacheConfigurable = cacheBuilder.build("cache-configuration-guava");
 		Assert.assertNotNull("Result should not be null", cacheConfigurable);
 
@@ -92,7 +92,7 @@ public class GuavaCacheTest {
 	@Test
 	public void functionTest() throws LoadException {
 		//preparation
-		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<String, String>();
+		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<>();
 		cacheBuilder.initiateCapacity(1);
 		cacheBuilder.maximumCapacity(2);
 		cacheBuilder.functionLoad(new LoadFunction<String, String>() {

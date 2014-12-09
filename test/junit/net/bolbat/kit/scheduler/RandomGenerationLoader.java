@@ -41,7 +41,7 @@ public class RandomGenerationLoader implements QueueLoader<String>, Configurable
 
 	@Override
 	public List<String> load() throws LoadingException {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 
 		if (loaded.get() < MAX_TO_LOAD) {
 			synchronized (LOCK) {

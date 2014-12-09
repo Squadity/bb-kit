@@ -53,7 +53,7 @@ public class ConfigurationSchedulerTest {
 	 */
 	@Test
 	public void withoutConfigScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<>();
 		builder.loaderClass(loader.getClass()).processorClass(processor.getClass()).processingMode(ProcessingMode.SYNC);
 		queue = SchedulerFactory.create(builder.build());
 
@@ -80,7 +80,7 @@ public class ConfigurationSchedulerTest {
 	 */
 	@Test
 	public void jsonConfigScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<>();
 		builder.loaderClass(loader.getClass()).processorClass(processor.getClass()).processingMode(ProcessingMode.SYNC).configurationType(SchedulerConfigurationType.CONFIGURE_ME).configuration("scheduled-configuration");
 		queue = SchedulerFactory.create(builder.build());
 

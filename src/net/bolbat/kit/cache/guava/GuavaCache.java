@@ -135,7 +135,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 		//save old cache data
 		Map<K, V> oldCache = null;
 		if (originalCache != null && originalCache.size() > 0)
-			oldCache = new HashMap<K, V>(originalCache.asMap());
+			oldCache = new HashMap<>(originalCache.asMap());
 
 		final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
 		if (initiateCapacity > 0)

@@ -169,7 +169,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		try {
 			final IndexReader localReader = getReader();
 			final Bits liveDocs = MultiFields.getLiveDocs(localReader);
-			final List<S> result = new ArrayList<S>();
+			final List<S> result = new ArrayList<>();
 			for (int i = 0; i < localReader.maxDoc(); i++) {
 				if (liveDocs != null && !liveDocs.get(i))
 					continue;
@@ -277,7 +277,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			return;
 
 		try {
-			final List<Document> docs = new ArrayList<Document>();
+			final List<Document> docs = new ArrayList<>();
 			for (final S bean : toAdd) {
 				if (bean == null || isEmpty(bean.idFieldName()) || isEmpty(bean.idFieldValue()))
 					continue;
@@ -390,7 +390,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		try {
 			final IndexSearcher localSearcher = getSearcher();
 			final TopDocs topDocs = localSearcher.search(query, limit);
-			final List<S> result = new ArrayList<S>();
+			final List<S> result = new ArrayList<>();
 			for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
 				final Document doc = localSearcher.doc(scoreDoc.doc);
 				result.add(mapper.readValue(doc.get(DOCUMENT_DATA_FIELD_NAME), beanType));

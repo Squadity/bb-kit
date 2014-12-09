@@ -71,7 +71,7 @@ public class QueueSchedulerTest {
 	 */
 	@Test
 	public void complexTestForSyncModeIntervalScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<>();
 		builder.loaderClass(loader.getClass());
 		builder.processorClass(processor.getClass());
 		builder.processingMode(ProcessingMode.SYNC);
@@ -100,7 +100,7 @@ public class QueueSchedulerTest {
 	 */
 	@Test
 	public void complexTestForSyncModeCronScheduleTest() throws SchedulerException, InterruptedException {
-		QueueTaskBuilder<String> builder = new QueueTaskBuilder<String>();
+		QueueTaskBuilder<String> builder = new QueueTaskBuilder<>();
 		builder.processorClass(processor.getClass()).loaderClass(loader.getClass()).configuration("quartz.properties").configurationType(SchedulerConfigurationType.PROPERTY).parameters(parameters);
 		queue = SchedulerFactory.create(builder.build());
 

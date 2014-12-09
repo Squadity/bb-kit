@@ -21,7 +21,7 @@ public final class Configuration implements Serializable {
 	/**
 	 * Configuration parameters store.
 	 */
-	private final Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+	private final Map<String, Serializable> parameters = new HashMap<>();
 
 	/**
 	 * Default constructor.
@@ -66,7 +66,7 @@ public final class Configuration implements Serializable {
 	 * @return {@link Set}
 	 */
 	public Set<String> getKeys() {
-		return new HashSet<String>(parameters.keySet());
+		return new HashSet<>(parameters.keySet());
 	}
 
 	/**
