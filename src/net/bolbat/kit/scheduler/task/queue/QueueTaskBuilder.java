@@ -122,7 +122,7 @@ public class QueueTaskBuilder<T> implements TaskBuilder {
 
 	@Override
 	public TaskConfiguration build() {
-		return new QueueTaskConfiguration<T>(loaderClass, processorClass, processingMode, parameters, configuration, configurationType);
+		return new QueueTaskConfiguration<>(loaderClass, processorClass, processingMode, parameters, configuration, configurationType);
 	}
 
 }

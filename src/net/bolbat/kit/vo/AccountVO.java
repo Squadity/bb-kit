@@ -37,12 +37,12 @@ public class AccountVO extends EntityVO {
 	/**
 	 * Account types.
 	 */
-	private Set<String> types = new HashSet<String>();
+	private Set<String> types = new HashSet<>();
 
 	/**
 	 * Account statuses.
 	 */
-	private Set<String> statuses = new HashSet<String>();
+	private Set<String> statuses = new HashSet<>();
 
 	/**
 	 * Default constructor.
@@ -201,11 +201,11 @@ public class AccountVO extends EntityVO {
 		final AccountVO result = AccountVO.class.cast(super.clone());
 		result.id = id.clone();
 
-		result.types = new HashSet<String>();
+		result.types = new HashSet<>();
 		for (final String type : types)
 			result.addType(type);
 
-		result.statuses = new HashSet<String>();
+		result.statuses = new HashSet<>();
 		for (final String status : statuses)
 			result.addStatus(status);
 

@@ -150,7 +150,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 
 	@Override
 	public Cache<K, V> build() {
-		return new GuavaCache<K, V>(initiateCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit, functionLoad);
+		return new GuavaCache<>(initiateCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit, functionLoad);
 	}
 
 	@Override

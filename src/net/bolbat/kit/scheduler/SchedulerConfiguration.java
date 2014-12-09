@@ -36,7 +36,7 @@ public class SchedulerConfiguration implements Serializable {
 	 * Configurations cache.
 	 */
 	@DontConfigure
-	private static final Map<String, SchedulerConfiguration> CACHE = new HashMap<String, SchedulerConfiguration>();
+	private static final Map<String, SchedulerConfiguration> CACHE = new HashMap<>();
 
 	/**
 	 * Instance creation lock.

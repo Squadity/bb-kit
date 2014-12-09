@@ -27,7 +27,7 @@ public final class ConfigurationManager {
 	/**
 	 * Configurations storage.
 	 */
-	private static final Map<Key<?>, Object> STORAGE = new ConcurrentHashMap<Key<?>, Object>();
+	private static final Map<Key<?>, Object> STORAGE = new ConcurrentHashMap<>();
 
 	/**
 	 * Instance creation lock.
@@ -213,7 +213,7 @@ public final class ConfigurationManager {
 		 * @return {@link Key}
 		 */
 		public static <T> Key<T> create(final Class<T> aType, final String aName, final String aEnvironment) {
-			return new Key<T>(aType, aName, aEnvironment);
+			return new Key<>(aType, aName, aEnvironment);
 		}
 
 		@Override

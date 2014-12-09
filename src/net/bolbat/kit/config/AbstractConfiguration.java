@@ -30,7 +30,7 @@ public abstract class AbstractConfiguration implements Configuration {
 	 * Listeners.
 	 */
 	@DontConfigure
-	private final List<ConfigurationListener> listeners = new CopyOnWriteArrayList<ConfigurationListener>();
+	private final List<ConfigurationListener> listeners = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Register listener.

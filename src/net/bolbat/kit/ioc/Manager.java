@@ -32,12 +32,12 @@ public final class Manager implements Module {
 	/**
 	 * Services configuration storage.
 	 */
-	private static final Map<String, ScopeConfiguration<?, ?>> STORAGE = new ConcurrentHashMap<String, ScopeConfiguration<?, ?>>();
+	private static final Map<String, ScopeConfiguration<?, ?>> STORAGE = new ConcurrentHashMap<>();
 
 	/**
 	 * Scopes links configuration storage.
 	 */
-	private static final Map<String, Scope[]> LINKS = new ConcurrentHashMap<String, Scope[]>();
+	private static final Map<String, Scope[]> LINKS = new ConcurrentHashMap<>();
 
 	/**
 	 * Key delimiter.
@@ -188,7 +188,7 @@ public final class Manager implements Module {
 
 		final Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
 		final String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
-		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<S, SF>(service, factory, conf, aScopes);
+		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<>(service, factory, conf, aScopes);
 
 		synchronized (LOCK) {
 			STORAGE.put(key, serviceScopeConfiguration);

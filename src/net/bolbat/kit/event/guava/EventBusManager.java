@@ -25,7 +25,7 @@ public final class EventBusManager {
 	/**
 	 * Internal registry storage.
 	 */
-	private static final Map<String, EventBus> STORAGE = new ConcurrentHashMap<String, EventBus>();
+	private static final Map<String, EventBus> STORAGE = new ConcurrentHashMap<>();
 
 	/**
 	 * Synchronization lock.
