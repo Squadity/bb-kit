@@ -141,7 +141,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		LOGGER.info("Type[" + aBeanType + "], " + configuration.toString());
 		try {
 			// version
-			this.version = config.getVersion();
+			this.version = Version.parseLeniently(config.getVersion());
 
 			// directory
 			switch (config.getDirectoryType()) {

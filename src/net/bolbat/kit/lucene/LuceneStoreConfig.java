@@ -6,7 +6,6 @@ import net.bolbat.utils.test.TestUtils;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 import org.configureme.annotations.DontConfigure;
@@ -35,7 +34,7 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	 * Default lucene version.
 	 */
 	@DontConfigure
-	public static final Version DEF_VERSION = Version.LUCENE_47;
+	public static final String DEF_VERSION = "LUCENE_47";
 
 	/**
 	 * Default lucene directory type.
@@ -47,7 +46,7 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	 * Configured version.
 	 */
 	@Configure
-	private Version version = DEF_VERSION;
+	private String version = DEF_VERSION;
 
 	/**
 	 * Configured directory type.
@@ -61,11 +60,11 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	@Configure
 	private String directoryPath = TestUtils.getTemporaryFolder(LuceneStoreConfig.class) + System.currentTimeMillis();
 
-	public Version getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
-	public void setVersion(final Version aVersion) {
+	public void setVersion(final String aVersion) {
 		this.version = aVersion;
 	}
 
