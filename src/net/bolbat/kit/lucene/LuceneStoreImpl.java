@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * {@link LuceneStore} implementation.
  *
  * @param <S>
- * 		storable bean type
+ *            storable bean type
  * @author Alexandr Bolbat
  */
 public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
@@ -118,9 +118,9 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	 * Protected constructor.
 	 *
 	 * @param aBeanType
-	 * 		bean type
+	 *            bean type
 	 * @param configuration
-	 * 		{@link LuceneStoreConfig} configuration name
+	 *            {@link LuceneStoreConfig} configuration name
 	 */
 	protected LuceneStoreImpl(final Class<S> aBeanType, final String configuration) {
 		this(aBeanType, ConfigurationManager.getInstanceForConf(LuceneStoreConfig.class, configuration));
@@ -130,14 +130,14 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	 * Constructor.
 	 *
 	 * @param aBeanType
-	 * 		bean type
+	 *            bean type
 	 * @param configuration
-	 * 		{@link LuceneStoreConfig} instance
+	 *            {@link LuceneStoreConfig} instance
 	 */
 	protected LuceneStoreImpl(final Class<S> aBeanType, final LuceneStoreConfig configuration) {
 		if (aBeanType == null)
 			throw new IllegalArgumentException("aBeanType argument is null");
-		this.config=configuration;
+		this.config = configuration;
 		LOGGER.info("Type[" + aBeanType + "], " + configuration.toString());
 		try {
 			// version
@@ -204,7 +204,6 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		}
 	}
 
-
 	@Override
 	public S get(final String fieldName, final String fieldValue) {
 		if (isEmpty(fieldName))
@@ -218,7 +217,6 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			throw new LuceneStoreRuntimeException(e);
 		}
 	}
-
 
 	@Override
 	public Document getDocument(final String fieldName, final String fieldValue) {
@@ -345,8 +343,8 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 				doc.add(new TextField(DOCUMENT_DATA_FIELD_NAME, mapper.writeValueAsString(bean), Field.Store.YES));
 
 				writer.updateDocument(new Term(bean.idFieldName(), bean.idFieldValue()), doc);
-				writer.commit();
 			}
+			writer.commit();
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
@@ -367,8 +365,9 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 					continue;
 
 				writer.deleteDocuments(new Term(bean.idFieldName(), bean.idFieldValue()));
-				writer.commit();
 			}
+
+			writer.commit();
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		} finally {
@@ -412,7 +411,6 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 		return get(query, Integer.MAX_VALUE);
 	}
-
 
 	@Override
 	public Collection<Document> getDocuments(final Query query) {
