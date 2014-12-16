@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.eventbus.Subscribe;
 import net.bolbat.kit.event.guava.EventBusManager;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
  * Created event check point.
@@ -16,34 +18,32 @@ import org.junit.Test;
  */
 public class EntityCreatedFacilityTest {
 
-
 	public static final String TEST_CHANNEL_NAME = "CreatedEventTest-TestEntityCreatedEvent";
 
 	@Test
 	public void createdEventTest() {
 		// create & register receiver!
 		TestEventReceiver receiver = new TestEventReceiver();
-		//create & register other receiver
+		// create & register other receiver
 		OtherEventReceiver otherReceiver = new OtherEventReceiver();
 		// defaults check!
 		Assert.assertEquals("Should not contains any events", 0, receiver.getReceivedEventsAmount());
 		Assert.assertNull("NOT NULL", receiver.getLastReceived());
 		Assert.assertEquals("Should not contains any events", 0, otherReceiver.getReceivedEventsAmount());
 		Assert.assertNull("NOT NULL", otherReceiver.getLastReceived());
-		//Sending some event!
+		// Sending some event!
 		TestEntity testEntity = new TestEntity(UUID.randomUUID().toString());
 		EventBusManager.getEventBus(TEST_CHANNEL_NAME).post(new TestEntityCreatedEvent(testEntity));
-		//sending other event!
+		// sending other event!
 		OtherEntity otherEntity = new OtherEntity(UUID.randomUUID().toString());
 		EventBusManager.getEventBus(TEST_CHANNEL_NAME).post(new OtherEntityCreatedEvent(otherEntity));
-		//  checking expectations
+		// checking expectations
 		Assert.assertEquals("Should contain 1  evens", 1, receiver.getReceivedEventsAmount());
 		Assert.assertEquals("Last received object is wrong", testEntity, receiver.getLastReceived());
 		Assert.assertEquals("Should contain 1  evens", 1, otherReceiver.getReceivedEventsAmount());
 		Assert.assertEquals("Last received object is wrong", otherEntity, otherReceiver.getLastReceived());
 
-
-		//TEAR down
+		// TEAR down
 		EventBusManager.getEventBus(TEST_CHANNEL_NAME).unregister(receiver);
 		EventBusManager.getEventBus(TEST_CHANNEL_NAME).unregister(otherReceiver);
 	}
@@ -51,7 +51,7 @@ public class EntityCreatedFacilityTest {
 	/**
 	 * Test event receiver.
 	 */
-	public static class TestEventReceiver implements EntityCreatedEventListener<TestEntityCreatedEvent> {
+	public static class TestEventReceiver implements EntityCreatedEventListener<TestEntity, TestEntityCreatedEvent> {
 		/**
 		 * Internal counter.
 		 */
@@ -64,7 +64,6 @@ public class EntityCreatedFacilityTest {
 		public TestEventReceiver() {
 			EventBusManager.getEventBus(TEST_CHANNEL_NAME).register(this);
 		}
-
 
 		/**
 		 * Return amount of created events.
@@ -89,11 +88,10 @@ public class EntityCreatedFacilityTest {
 		}
 	}
 
-
 	/**
 	 * Other event receiver.
 	 */
-	public static class OtherEventReceiver implements EntityCreatedEventListener<OtherEntityCreatedEvent> {
+	public static class OtherEventReceiver implements EntityCreatedEventListener<OtherEntity, OtherEntityCreatedEvent> {
 		/**
 		 * Internal counter.
 		 */
@@ -103,11 +101,9 @@ public class EntityCreatedFacilityTest {
 		 */
 		private OtherEntity lastReceived;
 
-
 		public OtherEventReceiver() {
 			EventBusManager.getEventBus(TEST_CHANNEL_NAME).register(this);
 		}
-
 
 		@Override
 		@Subscribe
@@ -131,9 +127,7 @@ public class EntityCreatedFacilityTest {
 			return lastReceived;
 		}
 
-
 	}
-
 
 	/**
 	 * Common - test entity.
@@ -152,7 +146,7 @@ public class EntityCreatedFacilityTest {
 		 * Constructor.
 		 *
 		 * @param identifier
-		 * 		id
+		 *            id
 		 */
 		public TestEntity(final String identifier) {
 			this.identifier = identifier;
@@ -160,12 +154,15 @@ public class EntityCreatedFacilityTest {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
 
 			TestEntity that = (TestEntity) o;
 
-			if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) return false;
+			if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null)
+				return false;
 
 			return true;
 		}
@@ -197,7 +194,7 @@ public class EntityCreatedFacilityTest {
 		 * Constructor.
 		 *
 		 * @param aEntity
-		 * 		- created entity itself
+		 *            - created entity itself
 		 */
 		protected TestEntityCreatedEvent(final TestEntity aEntity) {
 			super(aEntity);
@@ -222,7 +219,7 @@ public class EntityCreatedFacilityTest {
 		 * Constructor.
 		 *
 		 * @param identifier
-		 * 		id
+		 *            id
 		 */
 		public OtherEntity(final String identifier) {
 			this.identifier = identifier;
@@ -230,12 +227,15 @@ public class EntityCreatedFacilityTest {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
 
 			OtherEntity that = (OtherEntity) o;
 
-			if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) return false;
+			if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null)
+				return false;
 
 			return true;
 		}
@@ -267,7 +267,7 @@ public class EntityCreatedFacilityTest {
 		 * Constructor.
 		 *
 		 * @param aEntity
-		 * 		- created entity itself
+		 *            - created entity itself
 		 */
 		protected OtherEntityCreatedEvent(final OtherEntity aEntity) {
 			super(aEntity);
