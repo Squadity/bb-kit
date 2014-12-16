@@ -32,6 +32,10 @@ public class EntityUpdatedEvent<Updated extends Serializable> implements Seriali
 	 * 		updated
 	 */
 	protected EntityUpdatedEvent(final Updated oldEntity, final Updated newEntity) {
+		if (oldEntity == null)
+			throw new IllegalArgumentException("oldEntity is null");
+		if (newEntity == null)
+			throw new IllegalArgumentException("newEntity is null");
 		this.oldEntity = oldEntity;
 		this.newEntity = newEntity;
 	}
