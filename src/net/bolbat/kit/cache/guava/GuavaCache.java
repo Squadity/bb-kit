@@ -5,23 +5,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.cache.CacheBuilder;
 import net.bolbat.kit.cache.Cache;
 import net.bolbat.kit.cache.LoadFunction;
+
 import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
+
+import com.google.common.cache.CacheBuilder;
 
 /**
  * {@link Cache} implementation for guava.
  *
  * @param <K>
- * 		key
+ *            key
  * @param <V>
- * 		value
+ *            value
  * @author ivanbatura
  */
-@ConfigureMe (allfields = false)
+@ConfigureMe(allfields = false)
 public class GuavaCache<K, V> implements Cache<K, V> {
 
 	/**
@@ -73,21 +75,24 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	 * Constructor.
 	 *
 	 * @param aInitiateCapacity
-	 * 		Initial capacity
+	 *            Initial capacity
 	 * @param aMaximumCapacity
-	 * 		Maximum capacity
+	 *            Maximum capacity
 	 * @param aExpireAfterAccess
-	 * 		Expiration time after last access
+	 *            Expiration time after last access
 	 * @param aExpireAfterAccessTimeUnit
-	 * 		{@link TimeUnit} for access expiration
+	 *            {@link TimeUnit} for access expiration
 	 * @param aExpireAfterWrite
-	 * 		Expiration time after last write
+	 *            Expiration time after last write
 	 * @param aExpireAfterWriteTimeUnit
-	 * 		{@link TimeUnit} for write expiration
+	 *            {@link TimeUnit} for write expiration
 	 * @param aFunctionLoad
-	 * 		{@link net.bolbat.kit.cache.LoadFunction}
+	 *            {@link net.bolbat.kit.cache.LoadFunction}
+	 * @param skipConfiguration
+	 *            is configuration should be skipped
 	 */
-	protected GuavaCache(final int aInitiateCapacity, final long aMaximumCapacity, final Long aExpireAfterAccess, final TimeUnit aExpireAfterAccessTimeUnit, final Long aExpireAfterWrite, TimeUnit aExpireAfterWriteTimeUnit, final LoadFunction<K, V> aFunctionLoad) {
+	protected GuavaCache(final int aInitiateCapacity, final long aMaximumCapacity, final Long aExpireAfterAccess, final TimeUnit aExpireAfterAccessTimeUnit,
+			final Long aExpireAfterWrite, TimeUnit aExpireAfterWriteTimeUnit, final LoadFunction<K, V> aFunctionLoad, final boolean skipConfiguration) {
 		this.initiateCapacity = aInitiateCapacity;
 		this.maximumCapacity = aMaximumCapacity;
 		this.expireAfterAccess = aExpireAfterAccess;
@@ -95,8 +100,10 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 		this.expireAfterWrite = aExpireAfterWrite;
 		this.expireAfterWriteTimeUnit = aExpireAfterWriteTimeUnit;
 		this.functionLoad = aFunctionLoad;
-		//configure cache
-		configureCache();
+				
+		// configure cache
+		if (!skipConfiguration)
+			configureCache();
 	}
 
 	public void setOriginalCache(com.google.common.cache.Cache<K, V> originalCache) {
@@ -132,7 +139,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	 */
 	@AfterConfiguration
 	public void configureCache() {
-		//save old cache data
+		// save old cache data
 		Map<K, V> oldCache = null;
 		if (originalCache != null && originalCache.size() > 0)
 			oldCache = new HashMap<>(originalCache.asMap());
@@ -148,7 +155,7 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 			cacheBuilder.expireAfterWrite(expireAfterWrite, expireAfterWriteTimeUnit);
 		originalCache = cacheBuilder.build();
 
-		//restore old data to new cache
+		// restore old data to new cache
 		if (oldCache != null)
 			originalCache.putAll(oldCache);
 	}

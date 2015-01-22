@@ -15,14 +15,14 @@ import org.slf4j.LoggerFactory;
  * {@link CacheBuilder} implementation for guava.
  *
  * @param <K>
- * 		key type
+ *            key type
  * @param <V>
- * 		value type
+ *            value type
  * @author ivanbatura
  */
 
 public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
-	
+
 	/**
 	 * {@link Logger} instance.
 	 */
@@ -63,12 +63,11 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 */
 	private LoadFunction<K, V> functionLoad;
 
-
 	/**
 	 * Set {@code initiateCapacity}.
 	 *
 	 * @param aInitiateCapacity
-	 * 		initiate capacity.
+	 *            initiate capacity.
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> initiateCapacity(int aInitiateCapacity) {
@@ -80,7 +79,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code maximumCapacity}.
 	 *
 	 * @param aMaximumCapacity
-	 * 		maximum capacity
+	 *            maximum capacity
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> maximumCapacity(long aMaximumCapacity) {
@@ -92,7 +91,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code expireAfterAccess}.
 	 *
 	 * @param aExpireAfterAccess
-	 * 		expiration time after last access in {@code expireAfterAccessTimeUnit}
+	 *            expiration time after last access in {@code expireAfterAccessTimeUnit}
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> expireAfterAccess(Long aExpireAfterAccess) {
@@ -104,7 +103,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code expireAfterAccessTimeUnit}.
 	 *
 	 * @param aExpireAfterAccessTimeUnit
-	 * 		{@link TimeUnit}
+	 *            {@link TimeUnit}
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> expireAfterAccessTimeUnit(TimeUnit aExpireAfterAccessTimeUnit) {
@@ -116,7 +115,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code expireAfterWrite}.
 	 *
 	 * @param aExpireAfterWrite
-	 * 		Expiration time after last write in {@code expireAfterWriteTimeUnit}
+	 *            Expiration time after last write in {@code expireAfterWriteTimeUnit}
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> expireAfterWrite(Long aExpireAfterWrite) {
@@ -128,7 +127,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code expireAfterWriteTimeUnit}.
 	 *
 	 * @param aExpireAfterWriteTimeUnit
-	 * 		{@link TimeUnit}
+	 *            {@link TimeUnit}
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> expireAfterWriteTimeUnit(TimeUnit aExpireAfterWriteTimeUnit) {
@@ -140,7 +139,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 * Set {@code functionLoad}.
 	 *
 	 * @param aFunctionLoad
-	 * 		{@link net.bolbat.kit.cache.LoadFunction}
+	 *            {@link net.bolbat.kit.cache.LoadFunction}
 	 * @return {@link GuavaCacheBuilder}
 	 */
 	public GuavaCacheBuilder<K, V> functionLoad(LoadFunction<K, V> aFunctionLoad) {
@@ -150,21 +149,35 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 
 	@Override
 	public Cache<K, V> build() {
-		return new GuavaCache<>(initiateCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit, functionLoad);
+		return build(false);
+	}
+
+	/**
+	 * Create cache wrapper.
+	 * 
+	 * @param skipConfiguration
+	 *            is configuration should be skipped
+	 */
+	private GuavaCache<K, V> build(final boolean skipConfiguration) {
+		return new GuavaCache<>(initiateCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit,
+				functionLoad, skipConfiguration);
 	}
 
 	@Override
-	public Cache<K, V> build(String configuration) {
-		final Cache<K, V> cache = build();
-		if (StringUtils.isEmpty(configuration))
+	public Cache<K, V> build(final String configuration) {
+		final GuavaCache<K, V> cache = build(true);
+		if (StringUtils.isEmpty(configuration)) {
+			cache.configureCache();
 			return cache;
+		}
 
 		try {
-			ConfigurationManager.INSTANCE.configureBeanAs(cache, configuration);
+			ConfigurationManager.INSTANCE.configureAs(cache, configuration);
 			// CHECKSTYLE:OFF
 		} catch (final RuntimeException e) {
 			// CHECKSTYLE:ON
 			LOGGER.warn("build(" + configuration + ") fail. Can't configure cache[" + cache + "], skipping.");
+			cache.configureCache();
 		}
 		return cache;
 	}
