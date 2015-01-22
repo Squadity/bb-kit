@@ -3,25 +3,25 @@ package net.bolbat.kit.event.common;
 import java.io.Serializable;
 
 /**
- * Entity updated event.
+ * Entity saved event.
  *
- * @param <Updated>
- * 		- entity type
+ * @param <Saved>
+ * 		-  saved (created or updated) entity type
  * @author h3llka
  */
-public class EntityUpdatedEvent<Updated extends Serializable> implements Serializable {
+public class EntitySavedEvent<Saved extends Serializable> implements Serializable {
 	/**
 	 * Basic serial version UID.
 	 */
-	private static final long serialVersionUID = 6998272145202196761L;
+	private static final long serialVersionUID = 8380601278511664596L;
 	/**
-	 * {@link Updated} before update.
+	 * {@link Saved} before update.
 	 */
-	private final Updated oldEntity;
+	private final Saved oldEntity;
 	/**
-	 * {@link Updated} updated.
+	 * {@link Saved} updated.
 	 */
-	private final Updated newEntity;
+	private final Saved newEntity;
 
 	/**
 	 * Constructor.
@@ -31,20 +31,28 @@ public class EntityUpdatedEvent<Updated extends Serializable> implements Seriali
 	 * @param newEntity
 	 * 		updated
 	 */
-	protected EntityUpdatedEvent(final Updated oldEntity, final Updated newEntity) {
-		if (oldEntity == null)
-			throw new IllegalArgumentException("oldEntity is null");
+	protected EntitySavedEvent(final Saved oldEntity, final Saved newEntity) {
 		if (newEntity == null)
 			throw new IllegalArgumentException("newEntity is null");
 		this.oldEntity = oldEntity;
 		this.newEntity = newEntity;
 	}
 
-	public Updated getOldEntity() {
+	/**
+	 * Constructor.
+	 *
+	 * @param newEntity
+	 * 		updated or created entity
+	 */
+	protected EntitySavedEvent(final Saved newEntity) {
+		this(null, newEntity);
+	}
+
+	public Saved getOldEntity() {
 		return oldEntity;
 	}
 
-	public Updated getNewEntity() {
+	public Saved getNewEntity() {
 		return newEntity;
 	}
 
@@ -53,7 +61,7 @@ public class EntityUpdatedEvent<Updated extends Serializable> implements Seriali
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		@SuppressWarnings ("unchecked")
-		EntityUpdatedEvent<Updated> that = (EntityUpdatedEvent<Updated>) o;
+		EntitySavedEvent<Saved> that = (EntitySavedEvent<Saved>) o;
 
 		if (newEntity != null ? !newEntity.equals(that.newEntity) : that.newEntity != null) return false;
 		if (oldEntity != null ? !oldEntity.equals(that.oldEntity) : that.oldEntity != null) return false;
@@ -63,8 +71,8 @@ public class EntityUpdatedEvent<Updated extends Serializable> implements Seriali
 
 	@Override
 	public int hashCode() {
-		final int multiplier = 31;
 		int result = oldEntity != null ? oldEntity.hashCode() : 0;
+		final int multiplier = 31;
 		result = multiplier * result + (newEntity != null ? newEntity.hashCode() : 0);
 		return result;
 	}

@@ -36,6 +36,24 @@ public class EntityDeletedEvent<Deleted extends Serializable> implements Seriali
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		@SuppressWarnings ("unchecked")
+		EntityDeletedEvent<Deleted> that = (EntityDeletedEvent<Deleted>) o;
+
+		if (entity != null ? !entity.equals(that.entity) : that.entity != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return entity != null ? entity.hashCode() : 0;
+	}
+
+	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
 		sb.append("[entity=").append(entity);
