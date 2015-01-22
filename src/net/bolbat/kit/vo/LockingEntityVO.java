@@ -5,7 +5,7 @@ package net.bolbat.kit.vo;
  * 
  * @author Alexandr Bolbat
  */
-public class LockingEntityVO extends LockingVO {
+public class LockingEntityVO extends LockingVO implements Cloneable {
 
 	/**
 	 * Generated SerialVersionUID.
