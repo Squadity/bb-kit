@@ -375,8 +375,17 @@ public class PropertiesTest {
 		Assert.assertEquals(stringProperty.getValue(), stringProp.getValue());
 
 		// equals + hashCode
+		Assert.assertTrue(stringProp.equals(stringProp));
+		Assert.assertFalse(stringProp.equals(null));
+		Assert.assertFalse(stringProp.equals(new Object()));
+		Assert.assertFalse(new StringProperty().equals(new StringProperty(notExistKey, defaultString)));
+		Assert.assertFalse(new StringProperty(notExistKey + notExistKey, defaultString).equals(new StringProperty(notExistKey, defaultString)));
+
 		Assert.assertTrue(stringProperty.equals(stringProp));
+		Assert.assertFalse(stringProperty.equals(new StringProperty()));
+
 		Assert.assertEquals(stringProperty.hashCode(), stringProp.hashCode());
+		Assert.assertNotEquals(stringProperty.hashCode(), new StringProperty().hashCode());
 
 		// toString
 		Assert.assertNotNull(stringProp.toString());
@@ -391,10 +400,30 @@ public class PropertiesTest {
 		Assert.assertEquals(defaultString, StringProperty.get(propsList, stringProperty.getKey(), defaultString));
 		Assert.assertEquals(defaultLong, LongProperty.get(propsList, stringProperty.getKey(), defaultLong));
 
+		propsList.clear();
+		propsList.add(new LongProperty(stringProperty.getKey(), null));
+		Assert.assertEquals(defaultString, StringProperty.get(propsList, stringProperty.getKey(), defaultString));
+		Assert.assertEquals(defaultLong, LongProperty.get(propsList, stringProperty.getKey(), defaultLong));
+
 		final Map<String, Property<?>> propsMap = new HashMap<>();
 		propsMap.put(stringProperty.getKey(), new StringProperty(stringProperty.getKey(), null));
 		Assert.assertEquals(defaultString, StringProperty.get(propsMap, stringProperty.getKey(), defaultString));
 		Assert.assertEquals(defaultLong, LongProperty.get(propsMap, stringProperty.getKey(), defaultLong));
+
+		propsMap.clear();
+		propsMap.put(stringProperty.getKey(), new LongProperty(stringProperty.getKey(), null));
+		Assert.assertEquals(defaultString, StringProperty.get(propsMap, stringProperty.getKey(), defaultString));
+		Assert.assertEquals(defaultLong, LongProperty.get(propsMap, stringProperty.getKey(), defaultLong));
+
+		// additional cases for code coverage
+		Assert.assertNotEquals(stringProperty, new StringProperty());
+		Assert.assertNotEquals(booleanProperty, new BooleanProperty());
+		Assert.assertNotEquals(shortProperty, new ShortProperty());
+		Assert.assertNotEquals(integerProperty, new IntegerProperty());
+		Assert.assertNotEquals(longProperty, new LongProperty());
+		Assert.assertNotEquals(floatProperty, new FloatProperty());
+		Assert.assertNotEquals(doubleProperty, new DoubleProperty());
+		Assert.assertNotEquals(dateProperty, new DateProperty());
 	}
 
 	/**
