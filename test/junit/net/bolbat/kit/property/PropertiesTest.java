@@ -1,5 +1,7 @@
 package net.bolbat.kit.property;
 
+import static net.bolbat.utils.lang.StringUtils.EMPTY;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -427,6 +429,25 @@ public class PropertiesTest {
 		Assert.assertNotEquals(floatProperty, new FloatProperty());
 		Assert.assertNotEquals(doubleProperty, new DoubleProperty());
 		Assert.assertNotEquals(dateProperty, new DateProperty());
+	}
+
+	/**
+	 * Test for property types resolving.
+	 */
+	@Test
+	public void propertyResolveTypeTest() {
+		Assert.assertNull(Properties.resolveByName(EMPTY));
+		Assert.assertNull(Properties.resolveByName(null));
+		Assert.assertNull(Properties.resolveByName("notExistType"));
+
+		Assert.assertNotNull(Properties.resolveByName(Properties.INTEGER.name()));
+		Assert.assertNotNull(Properties.resolveByName("sHoRt"));
+		Assert.assertEquals(Properties.BOOLEAN, Properties.resolveByName(Properties.BOOLEAN.name()));
+		Assert.assertEquals(Properties.DATE, Properties.resolveByName("dAtE"));
+
+		Assert.assertNull(Properties.resolveByPropertyClass(null));
+		Assert.assertNull(Properties.resolveByPropertyClass(WrongProperty.class));
+		Assert.assertNotNull(Properties.resolveByPropertyClass(IntegerProperty.class));
 	}
 
 	/**

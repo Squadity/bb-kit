@@ -1,5 +1,7 @@
 package net.bolbat.kit.property;
 
+import static net.bolbat.utils.lang.StringUtils.isEmpty;
+
 import java.util.Date;
 
 /**
@@ -76,6 +78,42 @@ public enum Properties {
 
 	public Class<?> getPropertyValueClass() {
 		return propertyValueClass;
+	}
+
+	/**
+	 * Resolve property type by name.
+	 * 
+	 * @param name
+	 *            property name
+	 * @return property type
+	 */
+	public static Properties resolveByName(final String name) {
+		if (isEmpty(name))
+			return null;
+
+		for (final Properties property : Properties.values())
+			if (property.name().equalsIgnoreCase(name))
+				return property;
+
+		return null;
+	}
+
+	/**
+	 * Resolve property type by property class.
+	 * 
+	 * @param aPropertyClass
+	 *            property class
+	 * @return property type
+	 */
+	public static Properties resolveByPropertyClass(final Class<? extends Property<?>> aPropertyClass) {
+		if (aPropertyClass == null)
+			return null;
+
+		for (final Properties property : Properties.values())
+			if (property.getPropertyClass() == aPropertyClass)
+				return property;
+
+		return null;
 	}
 
 }
