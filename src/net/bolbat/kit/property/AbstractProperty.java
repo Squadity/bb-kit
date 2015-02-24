@@ -9,8 +9,8 @@ import java.util.Map;
  * Abstract {@link Property}.
  * 
  * @author Alexandr Bolbat
- * 
- * @param ValueType
+ *
+ * @param <ValueType>
  *            value type
  */
 public abstract class AbstractProperty<ValueType> implements Property<ValueType> {

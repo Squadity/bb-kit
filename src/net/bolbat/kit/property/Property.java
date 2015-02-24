@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 
  * @author Alexandr Bolbat
  * 
- * @param ValueType
+ * @param <ValueType>
  *            value type
  */
 public interface Property<ValueType> extends Serializable {
@@ -21,11 +21,15 @@ public interface Property<ValueType> extends Serializable {
 
 	/**
 	 * Get property key.
+	 * 
+	 * @return property key
 	 */
 	String getKey();
 
 	/**
 	 * Get property value.
+	 * 
+	 * @return property value
 	 */
 	ValueType getValue();
 
