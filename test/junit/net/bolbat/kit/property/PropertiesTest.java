@@ -397,6 +397,7 @@ public class PropertiesTest {
 		Assert.assertEquals(defaultString, StringProperty.get(new StringProperty(), defaultString));
 
 		final List<Property<?>> propsList = new ArrayList<>();
+		propsList.add(null);
 		propsList.add(new StringProperty(notExistKey, null));
 		propsList.add(new StringProperty(stringProperty.getKey(), null));
 		Assert.assertEquals(defaultString, StringProperty.get(propsList, stringProperty.getKey(), defaultString));
