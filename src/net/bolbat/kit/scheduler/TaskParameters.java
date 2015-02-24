@@ -261,7 +261,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	/**
 	 * Implementation of the {@link TaskParameterValue} for Long value.
 	 */
-	public final class LongParameterValue implements TaskParameterValue {
+	public static final class LongParameterValue implements TaskParameterValue {
 		/**
 		 * Generated serial uid.
 		 */
@@ -300,7 +300,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	/**
 	 * Implementation of the {@link TaskParameterValue} for Float value.
 	 */
-	public final class FloatParameterValue implements TaskParameterValue {
+	public static final class FloatParameterValue implements TaskParameterValue {
 		/**
 		 * Generated serial uid.
 		 */
@@ -339,7 +339,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	/**
 	 * Implementation of the {@link TaskParameterValue} for Double value.
 	 */
-	public final class DoubleParameterValue implements TaskParameterValue {
+	public static final class DoubleParameterValue implements TaskParameterValue {
 		/**
 		 * Generated serial uid.
 		 */
@@ -378,7 +378,7 @@ public class TaskParameters extends HashMap<String, TaskParameterValue> {
 	/**
 	 * Implementation of the {@link TaskParameterValue} for Boolean value.
 	 */
-	public final class BooleanParameterValue implements TaskParameterValue {
+	public static final class BooleanParameterValue implements TaskParameterValue {
 		/**
 		 * Generated serial uid.
 		 */

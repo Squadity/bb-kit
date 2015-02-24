@@ -41,7 +41,7 @@ public class CompositeScope implements Scope {
 	}
 
 	public Scope[] getScopes() {
-		return scopes;
+		return scopes != null ? scopes.clone() : null;
 	}
 
 	/**
@@ -69,14 +69,14 @@ public class CompositeScope implements Scope {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof CustomScope))
+		if (!(obj instanceof CompositeScope))
 			return false;
-		final CustomScope other = (CustomScope) obj;
+		final CompositeScope other = (CompositeScope) obj;
 		return getId().equals(other.getId());
 	}
 

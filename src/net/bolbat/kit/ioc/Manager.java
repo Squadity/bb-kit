@@ -93,12 +93,7 @@ public final class Manager implements Module {
 		if (source.getId().equalsIgnoreCase(target.getId()))
 			throw new IllegalArgumentException("source[" + source + "] and target[" + target + "] scopes is equal.");
 
-		String sourceId;
-		if (source instanceof CompositeScope)
-			sourceId = ScopeUtil.scopesToString(CompositeScope.class.cast(source).getScopes());
-		else
-			sourceId = ScopeUtil.scopesToString(source);
-
+		final String sourceId = source instanceof CompositeScope ? source.getId() : ScopeUtil.scopesToString(source);
 		final String sourceKey = service.getName() + DELIMITER + sourceId;
 		synchronized (LOCK) {
 			if (target instanceof CompositeScope)
