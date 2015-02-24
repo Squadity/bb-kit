@@ -3,7 +3,7 @@ package net.bolbat.kit.property;
 import java.util.Date;
 
 /**
- * {@link Property} related utilities.
+ * Properties enumeration.
  * 
  * @author Alexandr Bolbat
  */

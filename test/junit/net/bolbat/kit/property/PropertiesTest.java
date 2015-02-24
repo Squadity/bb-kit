@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -327,6 +328,107 @@ public class PropertiesTest {
 		Assert.assertEquals(defaultDate, DateProperty.get((Map<String, Property<?>>) null, dateProperty.getKey(), defaultDate));
 		Assert.assertEquals(defaultDate, DateProperty.get((Map<String, Property<?>>) null, null, defaultDate));
 		Assert.assertEquals(defaultDate, DateProperty.get(Date.class, (Map<String, Property<?>>) null, null, defaultDate));
+	}
+
+	/**
+	 * {@link Properties} test.
+	 */
+	@Test
+	public void propertiesEnumerationTest() {
+		Assert.assertEquals(StringProperty.class, Properties.STRING.getPropertyClass());
+		Assert.assertEquals(String.class, Properties.STRING.getPropertyValueClass());
+
+		Assert.assertEquals(BooleanProperty.class, Properties.BOOLEAN.getPropertyClass());
+		Assert.assertEquals(Boolean.class, Properties.BOOLEAN.getPropertyValueClass());
+
+		Assert.assertEquals(ShortProperty.class, Properties.SHORT.getPropertyClass());
+		Assert.assertEquals(Short.class, Properties.SHORT.getPropertyValueClass());
+
+		Assert.assertEquals(IntegerProperty.class, Properties.INTEGER.getPropertyClass());
+		Assert.assertEquals(Integer.class, Properties.INTEGER.getPropertyValueClass());
+
+		Assert.assertEquals(LongProperty.class, Properties.LONG.getPropertyClass());
+		Assert.assertEquals(Long.class, Properties.LONG.getPropertyValueClass());
+
+		Assert.assertEquals(FloatProperty.class, Properties.FLOAT.getPropertyClass());
+		Assert.assertEquals(Float.class, Properties.FLOAT.getPropertyValueClass());
+
+		Assert.assertEquals(DoubleProperty.class, Properties.DOUBLE.getPropertyClass());
+		Assert.assertEquals(Double.class, Properties.DOUBLE.getPropertyValueClass());
+
+		Assert.assertEquals(DateProperty.class, Properties.DATE.getPropertyClass());
+		Assert.assertEquals(Date.class, Properties.DATE.getPropertyValueClass());
+	}
+
+	/**
+	 * Test for other cases.
+	 */
+	@Test
+	public void otherCasesTest() {
+		final StringProperty stringProp = new StringProperty();
+		Assert.assertEquals(null, stringProp.getKey());
+		Assert.assertEquals(null, stringProp.getValue());
+
+		stringProp.setKey(stringProperty.getKey());
+		stringProp.setValue(stringProperty.getValue());
+		Assert.assertEquals(stringProperty.getKey(), stringProp.getKey());
+		Assert.assertEquals(stringProperty.getValue(), stringProp.getValue());
+
+		// equals + hashCode
+		Assert.assertTrue(stringProperty.equals(stringProp));
+		Assert.assertEquals(stringProperty.hashCode(), stringProp.hashCode());
+
+		// toString
+		Assert.assertNotNull(stringProp.toString());
+		Assert.assertTrue(new StringProperty().toString().startsWith(StringProperty.class.getSimpleName()));
+		Assert.assertTrue(new BooleanProperty().toString().startsWith(BooleanProperty.class.getSimpleName()));
+
+		// other rare cases
+		Assert.assertEquals(defaultString, StringProperty.get(new StringProperty(), defaultString));
+
+		final List<Property<?>> propsList = new ArrayList<>();
+		propsList.add(new StringProperty(stringProperty.getKey(), null));
+		Assert.assertEquals(defaultString, StringProperty.get(propsList, stringProperty.getKey(), defaultString));
+		Assert.assertEquals(defaultLong, LongProperty.get(propsList, stringProperty.getKey(), defaultLong));
+
+		final Map<String, Property<?>> propsMap = new HashMap<>();
+		propsMap.put(stringProperty.getKey(), new StringProperty(stringProperty.getKey(), null));
+		Assert.assertEquals(defaultString, StringProperty.get(propsMap, stringProperty.getKey(), defaultString));
+		Assert.assertEquals(defaultLong, LongProperty.get(propsMap, stringProperty.getKey(), defaultLong));
+	}
+
+	/**
+	 * Test for error cases.
+	 */
+	@Test
+	public void errorCasesTest() {
+		try {
+			new WrongProperty();
+			Assert.fail();
+		} catch (final IllegalArgumentException e) {
+			Assert.assertEquals("aType argument is null", e.getMessage());
+		}
+	}
+
+	/**
+	 * Property implementation for testing error cases.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	private static class WrongProperty extends AbstractProperty<String> {
+
+		/**
+		 * Generated SerialVersionUID.
+		 */
+		private static final long serialVersionUID = -1196412854075195196L;
+
+		/**
+		 * Default constructor.
+		 */
+		protected WrongProperty() {
+			super(null, null, null);
+		}
+
 	}
 
 }
