@@ -33,4 +33,12 @@ public interface Property<ValueType> extends Serializable {
 	 */
 	ValueType getValue();
 
+	/**
+	 * Get property group.<br>
+	 * Optional field for any custom properties grouping.
+	 * 
+	 * @return property group
+	 */
+	String getGroup();
+
 }

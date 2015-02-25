@@ -36,6 +36,11 @@ public abstract class AbstractProperty<ValueType> implements Property<ValueType>
 	private ValueType value;
 
 	/**
+	 * Property group.
+	 */
+	private String group;
+
+	/**
 	 * Default constructor.
 	 * 
 	 * @param aType
@@ -75,6 +80,15 @@ public abstract class AbstractProperty<ValueType> implements Property<ValueType>
 
 	public void setValue(final ValueType aValue) {
 		this.value = aValue;
+	}
+
+	@Override
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	/**
@@ -223,8 +237,10 @@ public abstract class AbstractProperty<ValueType> implements Property<ValueType>
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
-		builder.append(" [key=").append(key);
+		builder.append(" [type=").append(type);
+		builder.append(", key=").append(key);
 		builder.append(", value=").append(value);
+		builder.append(", group=").append(group);
 		builder.append("]");
 		return builder.toString();
 	}

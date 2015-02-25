@@ -429,6 +429,13 @@ public class PropertiesTest {
 		Assert.assertNotEquals(floatProperty, new FloatProperty());
 		Assert.assertNotEquals(doubleProperty, new DoubleProperty());
 		Assert.assertNotEquals(dateProperty, new DateProperty());
+
+		final StringProperty grouppedStringProperty1 = new StringProperty("prop1", "value1");
+		grouppedStringProperty1.setGroup("group1");
+		final StringProperty grouppedStringProperty2 = new StringProperty("prop2", "value2");
+		grouppedStringProperty2.setGroup("group1");
+		Assert.assertNotEquals(grouppedStringProperty1, grouppedStringProperty2);
+		Assert.assertEquals(grouppedStringProperty1.getGroup(), grouppedStringProperty2.getGroup());
 	}
 
 	/**
