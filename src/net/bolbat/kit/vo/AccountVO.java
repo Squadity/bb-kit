@@ -1,9 +1,12 @@
 package net.bolbat.kit.vo;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import net.bolbat.kit.property.Property;
 import net.bolbat.utils.lang.StringUtils;
 import net.bolbat.utils.lang.ToStringUtils;
 
@@ -43,6 +46,11 @@ public class AccountVO extends EntityVO {
 	 * Account statuses.
 	 */
 	private Set<String> statuses = new HashSet<>();
+
+	/**
+	 * Account properties.
+	 */
+	private Map<String, Property<?>> properties = new HashMap<>();
 
 	/**
 	 * Default constructor.
@@ -160,6 +168,63 @@ public class AccountVO extends EntityVO {
 		return statuses.contains(status);
 	}
 
+	public Map<String, Property<?>> getProperties() {
+		return Collections.unmodifiableMap(properties);
+	}
+
+	/**
+	 * Get property.
+	 * 
+	 * @param propertyKey
+	 *            property key
+	 * @return {@link Property} or <code>null</code>
+	 */
+	public Property<?> getProperty(final String propertyKey) {
+		return StringUtils.isNotEmpty(propertyKey) ? properties.get(propertyKey) : null;
+	}
+
+	/**
+	 * Add property.
+	 * 
+	 * @param property
+	 *            property, can't be <code>null</code> and property key can't be empty
+	 */
+	public void addProperty(final Property<?> property) {
+		if (property == null)
+			throw new IllegalArgumentException("property argument is null.");
+		if (StringUtils.isEmpty(property.getKey()))
+			throw new IllegalArgumentException("property.key argument is empty.");
+
+		properties.put(property.getKey(), property);
+	}
+
+	/**
+	 * Remove property.
+	 * 
+	 * @param propertyKey
+	 *            property key
+	 */
+	public void removeProperty(final String propertyKey) {
+		if (StringUtils.isEmpty(propertyKey))
+			return;
+
+		properties.remove(propertyKey);
+	}
+
+	/**
+	 * Is property exist.
+	 * 
+	 * @param propertyKey
+	 *            property key
+	 * @return <code>true</code> if exist or <code>false</code>
+	 */
+	public boolean hasProperty(final String propertyKey) {
+		if (StringUtils.isEmpty(propertyKey))
+			return false;
+
+		return properties.get(propertyKey) != null;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -169,14 +234,14 @@ public class AccountVO extends EntityVO {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (!(obj instanceof AccountVO))
 			return false;
-		AccountVO other = (AccountVO) obj;
+		final AccountVO other = (AccountVO) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -187,10 +252,11 @@ public class AccountVO extends EntityVO {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
+		final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
 		builder.append(" [id=").append(id);
 		builder.append(", types=").append(ToStringUtils.toString(types));
 		builder.append(", statuses=").append(ToStringUtils.toString(statuses));
+		builder.append(", properties=").append(ToStringUtils.toString(properties));
 		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();
@@ -208,6 +274,10 @@ public class AccountVO extends EntityVO {
 		result.statuses = new HashSet<>();
 		for (final String status : statuses)
 			result.addStatus(status);
+
+		result.properties = new HashMap<>();
+		for (final Property<?> property : properties.values())
+			result.addProperty(property.clone());
 
 		return result;
 	}

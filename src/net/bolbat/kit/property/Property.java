@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @param <ValueType>
  *            value type
  */
-public interface Property<ValueType> extends Serializable {
+public interface Property<ValueType> extends Serializable, Cloneable {
 
 	/**
 	 * Get property type.
@@ -40,5 +40,12 @@ public interface Property<ValueType> extends Serializable {
 	 * @return property group
 	 */
 	String getGroup();
+
+	/**
+	 * Clone property.
+	 * 
+	 * @return cloned property
+	 */
+	Property<ValueType> clone();
 
 }

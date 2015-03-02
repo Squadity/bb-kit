@@ -270,4 +270,15 @@ public abstract class AbstractProperty<ValueType> implements Property<ValueType>
 		return true;
 	}
 
+	@Override
+	public AbstractProperty<ValueType> clone() {
+		try {
+			@SuppressWarnings("unchecked")
+			final AbstractProperty<ValueType> result = AbstractProperty.class.cast(super.clone());
+			return result;
+		} catch (final CloneNotSupportedException e) {
+			throw new AssertionError("Can't clone [" + this + "]");
+		}
+	}
+
 }
