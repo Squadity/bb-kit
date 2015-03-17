@@ -234,6 +234,17 @@ public class ManagerTest {
 	}
 
 	/**
+	 * Test {@link Manager} warm up if there service with circular dependency in post-construct.
+	 * 
+	 * @throws ManagerException
+	 */
+	@Test
+	public void circularDependencyInWarmUpTest() throws ManagerException {
+		Manager.register(ServiceWithCircularDependencyInWarmUp.class, ServiceWithCircularDependencyInWarmUpFactory.class);
+		Manager.get(ServiceWithCircularDependencyInWarmUp.class);
+	}
+
+	/**
 	 * Mock service.
 	 * 
 	 * @author Alexandr Bolbat
@@ -333,6 +344,58 @@ public class ManagerTest {
 		@Override
 		public ServiceTwo create(final Configuration configuration) {
 			return new ServiceTwoImpl();
+		}
+	}
+
+	/**
+	 * Mock service.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public interface ServiceWithCircularDependencyInWarmUp extends Service {
+
+		/**
+		 * Get message.
+		 * 
+		 * @return {@link String}
+		 */
+		String getMessage();
+
+	}
+
+	/**
+	 * Mock implementation.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceWithCircularDependencyInWarmUpImpl implements ServiceWithCircularDependencyInWarmUp {
+
+		@PostConstruct
+		private void postConstruct() {
+			try {
+				System.out.println(this.getClass().getSimpleName() + " postConstruct[" + Manager.get(ServiceWithCircularDependencyInWarmUp.class).getMessage()
+						+ "] called");
+			} catch (final ManagerException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public String getMessage() {
+			return this.getClass().getSimpleName();
+		}
+
+	}
+
+	/**
+	 * Mock Factory.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public static class ServiceWithCircularDependencyInWarmUpFactory implements ServiceFactory<ServiceWithCircularDependencyInWarmUp> {
+		@Override
+		public ServiceWithCircularDependencyInWarmUp create(final Configuration configuration) {
+			return new ServiceWithCircularDependencyInWarmUpImpl();
 		}
 	}
 

@@ -249,12 +249,12 @@ public final class Manager implements Module {
 			try {
 				final S instance = factory.create(configuration.getConfiguration());
 
+				// updating scope configuration with already obtained service instance
+				configuration.setInstance(instance);
+
 				// execute post-construct
 				if (postConstruct)
 					ClassUtils.executePostConstruct(instance);
-
-				// updating scope configuration with already obtained service instance
-				configuration.setInstance(instance);
 
 				return instance;
 				// CHECKSTYLE:OFF
