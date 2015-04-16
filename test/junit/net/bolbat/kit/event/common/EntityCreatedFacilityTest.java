@@ -38,9 +38,9 @@ public class EntityCreatedFacilityTest {
 		OtherEntity otherEntity = new OtherEntity(UUID.randomUUID().toString());
 		EventBusManager.getEventBus(TEST_CHANNEL_NAME).post(new OtherEntityCreatedEvent(otherEntity));
 		// checking expectations
-		Assert.assertEquals("Should contain 1  evens", 1, receiver.getReceivedEventsAmount());
+		Assert.assertEquals("Should contain 1 events", 1, receiver.getReceivedEventsAmount());
 		Assert.assertEquals("Last received object is wrong", testEntity, receiver.getLastReceived());
-		Assert.assertEquals("Should contain 1  evens", 1, otherReceiver.getReceivedEventsAmount());
+		Assert.assertEquals("Should contain 1 events", 1, otherReceiver.getReceivedEventsAmount());
 		Assert.assertEquals("Last received object is wrong", otherEntity, otherReceiver.getLastReceived());
 
 		// TEAR down
@@ -83,6 +83,10 @@ public class EntityCreatedFacilityTest {
 		public void listen(TestEntityCreatedEvent createdEvent) {
 			if (createdEvent == null)
 				throw new IllegalArgumentException("createdEvent is null");
+			
+			// temporary debug
+			System.out.println(createdEvent);
+						
 			eventCounter.incrementAndGet();
 			lastReceived = createdEvent.getEntity();
 		}
@@ -110,6 +114,10 @@ public class EntityCreatedFacilityTest {
 		public void listen(OtherEntityCreatedEvent createdEvent) {
 			if (createdEvent == null)
 				throw new IllegalArgumentException("createdEvent is null");
+			
+			// temporary debug
+			System.out.println(createdEvent);
+			
 			eventCounter.incrementAndGet();
 			lastReceived = createdEvent.getEntity();
 		}
