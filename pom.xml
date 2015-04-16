@@ -22,7 +22,7 @@
 
 		<!-- provided dependencies -->
 		<jackson.version>2.3.2</jackson.version>
-		<guava.version>17.0</guava.version>
+		<guava.version>18.0</guava.version>
 		<lucene.version>4.7.2</lucene.version>
 	</properties>
 

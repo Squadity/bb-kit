@@ -85,7 +85,7 @@ public class EntityCreatedFacilityTest {
 				throw new IllegalArgumentException("createdEvent is null");
 
 			// temporary debug
-			System.out.println("TestEventReceiver" + createdEvent);
+			System.out.println("TestEventReceiver: " + createdEvent);
 
 			eventCounter.incrementAndGet();
 			lastReceived = createdEvent.getEntity();
@@ -116,7 +116,7 @@ public class EntityCreatedFacilityTest {
 				throw new IllegalArgumentException("createdEvent is null");
 
 			// temporary debug
-			System.out.println("OtherEventReceiver" + createdEvent);
+			System.out.println("OtherEventReceiver: " + createdEvent);
 
 			eventCounter.incrementAndGet();
 			lastReceived = createdEvent.getEntity();
