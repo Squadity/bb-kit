@@ -6,7 +6,11 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.bolbat.utils.reflect.ClassUtils;
+
 import org.configureme.Environment;
+import org.configureme.annotations.AfterConfiguration;
+import org.configureme.annotations.AfterInitialConfiguration;
 import org.configureme.environments.DynamicEnvironment;
 import org.configureme.sources.ConfigurationSourceKey.Format;
 import org.slf4j.Logger;
@@ -121,7 +125,7 @@ public final class ConfigurationManager {
 				throw new RuntimeException(e);
 			} catch (final RuntimeException e) {
 				// CHECKSTYLE:ON
-				LOGGER.warn("Configuration fail[" + e.getMessage() + "]. Relaying on defaults.");
+				relayOnDefaults(instance, e.getMessage());
 			}
 
 			STORAGE.put(key, instance);
@@ -131,6 +135,20 @@ public final class ConfigurationManager {
 		}
 
 		return type.cast(instance);
+	}
+
+	/**
+	 * Relaying on configuration defaults.
+	 * 
+	 * @param instance
+	 *            configuration instance
+	 * @param cause
+	 *            relaying cause
+	 */
+	private static void relayOnDefaults(final Object instance, final String cause) {
+		LOGGER.warn("Configuration fail[" + cause + "]. Relaying on defaults.");
+
+		ClassUtils.execute(instance, AfterConfiguration.class, AfterInitialConfiguration.class);
 	}
 
 	/**
