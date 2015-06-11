@@ -3,6 +3,7 @@ package net.bolbat.kit.ioc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.bolbat.kit.Module;
@@ -296,6 +297,39 @@ public final class Manager implements Module {
 	}
 
 	/**
+	 * Warm up {@link Manager} state for given service.<br>
+	 * For registered and not instantiated services 'post-construct' will be processed.
+	 * 
+	 * @param service
+	 *            service interface
+	 */
+	public static <S extends Service> void warmUp(final Class<S> service) {
+		synchronized (LOCK) {
+			final List<Object> instances = new ArrayList<>();
+			for (final ScopeConfiguration<?, ?> conf : STORAGE.values()) {
+				if (!conf.getClass().equals(service) || conf.getInstance() != null)
+					continue;
+
+				try {
+					instances.add(getInternally(conf.toKey(), false));
+				} catch (final ManagerException e) {
+					throw new ManagerRuntimeException("Can't warm up", e);
+				}
+			}
+
+			// execute post-construct
+			for (final Object instance : instances)
+				try {
+					ClassUtils.executePostConstruct(instance);
+					// CHECKSTYLE:OFF
+				} catch (final RuntimeException e) {
+					// CHECKSTYLE:ON
+					throw new ManagerRuntimeException("Can't warm up", e);
+				}
+		}
+	}
+
+	/**
 	 * Tear down {@link Manager} state.<br>
 	 * For registered and instantiated services 'pre-destroy' will be processed.
 	 */
@@ -309,6 +343,38 @@ public final class Manager implements Module {
 			for (final ScopeConfiguration<?, ?> conf : values)
 				if (conf.getInstance() != null)
 					ClassUtils.executePreDestroy(conf.getInstance());
+		}
+	}
+
+	/**
+	 * Tear down {@link Manager} state for given service.<br>
+	 * For registered and instantiated services 'pre-destroy' will be processed.
+	 * 
+	 * @param service
+	 *            service interface
+	 */
+	public static <S extends Service> void tearDown(final Class<S> service) {
+		synchronized (LOCK) {
+			final List<ScopeConfiguration<?, ?>> instances = new ArrayList<>();
+			for (final ScopeConfiguration<?, ?> conf : STORAGE.values())
+				if (conf.getClass().equals(service))
+					instances.add(conf);
+
+			// clearing services configuration
+			for (final ScopeConfiguration<?, ?> conf : instances) {
+				STORAGE.remove(conf.toKey());
+
+				// executing services pre-destroy
+				if (conf.getInstance() != null)
+					ClassUtils.executePreDestroy(conf.getInstance());
+			}
+
+			// clearing services links
+			final String serviceLinkPrefix = service.getName() + DELIMITER;
+			for (final Entry<String, Scope[]> linkEntry : LINKS.entrySet()) {
+				if (linkEntry.getKey().startsWith(serviceLinkPrefix))
+					LINKS.remove(linkEntry.getKey());
+			}
 		}
 	}
 

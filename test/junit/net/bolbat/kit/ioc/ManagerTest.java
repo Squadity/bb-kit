@@ -30,6 +30,7 @@ import org.junit.Test;
  * 
  * @author Alexandr Bolbat
  */
+// TODO Implement service based warmUp and tearDown test cases
 public class ManagerTest {
 
 	/**
