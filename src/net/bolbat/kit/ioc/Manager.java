@@ -307,7 +307,7 @@ public final class Manager implements Module {
 		synchronized (LOCK) {
 			final List<Object> instances = new ArrayList<>();
 			for (final ScopeConfiguration<?, ?> conf : STORAGE.values()) {
-				if (!conf.getClass().equals(service) || conf.getInstance() != null)
+				if (!conf.getService().equals(service) || conf.getInstance() != null)
 					continue;
 
 				try {
@@ -357,7 +357,7 @@ public final class Manager implements Module {
 		synchronized (LOCK) {
 			final List<ScopeConfiguration<?, ?>> instances = new ArrayList<>();
 			for (final ScopeConfiguration<?, ?> conf : STORAGE.values())
-				if (conf.getClass().equals(service))
+				if (conf.getService().equals(service))
 					instances.add(conf);
 
 			// clearing services configuration
@@ -437,6 +437,10 @@ public final class Manager implements Module {
 			this.serviceFactory = aServiceFactory;
 			this.configuration = aConfiguration != null ? aConfiguration : EMPTY_CONFIGURATION;
 			this.scopes = aScopes;
+		}
+
+		public Class<S> getService() {
+			return service;
 		}
 
 		public SF getServiceFactory() {
