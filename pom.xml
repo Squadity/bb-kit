@@ -9,12 +9,12 @@
 	<parent>
 		<groupId>net.bolbat</groupId>
 		<artifactId>bb-parent</artifactId>
-		<version>9</version>
+		<version>10</version>
 	</parent>
 
 	<properties>
 		<!-- bb dependencies -->
-		<bb-utils.version>0.2.5-SNAPSHOT</bb-utils.version>
+		<bb-utils.version>0.2.5</bb-utils.version>
 
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
