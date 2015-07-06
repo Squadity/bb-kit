@@ -2,7 +2,11 @@ package net.bolbat.kit.ioc.scope;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import net.bolbat.kit.ioc.Manager;
 
 /**
  * {@link Scope} related utility.
@@ -19,7 +23,8 @@ public final class ScopeUtil {
 	}
 
 	/**
-	 * Convert scopes array to string representation, it's unique for given scopes, scopes order doesn't matter.
+	 * Convert scopes array to string representation, it's unique for given scopes, scopes order doesn't matter.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(false,scopes)</code> upon preparation.
 	 * 
 	 * @param scopes
 	 *            scopes array
@@ -30,13 +35,13 @@ public final class ScopeUtil {
 			return "";
 
 		final List<String> scopesIds = new ArrayList<>();
-		for (Scope scope : scopes)
+		for (final Scope scope : scopesToArray(false, scopes))
 			if (scope != null)
 				scopesIds.add(scope.getId());
 
 		Collections.sort(scopesIds);
 
-		StringBuilder sb = new StringBuilder("[");
+		final StringBuilder sb = new StringBuilder("[");
 		for (String scopeId : scopesIds) {
 			if (sb.length() > 1)
 				sb.append(",");
@@ -46,6 +51,56 @@ public final class ScopeUtil {
 		sb.append("]");
 
 		return sb.toString();
+	}
+
+	/**
+	 * Utility for converting scopes to array with required validation and aggregation.<br>
+	 * All composite scopes would be expanded to flat structure.<br>
+	 * All duplicated scopes would be skipped.
+	 * 
+	 * @param scopes
+	 *            original scopes array
+	 * @param addDefault
+	 *            add default scope if original is empty
+	 * @return aggregated scopes array
+	 */
+	public static Scope[] scopesToArray(final boolean addDefault, final Scope... scopes) {
+		final List<Scope> aScopesList = new ArrayList<>();
+		final Set<String> added = new HashSet<>();
+
+		// handle composite scopes
+		if (scopes != null && scopes.length > 0) {
+			for (final Scope scope : scopes) {
+				if (scope == null)
+					continue;
+
+				// scope if not composite
+				if (!(scope instanceof CompositeScope)) {
+					if (!(added.contains(scope.getId()))) {
+						aScopesList.add(scope);
+						added.add(scope.getId());
+					}
+					continue;
+				}
+				// scope is composite
+				final CompositeScope composite = CompositeScope.class.cast(scope);
+				for (final Scope cScope : composite.getScopes()) {
+					if (cScope == null)
+						continue;
+
+					if (!(added.contains(cScope.getId()))) {
+						aScopesList.add(cScope);
+						added.add(cScope.getId());
+					}
+				}
+			}
+		}
+
+		// handle default scope
+		if (aScopesList.isEmpty() && addDefault)
+			aScopesList.add(Manager.DEFAULT_SCOPE);
+
+		return aScopesList.toArray(new Scope[aScopesList.size()]);
 	}
 
 }

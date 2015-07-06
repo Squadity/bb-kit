@@ -24,20 +24,7 @@ public class CompositeScope implements Scope {
 	 *            source scopes
 	 */
 	private CompositeScope(final Scope... scopes) {
-		if (scopes == null) {
-			this.scopes = new Scope[0];
-			return;
-
-		}
-
-		for (final Scope scope : scopes) {
-			if (scope == null)
-				throw new IllegalArgumentException("scopes can't contain 'null' scope");
-			if (scope instanceof CompositeScope)
-				throw new IllegalArgumentException("scopes can't contain 'CompositeScope' scope");
-		}
-
-		this.scopes = scopes;
+		this.scopes = scopes != null && scopes.length > 0 ? ScopeUtil.scopesToArray(false, scopes) : new Scope[0];
 	}
 
 	public Scope[] getScopes() {
@@ -45,7 +32,8 @@ public class CompositeScope implements Scope {
 	}
 
 	/**
-	 * Create {@link CompositeScope} from given scopes.
+	 * Create {@link CompositeScope} from given scopes.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(false,scopes)</code> upon creation.
 	 * 
 	 * @param scopes
 	 *            scopes
