@@ -1,14 +1,14 @@
 package net.bolbat.kit.scope;
 
-import net.bolbat.kit.ioc.scope.CustomScope;
-import net.bolbat.kit.ioc.scope.DistributionScope;
-import net.bolbat.kit.ioc.scope.Scope;
-import net.bolbat.kit.ioc.scope.TypeScope;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.bolbat.kit.ioc.scope.CustomScope;
+import net.bolbat.kit.ioc.scope.DistributionScope;
+import net.bolbat.kit.ioc.scope.Scope;
+import net.bolbat.kit.ioc.scope.TypeScope;
 
 /**
  * {@link Scope} implementation's test.
