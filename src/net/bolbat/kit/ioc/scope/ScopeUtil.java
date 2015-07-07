@@ -1,5 +1,8 @@
 package net.bolbat.kit.ioc.scope;
 
+import static net.bolbat.utils.lang.StringUtils.EMPTY;
+import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,17 +35,20 @@ public final class ScopeUtil {
 	 */
 	public static String scopesToString(final Scope... scopes) {
 		if (scopes == null || scopes.length == 0)
-			return "";
+			return EMPTY;
 
 		final List<String> scopesIds = new ArrayList<>();
 		for (final Scope scope : scopesToArray(false, scopes))
-			if (scope != null)
+			if (scope != null && isNotEmpty(scope.getId()))
 				scopesIds.add(scope.getId());
+
+		if (scopesIds.isEmpty())
+			return EMPTY;
 
 		Collections.sort(scopesIds);
 
 		final StringBuilder sb = new StringBuilder("[");
-		for (String scopeId : scopesIds) {
+		for (final String scopeId : scopesIds) {
 			if (sb.length() > 1)
 				sb.append(",");
 
