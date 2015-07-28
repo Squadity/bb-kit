@@ -21,6 +21,7 @@ import org.junit.Test;
  */
 // TODO this test can be improved with additional asserts in all test cases
 // TODO multi-threaded test case should be implemented
+// TODO add test cases for querying with sorting
 public class LuceneStoreTest {
 
 	/**
@@ -122,7 +123,6 @@ public class LuceneStoreTest {
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
 		Assert.assertTrue(result.contains(bean1));
-
 
 		// TermQuery
 		q = new TermQuery(new Term("email", "bean1@beans.com"));
@@ -233,6 +233,5 @@ public class LuceneStoreTest {
 			Assert.assertTrue("Right exception should be there.", e.getMessage().startsWith("query"));
 		}
 	}
-
 
 }

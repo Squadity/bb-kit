@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.bolbat.kit.config.ConfigurationManager;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -27,6 +25,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -39,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.bolbat.kit.config.ConfigurationManager;
 
 /**
  * {@link LuceneStore} implementation.
@@ -406,29 +407,43 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	@Override
 	public Collection<S> get(final Query query) {
-		if (query == null)
-			throw new IllegalArgumentException("query argument is null");
-
-		return get(query, Integer.MAX_VALUE);
+		return get(query, Integer.MAX_VALUE, null);
 	}
 
 	@Override
 	public Collection<Document> getDocuments(final Query query) {
-		if (query == null)
-			throw new IllegalArgumentException("query argument is null");
+		return getDocuments(query, Integer.MAX_VALUE, null);
+	}
 
-		return getDocuments(query, Integer.MAX_VALUE);
+	@Override
+	public Collection<S> get(final Query query, final Sort sort) {
+		return get(query, Integer.MAX_VALUE, sort);
+	}
+
+	@Override
+	public Collection<Document> getDocuments(final Query query, final Sort sort) {
+		return getDocuments(query, Integer.MAX_VALUE, sort);
 	}
 
 	@Override
 	public Collection<S> get(final Query query, final int limit) {
+		return get(query, limit, null);
+	}
+
+	@Override
+	public Collection<Document> getDocuments(final Query query, final int limit) {
+		return getDocuments(query, limit, null);
+	}
+
+	@Override
+	public Collection<S> get(final Query query, final int limit, final Sort sort) {
 		if (query == null)
 			throw new IllegalArgumentException("query argument is null");
 		if (limit < 1)
 			return Collections.emptyList();
 
 		try {
-			Collection<Document> docs = getDocuments(query, limit);
+			Collection<Document> docs = getDocuments(query, limit, sort);
 			final List<S> result = new ArrayList<>(docs.size());
 			for (final Document doc : docs) {
 				if (doc != null)
@@ -441,7 +456,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	}
 
 	@Override
-	public Collection<Document> getDocuments(final Query query, final int limit) {
+	public Collection<Document> getDocuments(final Query query, final int limit, final Sort sort) {
 		if (query == null)
 			throw new IllegalArgumentException("query argument is null");
 		if (limit < 1)
@@ -449,7 +464,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 		try {
 			final IndexSearcher localSearcher = getSearcher();
-			final TopDocs topDocs = localSearcher.search(query, limit);
+			final TopDocs topDocs = sort != null ? localSearcher.search(query, limit, sort) : localSearcher.search(query, limit);
 			final List<Document> result = new ArrayList<>();
 			for (final ScoreDoc scoreDoc : topDocs.scoreDocs)
 				result.add(localSearcher.doc(scoreDoc.doc));
