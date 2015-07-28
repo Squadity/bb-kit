@@ -24,7 +24,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
@@ -407,43 +406,63 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 	@Override
 	public Collection<S> get(final Query query) {
-		return get(query, Integer.MAX_VALUE, null);
+		return get(query, 0, Integer.MAX_VALUE, null);
 	}
 
 	@Override
 	public Collection<Document> getDocuments(final Query query) {
-		return getDocuments(query, Integer.MAX_VALUE, null);
+		return getDocuments(query, 0, Integer.MAX_VALUE, null);
 	}
 
 	@Override
 	public Collection<S> get(final Query query, final Sort sort) {
-		return get(query, Integer.MAX_VALUE, sort);
+		return get(query, 0, Integer.MAX_VALUE, sort);
 	}
 
 	@Override
 	public Collection<Document> getDocuments(final Query query, final Sort sort) {
-		return getDocuments(query, Integer.MAX_VALUE, sort);
+		return getDocuments(query, 0, Integer.MAX_VALUE, sort);
 	}
 
 	@Override
 	public Collection<S> get(final Query query, final int limit) {
-		return get(query, limit, null);
+		return get(query, 0, limit, null);
 	}
 
 	@Override
 	public Collection<Document> getDocuments(final Query query, final int limit) {
-		return getDocuments(query, limit, null);
+		return getDocuments(query, 0, limit, null);
+	}
+
+	@Override
+	public Collection<S> get(final Query query, final int offset, final int limit) {
+		return get(query, offset, limit, null);
+	}
+
+	@Override
+	public Collection<Document> getDocuments(final Query query, final int offset, final int limit) {
+		return getDocuments(query, offset, limit, null);
 	}
 
 	@Override
 	public Collection<S> get(final Query query, final int limit, final Sort sort) {
+		return get(query, 0, limit, sort);
+	}
+
+	@Override
+	public Collection<Document> getDocuments(final Query query, final int limit, final Sort sort) {
+		return getDocuments(query, 0, limit, sort);
+	}
+
+	@Override
+	public Collection<S> get(final Query query, final int offset, final int limit, final Sort sort) {
 		if (query == null)
 			throw new IllegalArgumentException("query argument is null");
 		if (limit < 1)
 			return Collections.emptyList();
 
 		try {
-			Collection<Document> docs = getDocuments(query, limit, sort);
+			Collection<Document> docs = getDocuments(query, offset, limit, sort);
 			final List<S> result = new ArrayList<>(docs.size());
 			for (final Document doc : docs) {
 				if (doc != null)
@@ -456,18 +475,24 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	}
 
 	@Override
-	public Collection<Document> getDocuments(final Query query, final int limit, final Sort sort) {
+	public Collection<Document> getDocuments(final Query query, final int offset, final int limit, final Sort sort) {
 		if (query == null)
 			throw new IllegalArgumentException("query argument is null");
+		if (offset < 0)
+			throw new IllegalArgumentException("offset[" + offset + "] couldn't be less then 0");
 		if (limit < 1)
 			return Collections.emptyList();
 
 		try {
 			final IndexSearcher localSearcher = getSearcher();
-			final TopDocs topDocs = sort != null ? localSearcher.search(query, limit, sort) : localSearcher.search(query, limit);
+			final TopDocs topDocs = sort != null ? localSearcher.search(query, offset + limit, sort) : localSearcher.search(query, offset + limit);
 			final List<Document> result = new ArrayList<>();
-			for (final ScoreDoc scoreDoc : topDocs.scoreDocs)
-				result.add(localSearcher.doc(scoreDoc.doc));
+			if (offset >= topDocs.scoreDocs.length)
+				return result;
+
+			for (int i = offset; i < topDocs.scoreDocs.length; i++)
+				result.add(localSearcher.doc(topDocs.scoreDocs[i].doc));
+
 			return result;
 		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);

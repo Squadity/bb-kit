@@ -191,6 +191,32 @@ public interface LuceneStore<S extends Storable> {
 	 * 
 	 * @param query
 	 *            {@link Query}
+	 * @param offset
+	 *            found results offset
+	 * @param limit
+	 *            limit of the result
+	 * @return {@link Collection} of <S>
+	 */
+	Collection<S> get(Query query, int offset, int limit);
+
+	/**
+	 * Search documents.
+	 *
+	 * @param query
+	 *            {@link Query}
+	 * @param offset
+	 *            found results offset
+	 * @param limit
+	 *            max amount of documents in result
+	 * @return {@link Document} collection
+	 */
+	Collection<Document> getDocuments(Query query, int offset, int limit);
+
+	/**
+	 * Search beans.
+	 * 
+	 * @param query
+	 *            {@link Query}
 	 * @param limit
 	 *            limit of the result
 	 * @param sort
@@ -211,6 +237,36 @@ public interface LuceneStore<S extends Storable> {
 	 * @return {@link Document} collection
 	 */
 	Collection<Document> getDocuments(Query query, int limit, Sort sort);
+
+	/**
+	 * Search beans.
+	 * 
+	 * @param query
+	 *            {@link Query}
+	 * @param offset
+	 *            found results offset
+	 * @param limit
+	 *            limit of the result
+	 * @param sort
+	 *            sorting criteria
+	 * @return {@link Collection} of <S>
+	 */
+	Collection<S> get(Query query, int offset, int limit, Sort sort);
+
+	/**
+	 * Search documents.
+	 *
+	 * @param query
+	 *            {@link Query}
+	 * @param offset
+	 *            found results offset
+	 * @param limit
+	 *            max amount of documents in result
+	 * @param sort
+	 *            sorting criteria
+	 * @return {@link Document} collection
+	 */
+	Collection<Document> getDocuments(Query query, int offset, int limit, Sort sort);
 
 	/**
 	 * Tear down {@link LuceneStore} state.

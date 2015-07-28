@@ -22,6 +22,7 @@ import org.junit.Test;
 // TODO this test can be improved with additional asserts in all test cases
 // TODO multi-threaded test case should be implemented
 // TODO add test cases for querying with sorting
+// TODO add test cases for querying with offset, limit, offset+limit
 public class LuceneStoreTest {
 
 	/**
