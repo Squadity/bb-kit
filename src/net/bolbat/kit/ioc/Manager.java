@@ -164,7 +164,8 @@ public final class Manager implements Module {
 	}
 
 	/**
-	 * Register service.
+	 * Register service.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.
 	 * 
 	 * @param service
 	 *            service interface
@@ -182,7 +183,7 @@ public final class Manager implements Module {
 		if (factory == null)
 			throw new IllegalArgumentException("serviceFactory argument is null.");
 
-		final Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
+		final Scope[] aScopes = ScopeUtil.scopesToArray(true, scopes);
 		final String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
 		final ScopeConfiguration<S, SF> serviceScopeConfiguration = new ScopeConfiguration<>(service, factory, conf, aScopes);
 
@@ -192,7 +193,8 @@ public final class Manager implements Module {
 	}
 
 	/**
-	 * Get service.
+	 * Get service.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon resolving.
 	 * 
 	 * @param service
 	 *            service interface
@@ -205,7 +207,7 @@ public final class Manager implements Module {
 		if (service == null)
 			throw new IllegalArgumentException("service argument is null.");
 
-		final Scope[] aScopes = scopes != null && scopes.length > 0 ? scopes : new Scope[] { DEFAULT_SCOPE };
+		final Scope[] aScopes = ScopeUtil.scopesToArray(true, scopes);
 		final String key = service.getName() + DELIMITER + ScopeUtil.scopesToString(aScopes);
 
 		@SuppressWarnings("unchecked")

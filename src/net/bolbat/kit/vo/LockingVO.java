@@ -35,19 +35,19 @@ public class LockingVO implements Locking {
 	}
 
 	/**
-	 * Check is read operation, {@link IllegalStateException} will be thrown if read not allowed.
+	 * Check is read operation, {@link LockingReadException} will be thrown if read not allowed.
 	 */
 	protected void checkRead() {
 		if (!isReadAllowed())
-			throw new IllegalStateException("Operation not allowed");
+			throw new LockingReadException(state);
 	}
 
 	/**
-	 * Check is write operation, {@link IllegalStateException} will be thrown if write not allowed.
+	 * Check is write operation, {@link LockingWriteException} will be thrown if write not allowed.
 	 */
 	protected void checkWrite() {
 		if (!isWriteAllowed())
-			throw new IllegalStateException("Operation not allowed");
+			throw new LockingWriteException(state);
 	}
 
 	/**
