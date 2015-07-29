@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.CacheBuilder;
 import net.bolbat.kit.cache.Cache;
 import net.bolbat.kit.cache.LoadFunction;
-
 import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
-
-import com.google.common.cache.CacheBuilder;
 
 /**
  * {@link Cache} implementation for guava.
@@ -224,5 +222,20 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 	@Override
 	public boolean isEmpty() {
 		return originalCache == null || originalCache.size() == 0;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
+		sb.append("[originalCache=").append(originalCache);
+		sb.append(", initiateCapacity=").append(initiateCapacity);
+		sb.append(", maximumCapacity=").append(maximumCapacity);
+		sb.append(", expireAfterAccess=").append(expireAfterAccess);
+		sb.append(", expireAfterAccessTimeUnit=").append(expireAfterAccessTimeUnit);
+		sb.append(", expireAfterWrite=").append(expireAfterWrite);
+		sb.append(", expireAfterWriteTimeUnit=").append(expireAfterWriteTimeUnit);
+		sb.append(", functionLoad=").append(functionLoad);
+		sb.append(']');
+		return sb.toString();
 	}
 }

@@ -6,7 +6,6 @@ import net.bolbat.kit.cache.Cache;
 import net.bolbat.kit.cache.CacheBuilder;
 import net.bolbat.kit.cache.LoadFunction;
 import net.bolbat.utils.lang.StringUtils;
-
 import org.configureme.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,5 +179,19 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 			cache.configureCache();
 		}
 		return cache;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
+		sb.append("[initiateCapacity=").append(initiateCapacity);
+		sb.append(", maximumCapacity=").append(maximumCapacity);
+		sb.append(", expireAfterAccess=").append(expireAfterAccess);
+		sb.append(", expireAfterAccessTimeUnit=").append(expireAfterAccessTimeUnit);
+		sb.append(", expireAfterWrite=").append(expireAfterWrite);
+		sb.append(", expireAfterWriteTimeUnit=").append(expireAfterWriteTimeUnit);
+		sb.append(", functionLoad=").append(functionLoad);
+		sb.append(']');
+		return sb.toString();
 	}
 }

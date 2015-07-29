@@ -111,4 +111,33 @@ public class GuavaCacheTest {
 	}
 
 
+	@Test
+	public void maxTest() throws LoadException {
+		//preparation
+		GuavaCacheBuilder<String, String> cacheBuilder = new GuavaCacheBuilder<>();
+		cacheBuilder.initiateCapacity(1);
+		cacheBuilder.maximumCapacity(2);
+		cache = cacheBuilder.build();
+
+		final String key1 = "key1";
+		final String key2 = "key2";
+		final String key3 = "key3";
+
+		final String value1 = "value1";
+		final String value2 = "value2";
+		final String value3 = "value3";
+		//call test method
+		cache.put(key1, value1);
+		cache.put(key2, value2);
+		cache.put(key3, value3);
+		Assert.assertEquals("Result not correct", null, cache.get(key1));
+		Assert.assertEquals("Result not correct", value2, cache.get(key2));
+		Assert.assertEquals("Result not correct", value3, cache.get(key3));
+		cache.put(key1, value1);
+		Assert.assertEquals("Result not correct", value1, cache.get(key1));
+		Assert.assertEquals("Result not correct", null, cache.get(key2));
+		Assert.assertEquals("Result not correct", value3, cache.get(key3));
+	}
+
+
 }
