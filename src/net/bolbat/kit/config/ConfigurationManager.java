@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.bolbat.utils.reflect.ClassUtils;
-
 import org.configureme.Environment;
 import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.AfterInitialConfiguration;
@@ -15,6 +13,8 @@ import org.configureme.environments.DynamicEnvironment;
 import org.configureme.sources.ConfigurationSourceKey.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.bolbat.utils.reflect.ClassUtils;
 
 /**
  * Configuration manager.
@@ -123,6 +123,8 @@ public final class ConfigurationManager {
 				throw new RuntimeException(e);
 			} catch (final IllegalAccessException e) {
 				throw new RuntimeException(e);
+			} catch (final ConfigurationRuntimeException e) {
+				throw e; // throwing up, this exception can be used as runtime exception in configuration constructor or "after configuration" methods
 			} catch (final RuntimeException e) {
 				// CHECKSTYLE:ON
 				relayOnDefaults(instance, e.getMessage());
