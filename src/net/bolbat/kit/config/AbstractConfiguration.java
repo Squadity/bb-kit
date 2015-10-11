@@ -3,6 +3,7 @@ package net.bolbat.kit.config;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.DontConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,14 @@ public abstract class AbstractConfiguration implements Configuration {
 				LOGGER.warn("Configuration[" + cName + "] 'configurationChanged' event for listener[" + lName + "] fail.", e);
 			}
 		}
+	}
+
+	/**
+	 * This method will be invoked automatically by <i>ConfigureMe</i> after configuration change.
+	 */
+	@AfterConfiguration
+	protected void configurationChanged() {
+		fireConfigurationChanged();
 	}
 
 }
