@@ -93,6 +93,8 @@ public final class LuceneUtils {
 	 * @param directory
 	 *            {@link Directory}
 	 */
+	// TODO fix deprecation before migration to Lucene 5
+	@SuppressWarnings("deprecation")
 	public static void unlock(final Directory directory) {
 		try {
 			if (directory != null)

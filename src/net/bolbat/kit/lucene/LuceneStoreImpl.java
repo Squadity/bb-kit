@@ -4,6 +4,7 @@ import static net.bolbat.utils.lang.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -155,7 +156,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 
 			// analyzer
 			// TODO should be configurable somehow in future
-			this.analyzer = new StandardAnalyzer(version);
+			this.analyzer = new StandardAnalyzer();
 
 			// writer config and writer
 			this.writerConfig = new IndexWriterConfig(version, analyzer);
@@ -168,7 +169,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
 			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-		} catch (final IOException e) {
+		} catch (final IOException | ParseException e) {
 			throw new LuceneStoreRuntimeException(e);
 		}
 	}
