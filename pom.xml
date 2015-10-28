@@ -14,14 +14,14 @@
 
 	<properties>
 		<!-- bb dependencies -->
-		<bb-utils.version>0.2.5</bb-utils.version>
+		<bb-utils.version>0.2.6-SNAPSHOT</bb-utils.version>
 
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
 
 		<!-- provided dependencies -->
-		<quartz-scheduler.version>2.2.1</quartz-scheduler.version>
-		<jackson.version>2.6.2</jackson.version>
+		<quartz-scheduler.version>2.2.2</quartz-scheduler.version>
+		<jackson.version>2.6.3</jackson.version>
 		<guava.version>18.0</guava.version>
 		<lucene.version>4.10.4</lucene.version>
 	</properties>
