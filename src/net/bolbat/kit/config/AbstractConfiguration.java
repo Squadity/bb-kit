@@ -82,7 +82,7 @@ public abstract class AbstractConfiguration implements Configuration {
 	 * This method will be invoked automatically by <i>ConfigureMe</i> after configuration change.
 	 */
 	@AfterConfiguration
-	protected void configurationChanged() {
+	public void configurationChanged() {
 		fireConfigurationChanged();
 	}
 
