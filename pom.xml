@@ -14,7 +14,7 @@
 
 	<properties>
 		<!-- bb dependencies -->
-		<bb-utils.version>0.2.6</bb-utils.version>
+		<bb-utils.version>0.2.7-SNAPSHOT</bb-utils.version>
 
 		<!-- external dependencies -->
 		<configureme.version>2.3.0</configureme.version>
