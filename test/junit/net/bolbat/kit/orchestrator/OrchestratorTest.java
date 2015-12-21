@@ -22,12 +22,14 @@ import net.bolbat.kit.orchestrator.exception.ExecutorOverflowException;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
 import net.bolbat.kit.service.ServiceException;
 import net.bolbat.kit.service.ServiceRuntimeException;
+import net.bolbat.utils.annotation.Mark.ToDo;
 
 /**
  * {@link Orchestrator} test.
  * 
  * @author Alexandr Bolbat
  */
+@ToDo("add test cases for orchestration configured from file configuration")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OrchestratorTest {
 
