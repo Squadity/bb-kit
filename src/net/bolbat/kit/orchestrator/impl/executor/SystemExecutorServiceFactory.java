@@ -41,7 +41,7 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	/**
 	 * System {@link ExecutorService}.
 	 */
-	private static volatile ExecutorService sysExecutor;
+	private volatile ExecutorService sysExecutor;
 
 	/**
 	 * Static initialization.
@@ -83,11 +83,11 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	/**
 	 * Tear down system {@link ExecutorService} instance.
 	 */
-	public static synchronized void tearDown() {
+	public static void tearDown() {
 		synchronized (SYS_CONFIG) {
-			if (sysExecutor != null) {
-				final ExecutorService toTerminate = sysExecutor;
-				sysExecutor = null;
+			if (getInstance().sysExecutor != null) {
+				final ExecutorService toTerminate = getInstance().sysExecutor;
+				getInstance().sysExecutor = null;
 				ExecutionUtils.terminate(toTerminate);
 			}
 		}

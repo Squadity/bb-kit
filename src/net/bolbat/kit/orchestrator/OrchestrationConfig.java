@@ -3,6 +3,7 @@ package net.bolbat.kit.orchestrator;
 import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
 import static net.bolbat.utils.lang.Validations.checkArgument;
 
+import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -151,7 +152,13 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	 * @author Alexandr Bolbat
 	 */
 	@ConfigureMe(allfields = false)
-	public static class LimitsConfig {
+	public static class LimitsConfig implements Serializable {
+
+		/**
+		 * Generated SerialVersionUID.
+		 */
+		@DontConfigure
+		private static final long serialVersionUID = 1082218846823612100L;
 
 		/**
 		 * Execution time limit.
@@ -213,7 +220,13 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	 */
 	@ToDo("Implement support for custom factory configuration from file")
 	@ConfigureMe(allfields = false)
-	public static class ExecutorConfig {
+	public static class ExecutorConfig implements Serializable {
+
+		/**
+		 * Generated SerialVersionUID.
+		 */
+		@DontConfigure
+		private static final long serialVersionUID = 9058169478068158733L;
 
 		/**
 		 * {@link ExecutorService} factory class.

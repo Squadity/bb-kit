@@ -78,7 +78,7 @@ public class ExecutionHandler implements InvocationHandler {
 	 */
 	public ExecutionHandler(final Object aImpl, final Class<?>[] aInterfaces) {
 		this.impl = aImpl;
-		this.interfaces = aInterfaces;
+		this.interfaces = aInterfaces.clone();
 		this.implExecutionId = ExecutionUtils.objectId(impl);
 	}
 
