@@ -166,7 +166,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		private TimeUnit timeUnit = OrchestrationConstants.TIME_LIMIT_UNIT;
 
 		/**
-		 * Concurrent executions limit
+		 * Concurrent executions limit.
 		 */
 		@Configure
 		private int concurrent = OrchestrationConstants.CONCURRENT_LIMIT;

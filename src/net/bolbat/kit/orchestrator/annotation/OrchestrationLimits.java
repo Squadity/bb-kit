@@ -32,7 +32,7 @@ public @interface OrchestrationLimits {
 	TimeUnit timeUnit() default TimeUnit.MILLISECONDS; // couldn't use from CallConstants due to annotations restrictions
 
 	/**
-	 * Concurrent executions limit
+	 * Concurrent executions limit.
 	 */
 	int concurrent() default OrchestrationConstants.CONCURRENT_LIMIT;
 

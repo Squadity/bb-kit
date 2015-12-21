@@ -83,7 +83,9 @@ public class ExecutionHandler implements InvocationHandler {
 	}
 
 	@Override
+	// CHECKSTYLE:OFF
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+		// CHECKSTYLE:ON
 		final String executionId = resolveId(method);
 
 		// PHASE-1 - optimized orchestration resolving (from local cache)
@@ -92,10 +94,10 @@ public class ExecutionHandler implements InvocationHandler {
 		if (state != null)
 			switch (state) {
 				case ORCHESTRATED_BY_METHOD:
-					final ExecutionInfo methodInfo = resolveInfo(executionId, impl, method).getInfo();
+					final ExecutionInfo methodInfo = resolveInfo(executionId, method).getInfo();
 					return invokeOnExecutor(method, args, methodInfo);
 				case ORCHESTRATED_BY_CLASS:
-					final ExecutionInfo classInfo = resolveInfo(implExecutionId, impl).getInfo();
+					final ExecutionInfo classInfo = resolveInfo().getInfo();
 					return invokeOnExecutor(method, args, classInfo);
 				default:
 					return method.invoke(impl, args);
@@ -104,7 +106,7 @@ public class ExecutionHandler implements InvocationHandler {
 		// PHASE-2 - finding right way to orchestrate
 
 		// try to orchestrate by method configuration
-		ResolvedInfo resolved = resolveInfo(executionId, impl, method);
+		ResolvedInfo resolved = resolveInfo(executionId, method);
 		if (resolved.getState() == ResolvedState.OK) {
 			infos.put(executionId, InfoState.ORCHESTRATED_BY_METHOD);
 			return invokeOnExecutor(method, args, resolved.getInfo());
@@ -114,7 +116,7 @@ public class ExecutionHandler implements InvocationHandler {
 		}
 
 		// try to orchestrate by implementation configuration
-		resolved = resolveInfo(implExecutionId, impl);
+		resolved = resolveInfo();
 		if (resolved.getState() == ResolvedState.OK) {
 			infos.put(executionId, InfoState.ORCHESTRATED_BY_CLASS);
 			return invokeOnExecutor(method, args, resolved.getInfo());
@@ -138,9 +140,11 @@ public class ExecutionHandler implements InvocationHandler {
 	 * @param info
 	 *            {@link ExecutionInfo}
 	 * @return invocation result
-	 * @throws Throwable
+	 * @throws Exception
 	 */
-	private Object invokeOnExecutor(final Method method, final Object[] args, final ExecutionInfo info) throws Throwable {
+	// CHECKSTYLE:OFF
+	private Object invokeOnExecutor(final Method method, final Object[] args, final ExecutionInfo info) throws Exception {
+		// CHECKSTYLE:ON
 		final Callable<Object> callable = ExecutionCaches.getCallable(impl, method, args);
 		final LimitsConfig limitsConf = info.getConfig().getLimitsConfig();
 
@@ -180,21 +184,17 @@ public class ExecutionHandler implements InvocationHandler {
 	/**
 	 * Resolve execution configuration based on implementation type data.
 	 * 
-	 * @param id
-	 *            execution identifier
-	 * @param impl
-	 *            implementation instance
 	 * @return {@link ResolvedInfo}
 	 */
-	public ResolvedInfo resolveInfo(final String id, final Object impl) {
-		ExecutionInfo info = ExecutionCaches.getExecutionInfo(id);
+	public ResolvedInfo resolveInfo() {
+		ExecutionInfo info = ExecutionCaches.getExecutionInfo(implExecutionId);
 		if (info != null)
 			return ResolvedInfo.ok(info);
 
-		final IdBasedLock<String> lock = lockManager.obtainLock(id);
+		final IdBasedLock<String> lock = lockManager.obtainLock(implExecutionId);
 		lock.lock();
 		try {
-			info = ExecutionCaches.getExecutionInfo(id); // double check
+			info = ExecutionCaches.getExecutionInfo(implExecutionId); // double check
 			if (info != null)
 				return ResolvedInfo.ok(info);
 
@@ -213,8 +213,8 @@ public class ExecutionHandler implements InvocationHandler {
 					implType.getAnnotation(OrchestrationExecutor.class));
 
 			final String executionName = implType.getSimpleName();
-			info = new ExecutionInfo(id, executionName, config);
-			ExecutionCaches.cacheExecutionInfo(id, info);
+			info = new ExecutionInfo(implExecutionId, executionName, config);
+			ExecutionCaches.cacheExecutionInfo(implExecutionId, info);
 		} finally {
 			lock.unlock();
 		}
@@ -227,13 +227,11 @@ public class ExecutionHandler implements InvocationHandler {
 	 * 
 	 * @param id
 	 *            execution identifier
-	 * @param impl
-	 *            implementation instance
 	 * @param method
 	 *            execution method
 	 * @return {@link ResolvedInfo}
 	 */
-	public ResolvedInfo resolveInfo(final String id, final Object impl, final Method method) {
+	public ResolvedInfo resolveInfo(final String id, final Method method) {
 		ExecutionInfo info = ExecutionCaches.getExecutionInfo(id);
 		if (info != null)
 			return ResolvedInfo.ok(info);

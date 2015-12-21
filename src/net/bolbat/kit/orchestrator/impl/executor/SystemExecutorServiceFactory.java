@@ -41,7 +41,7 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	/**
 	 * System {@link ExecutorService}.
 	 */
-	private static volatile ExecutorService SYS_EXECUTOR;
+	private static volatile ExecutorService sysExecutor;
 
 	/**
 	 * Static initialization.
@@ -62,15 +62,13 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 
 	@Override
 	public ExecutorService create(final OrchestrationConfig config, final Object... nameFormatArgs) {
-		if (SYS_EXECUTOR != null)
-			return SYS_EXECUTOR;
+		if (sysExecutor == null)
+			synchronized (SYS_CONFIG) {
+				if (sysExecutor == null)
+					sysExecutor = DefaultExecutorServiceFactory.getInstance().create(SYS_CONFIG, nameFormatArgs);
+			}
 
-		synchronized (SYS_CONFIG) {
-			if (SYS_EXECUTOR == null)
-				SYS_EXECUTOR = DefaultExecutorServiceFactory.getInstance().create(SYS_CONFIG, nameFormatArgs);
-		}
-
-		return SYS_EXECUTOR;
+		return sysExecutor;
 	}
 
 	/**
@@ -87,9 +85,9 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	 */
 	public static synchronized void tearDown() {
 		synchronized (SYS_CONFIG) {
-			if (SYS_EXECUTOR != null) {
-				final ExecutorService toTerminate = SYS_EXECUTOR;
-				SYS_EXECUTOR = null;
+			if (sysExecutor != null) {
+				final ExecutorService toTerminate = sysExecutor;
+				sysExecutor = null;
 				ExecutionUtils.terminate(toTerminate);
 			}
 		}
