@@ -3,6 +3,7 @@ package net.bolbat.kit.orchestrator.impl.executor;
 import java.util.concurrent.ExecutorService;
 
 import net.bolbat.kit.orchestrator.OrchestrationConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.impl.ExecutionUtils;
 
 /**
@@ -34,9 +35,9 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	private static final SystemExecutorServiceFactory INSTANCE = new SystemExecutorServiceFactory();
 
 	/**
-	 * System {@link OrchestrationConfig}.
+	 * System {@link ExecutorConfig}.
 	 */
-	private static final OrchestrationConfig SYS_CONFIG;
+	private static final ExecutorConfig SYS_CONFIG;
 
 	/**
 	 * System {@link ExecutorService}.
@@ -47,10 +48,10 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	 * Static initialization.
 	 */
 	static {
-		SYS_CONFIG = new OrchestrationConfig();
-		SYS_CONFIG.getExecutorConfig().setFactory(SystemExecutorServiceFactory.class);
-		SYS_CONFIG.getExecutorConfig().setCoreSize(SYS_POOL_CORE_SIZE);
-		SYS_CONFIG.getExecutorConfig().setNameFormat(SYS_THREAD_NAME_FORMAT);
+		SYS_CONFIG = new ExecutorConfig();
+		SYS_CONFIG.setFactory(SystemExecutorServiceFactory.class);
+		SYS_CONFIG.setCoreSize(SYS_POOL_CORE_SIZE);
+		SYS_CONFIG.setNameFormat(SYS_THREAD_NAME_FORMAT);
 		// other custom settings should be there
 	}
 
@@ -61,7 +62,7 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	}
 
 	@Override
-	public ExecutorService create(final OrchestrationConfig config, final Object... nameFormatArgs) {
+	public ExecutorService create(final ExecutorConfig config, final Object... nameFormatArgs) {
 		if (sysExecutor == null)
 			synchronized (SYS_CONFIG) {
 				if (sysExecutor == null)

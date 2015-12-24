@@ -29,8 +29,8 @@ public class ExecutorOverflowException extends OrchestrationException {
 	 *            {@link ExecutionInfo}
 	 */
 	public ExecutorOverflowException(final ExecutionInfo info) {
-		super(String.format(OrchestrationConstants.ERR_MSG_TEMPLATE, info.getId(), info.getName(), info.getConfig().getLimitsConfig(),
-				info.getConfig().getExecutorConfig(), MESSAGE));
+		super(String.format(OrchestrationConstants.ERR_MSG_TEMPLATE, info.getId(), info.getName(), info.getActualLimitsConfig(), info.getActualExecutorConfig(),
+				MESSAGE));
 	}
 
 }

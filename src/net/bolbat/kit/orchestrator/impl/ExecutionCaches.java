@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import net.bolbat.kit.orchestrator.OrchestrationConfig;
 
 /**
  * Caches required for orchestration.
@@ -18,7 +21,7 @@ public final class ExecutionCaches {
 	/**
 	 * {@link ExecutionInfo} cache.
 	 */
-	private static final Map<String, ExecutionInfo> EXECUTION_INFO = new ConcurrentHashMap<>();
+	private static final Map<String, ExecutionInfo> INFOS = new ConcurrentHashMap<>();
 
 	/**
 	 * {@link ExecutorService} cache.
@@ -42,12 +45,12 @@ public final class ExecutionCaches {
 	 * 
 	 * @param id
 	 *            execution identifier
-	 * @return {@link ExecutionInfo} instance or <code>null</code>
+	 * @return {@link OrchestrationConfig} instance or <code>null</code>
 	 */
-	public static ExecutionInfo getExecutionInfo(final String id) {
+	public static ExecutionInfo getInfo(final String id) {
 		checkArgument(id != null, "id argument is null");
 
-		return EXECUTION_INFO.get(id);
+		return INFOS.get(id);
 	}
 
 	/**
@@ -58,11 +61,11 @@ public final class ExecutionCaches {
 	 * @param info
 	 *            {@link ExecutionInfo} instance
 	 */
-	public static void cacheExecutionInfo(final String id, final ExecutionInfo info) {
+	public static void cacheInfo(final String id, final ExecutionInfo info) {
 		checkArgument(id != null, "id argument is null");
 		checkArgument(info != null, "info argument is empty");
 
-		EXECUTION_INFO.put(id, info);
+		INFOS.put(id, info);
 	}
 
 	/**
@@ -79,7 +82,8 @@ public final class ExecutionCaches {
 	}
 
 	/**
-	 * Cache {@link ExecutorService}.
+	 * Cache {@link ExecutorService}.<br>
+	 * Previously associated {@link ExecutorService} would be shut down.
 	 * 
 	 * @param id
 	 *            execution identifier
@@ -87,11 +91,34 @@ public final class ExecutionCaches {
 	 *            {@link ExecutorService} instance
 	 * @return old {@link ExecutorService} instance or <code>null</code>
 	 */
-	public static ExecutorService cacheExecutor(final String id, final ExecutorService service) {
+	public static void cacheExecutor(final String id, final ExecutorService service) {
 		checkArgument(id != null, "id argument is null");
 		checkArgument(service != null, "service argument is empty");
 
-		return EXECUTORS.put(id, service);
+		final ExecutorService toShutdown = EXECUTORS.put(id, service);
+		shutdownExecutor(toShutdown);
+	}
+
+	/**
+	 * Shut down {@link ExecutorService}.
+	 * 
+	 * @param id
+	 *            execution identifier
+	 */
+	public static void shutdownExecutor(final String id) {
+		final ExecutorService toShutdown = EXECUTORS.remove(id);
+		shutdownExecutor(toShutdown);
+	}
+
+	/**
+	 * Shut down {@link ExecutorService}.
+	 * 
+	 * @param toShutdown
+	 *            {@link ExecutorService} instance
+	 */
+	public static void shutdownExecutor(final ExecutorService toShutdown) {
+		if (toShutdown != null)
+			ExecutionUtils.shutdown(toShutdown, false, 0, TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -125,13 +152,17 @@ public final class ExecutionCaches {
 	 * Tear down {@link ExecutionCaches}.
 	 */
 	public static synchronized void tearDown() {
-		// execution info cache
-		for (final String id : EXECUTION_INFO.keySet())
-			EXECUTION_INFO.remove(id).unregisterFromConfiguration();
+		// executions info's cache
+		for (final String id : INFOS.keySet()) {
+			final ExecutionInfo removed = INFOS.remove(id);
+			removed.unregisterFromConfigurationChanges();
+		}
 
 		// executors cache
-		for (final String id : EXECUTORS.keySet())
-			ExecutionUtils.terminate(EXECUTORS.remove(id));
+		for (final String id : EXECUTORS.keySet()) {
+			final ExecutorService removed = EXECUTORS.remove(id);
+			ExecutionUtils.terminate(removed);
+		}
 
 		// callables cache
 		CALLABLES.clear();

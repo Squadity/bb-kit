@@ -15,7 +15,12 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.bolbat.kit.orchestrator.OrchestrationConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.LimitsConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConstants;
+import net.bolbat.kit.orchestrator.exception.ConcurrentOverflowException;
+import net.bolbat.kit.orchestrator.exception.ExecutionTimeoutException;
+import net.bolbat.kit.orchestrator.exception.ExecutorOverflowException;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
 import net.bolbat.kit.orchestrator.impl.executor.DefaultExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.ExecutorServiceFactory;
@@ -96,6 +101,38 @@ public final class ExecutionUtils {
 	}
 
 	/**
+	 * Invoke on executor.
+	 * 
+	 * @param method
+	 *            execution method
+	 * @param args
+	 *            method arguments
+	 * @param info
+	 *            {@link ExecutionInfo}
+	 * @return invocation result
+	 * @throws Exception
+	 */
+	public static Object invoke(final Object instance, final Method method, final Object[] args, final ExecutionInfo info) throws Exception {
+		final Callable<Object> callable = ExecutionCaches.getCallable(instance, method, args);
+		final LimitsConfig limitsConf = info.getActualLimitsConfig();
+
+		final boolean controlConcurrency = limitsConf.getConcurrent() != OrchestrationConstants.CONCURRENT_LIMIT;
+		try {
+			if (controlConcurrency && limitsConf.getConcurrent() < info.getActualExecutions().incrementAndGet())
+				throw new ConcurrentOverflowException(info);
+
+			return ExecutionUtils.invoke(callable, limitsConf.getTime(), limitsConf.getTimeUnit(), info.getActualExecutor());
+		} catch (final RejectedExecutionException e) {
+			throw new ExecutorOverflowException(info);
+		} catch (final TimeoutException e) {
+			throw new ExecutionTimeoutException(info);
+		} finally {
+			if (controlConcurrency)
+				info.getActualExecutions().decrementAndGet();
+		}
+	}
+
+	/**
 	 * Invoke callable on {@link ExecutorService}.<br>
 	 * {@link RejectedExecutionException} will be thrown if executor couldn't accept task for execution.<br>
 	 * {@link TimeoutException} will be thrown if maximum time to wait is reached.<br>
@@ -139,15 +176,15 @@ public final class ExecutionUtils {
 	 * Create {@link ExecutorService}.
 	 * 
 	 * @param config
-	 *            {@link OrchestrationConfig}
+	 *            {@link ExecutorConfig}
 	 * @param nameFormatArgs
 	 *            thread name format arguments
 	 * @return {@link ExecutorService}
 	 */
-	public static ExecutorService create(final OrchestrationConfig config, final Object... nameFormatArgs) {
+	public static ExecutorService create(final ExecutorConfig config, final Object... nameFormatArgs) {
 		checkArgument(config != null, "config argument is null");
 
-		final Class<? extends ExecutorServiceFactory> factory = config.getExecutorConfig().getFactory();
+		final Class<? extends ExecutorServiceFactory> factory = config.getFactory();
 		if (DefaultExecutorServiceFactory.class == factory)
 			return DefaultExecutorServiceFactory.getInstance().create(config, nameFormatArgs);
 

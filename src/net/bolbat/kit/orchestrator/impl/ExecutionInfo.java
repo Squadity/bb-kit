@@ -1,15 +1,13 @@
 package net.bolbat.kit.orchestrator.impl;
 
-import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
-import static net.bolbat.utils.lang.Validations.checkArgument;
-
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.bolbat.kit.config.ConfigurationListener;
 import net.bolbat.kit.orchestrator.OrchestrationConfig;
-import net.bolbat.kit.orchestrator.OrchestrationConfig.Source;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.LimitsConfig;
+import net.bolbat.kit.orchestrator.annotation.Orchestrate;
 import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 import net.bolbat.utils.concurrency.lock.SafeIdBasedLockManager;
@@ -26,128 +24,180 @@ public class ExecutionInfo implements ConfigurationListener {
 	 */
 	private static final IdBasedLockManager<String> LOCK_MANAGER = new SafeIdBasedLockManager<>();
 
-	/**
-	 * Execution identifier.
-	 */
-	private final String id;
+	private String id;
 
-	/**
-	 * Execution name.
-	 */
-	private final String name;
+	private String name;
 
-	/**
-	 * {@link OrchestrationConfig} instance.
-	 */
-	private final OrchestrationConfig config;
+	private Source source = Source.CLASS;
 
-	/**
-	 * Currently running concurrent executions.
-	 */
-	private final AtomicInteger currentExecutions = new AtomicInteger();
+	private State state = State.NOT_ORCHESTRATED;
 
-	/**
-	 * Default constructor.
-	 * 
-	 * @param aId
-	 *            execution identifier
-	 * @param aConfig
-	 *            {@link OrchestrationConfig} instance
-	 */
-	public ExecutionInfo(final String aId, final String aName, final OrchestrationConfig aConfig) {
-		checkArgument(isNotEmpty(aId), "aId argument is empty");
-		checkArgument(aConfig != null, "aConfig argument is null");
+	private ExecutionInfo classInfo;
 
-		this.id = aId;
-		this.name = aName;
-		this.config = aConfig;
+	private Source limitsSource = Source.CLASS;
 
-		registerToConfiguration();
-	}
+	private Source executorSource = Source.CLASS;
+
+	private OrchestrationConfig config;
+
+	private final transient AtomicInteger executions = new AtomicInteger(0);
 
 	public String getId() {
 		return id;
+	}
+
+	public void setId(final String aId) {
+		this.id = aId;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public void setName(final String aName) {
+		this.name = aName;
+	}
+
+	public Source getSource() {
+		return source;
+	}
+
+	public void setSource(final Source aSource) {
+		this.source = aSource;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public void setState(final State aState) {
+		this.state = aState;
+	}
+
+	public ExecutionInfo getClassInfo() {
+		return classInfo;
+	}
+
+	public void setClassInfo(final ExecutionInfo aClassInfo) {
+		this.classInfo = aClassInfo;
+	}
+
+	public Source getLimitsSource() {
+		return limitsSource;
+	}
+
+	public void setLimitsSource(final Source aLimitsSource) {
+		this.limitsSource = aLimitsSource;
+	}
+
+	public Source getExecutorSource() {
+		return executorSource;
+	}
+
+	public void setExecutorSource(final Source aExecutorSource) {
+		this.executorSource = aExecutorSource;
+	}
+
 	public OrchestrationConfig getConfig() {
 		return config;
 	}
 
-	public AtomicInteger getCurrentExecutions() {
-		return currentExecutions;
+	public void setConfig(final OrchestrationConfig aConfig) {
+		this.config = aConfig;
+	}
+
+	public AtomicInteger getExecutions() {
+		return executions;
+	}
+
+	public boolean isOrchestrated() {
+		if (source == Source.METHOD && State.NO_CONFIGURATION == state)
+			return classInfo.isOrchestrated();
+
+		return State.ORCHESTRATED == state;
+	}
+
+	public OrchestrationConfig getActualConfig() {
+		if (source == Source.METHOD && limitsSource == Source.CLASS)
+			return classInfo.getConfig();
+
+		return config;
+	}
+
+	public LimitsConfig getActualLimitsConfig() {
+		if (source == Source.METHOD && limitsSource == Source.CLASS)
+			return classInfo.getConfig().getLimitsConfig();
+
+		return config.getLimitsConfig();
+	}
+
+	public ExecutorConfig getActualExecutorConfig() {
+		if (source == Source.METHOD && executorSource == Source.CLASS)
+			return classInfo.getConfig().getExecutorConfig();
+
+		return config.getExecutorConfig();
+	}
+
+	public String getActualExecutorId() {
+		if (source == Source.METHOD && executorSource == Source.CLASS)
+			return classInfo.getId();
+
+		return id;
+	}
+
+	public String getActualExecutorName() {
+		if (source == Source.METHOD && executorSource == Source.CLASS)
+			return classInfo.getName();
+
+		return name;
 	}
 
 	/**
-	 * Get {@link ExecutorService} instance.
+	 * Get actual {@link ExecutorService} instance.
 	 * 
 	 * @return {@link ExecutorService}
 	 */
-	public ExecutorService getExecutor() {
-		ExecutorService service = ExecutionCaches.getExecutor(id);
+	public ExecutorService getActualExecutor() {
+		final String actualExecutorId = getActualExecutorId();
+		ExecutorService service = ExecutionCaches.getExecutor(actualExecutorId);
 		if (service != null)
 			return service;
 
-		final IdBasedLock<String> lock = LOCK_MANAGER.obtainLock(id);
+		final IdBasedLock<String> lock = LOCK_MANAGER.obtainLock(actualExecutorId);
 		lock.lock();
 		try {
-			service = ExecutionCaches.getExecutor(id);
-			if (service == null)
-				service = initExecutor();
+			service = ExecutionCaches.getExecutor(actualExecutorId);
+			if (service != null) // double check
+				return service;
+
+			service = ExecutionUtils.create(getActualExecutorConfig(), getActualExecutorId(), getActualExecutorName());
+			ExecutionCaches.cacheExecutor(actualExecutorId, service);
+			return service;
 		} finally {
 			lock.unlock();
 		}
-
-		return service;
 	}
 
-	/**
-	 * Operation what should be executed if configuration changed.
-	 */
+	public AtomicInteger getActualExecutions() {
+		if (source == Source.METHOD && executorSource == Source.CLASS)
+			return classInfo.getExecutions();
+
+		return executions;
+	}
+
+	public void registerForConfigurationChanges() {
+		if (config != null && config.getSource() == OrchestrationConfig.Source.CONFIGURE_ME)
+			config.registerListener(this);
+	}
+
+	public void unregisterFromConfigurationChanges() {
+		if (config != null && config.getSource() == OrchestrationConfig.Source.CONFIGURE_ME)
+			config.unregisterListener(this);
+	}
+
 	@Override
 	public void configurationChanged() {
-		initExecutor();
-	}
-
-	/**
-	 * Initialize new {@link ExecutorService} instance and shutdown old one.
-	 * 
-	 * @return {@link ExecutorService}
-	 */
-	private ExecutorService initExecutor() {
-		final IdBasedLock<String> lock = LOCK_MANAGER.obtainLock(id);
-		lock.lock();
-		try {
-			final ExecutorService newService = ExecutionUtils.create(config, id, name);
-
-			// closing old service instance
-			final ExecutorService oldService = ExecutionCaches.cacheExecutor(id, newService);
-			if (oldService != null)
-				ExecutionUtils.shutdown(oldService, false, 0, TimeUnit.MILLISECONDS);
-
-			return newService;
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * Register to configuration change listening.
-	 */
-	public void registerToConfiguration() {
-		if (config.getSource() == Source.CONFIGURE_ME)
-			config.unregisterListener(this);
-	}
-
-	/**
-	 * Unregister from configuration change listening.
-	 */
-	public void unregisterFromConfiguration() {
-		if (config.getSource() == Source.CONFIGURE_ME)
-			config.unregisterListener(this);
+		ExecutionCaches.shutdownExecutor(getActualExecutorId());
 	}
 
 	@Override
@@ -175,14 +225,47 @@ public class ExecutionInfo implements ConfigurationListener {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
-		builder.append(" [id=").append(id);
-		builder.append(", name=").append(name);
-		builder.append(", config=").append(config);
-		builder.append("]");
-		return builder.toString();
+	/**
+	 * Info sources.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public enum Source {
+
+		/**
+		 * Configured from class.
+		 */
+		CLASS,
+
+		/**
+		 * Configured from method.
+		 */
+		METHOD;
+
+	}
+
+	/**
+	 * Info status.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	public enum State {
+
+		/**
+		 * Orchestration is enabled.
+		 */
+		ORCHESTRATED,
+
+		/**
+		 * Orchestration is disabled.
+		 */
+		NOT_ORCHESTRATED,
+
+		/**
+		 * {@link Orchestrate} annotation is not present.
+		 */
+		NO_CONFIGURATION;
+
 	}
 
 }

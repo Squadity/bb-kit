@@ -1,9 +1,9 @@
 package net.bolbat.kit.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.configureme.annotations.AfterConfiguration;
 import org.configureme.annotations.DontConfigure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,15 @@ public abstract class AbstractConfiguration implements Configuration {
 	private final List<ConfigurationListener> listeners = new CopyOnWriteArrayList<>();
 
 	/**
+	 * Get listeners.
+	 * 
+	 * @return listeners
+	 */
+	public List<ConfigurationListener> getListeners() {
+		return new ArrayList<>(listeners);
+	}
+
+	/**
 	 * Register listener.
 	 * 
 	 * @param listener
@@ -53,6 +62,13 @@ public abstract class AbstractConfiguration implements Configuration {
 	public void unregisterListener(final ConfigurationListener listener) {
 		if (listener != null)
 			listeners.remove(listener);
+	}
+
+	/**
+	 * Unregister all listeners.
+	 */
+	public void unregisterListeners() {
+		listeners.clear();
 	}
 
 	/**
@@ -76,14 +92,6 @@ public abstract class AbstractConfiguration implements Configuration {
 				LOGGER.warn("Configuration[" + cName + "] 'configurationChanged' event for listener[" + lName + "] fail.", e);
 			}
 		}
-	}
-
-	/**
-	 * This method will be invoked automatically by <i>ConfigureMe</i> after configuration change.
-	 */
-	@AfterConfiguration
-	public void configurationChanged() {
-		fireConfigurationChanged();
 	}
 
 }

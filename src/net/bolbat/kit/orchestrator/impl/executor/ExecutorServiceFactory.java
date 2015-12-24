@@ -2,7 +2,7 @@ package net.bolbat.kit.orchestrator.impl.executor;
 
 import java.util.concurrent.ExecutorService;
 
-import net.bolbat.kit.orchestrator.OrchestrationConfig;
+import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 
 /**
  * Factory for {@link ExecutorService}.
@@ -15,11 +15,11 @@ public interface ExecutorServiceFactory {
 	 * Create {@link ExecutorService} instance.
 	 * 
 	 * @param config
-	 *            {@link OrchestrationConfig}
+	 *            {@link ExecutorConfig}
 	 * @param nameFormatArgs
 	 *            thread name format arguments
 	 * @return {@link ExecutorService}
 	 */
-	ExecutorService create(OrchestrationConfig config, Object... nameFormatArgs);
+	ExecutorService create(ExecutorConfig config, Object... nameFormatArgs);
 
 }

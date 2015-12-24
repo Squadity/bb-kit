@@ -10,7 +10,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
-import net.bolbat.kit.orchestrator.OrchestrationConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConstants;
 import net.bolbat.utils.concurrency.ThreadFactoryBuilder;
@@ -35,27 +34,26 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
 	}
 
 	@Override
-	public ExecutorService create(final OrchestrationConfig config, final Object... nameFormatArgs) {
+	public ExecutorService create(final ExecutorConfig config, final Object... nameFormatArgs) {
 		checkArgument(config != null, "config argument is null");
 
-		final ExecutorConfig eConfig = config.getExecutorConfig();
-		final String nameFormat = isNotEmpty(eConfig.getNameFormat()) ? eConfig.getNameFormat() : OrchestrationConstants.THREAD_NAME_FORMAT;
+		final String nameFormat = isNotEmpty(config.getNameFormat()) ? config.getNameFormat() : OrchestrationConstants.THREAD_NAME_FORMAT;
 		final ThreadFactoryBuilder factoryBuilder = new ThreadFactoryBuilder() //
 				.setDaemon(true) // move me to configuration if needed
 				.setPriority(Thread.NORM_PRIORITY) // move me to configuration if needed
 				.setNameFormat(nameFormat) //
 				.setNameFormatArgs(nameFormatArgs);
 
-		final BlockingQueue<Runnable> queue = eConfig.getQueueSize() == OrchestrationConstants.POOL_QUEUE_SIZE //
+		final BlockingQueue<Runnable> queue = config.getQueueSize() == OrchestrationConstants.POOL_QUEUE_SIZE //
 				? new SynchronousQueue<Runnable>() //
-				: new ArrayBlockingQueue<Runnable>(eConfig.getQueueSize());
+				: new ArrayBlockingQueue<Runnable>(config.getQueueSize());
 
-		final int poolMaxSize = eConfig.getMaxSize() == OrchestrationConstants.POOL_MAX_SIZE ? Integer.MAX_VALUE : eConfig.getMaxSize();
+		final int poolMaxSize = config.getMaxSize() == OrchestrationConstants.POOL_MAX_SIZE ? Integer.MAX_VALUE : config.getMaxSize();
 		final ExecutorService executor = new ThreadPoolExecutor( //
-				eConfig.getCoreSize(), //
+				config.getCoreSize(), //
 				poolMaxSize, //
-				eConfig.getKeepAlive(), //
-				eConfig.getKeepAliveUnit(), //
+				config.getKeepAlive(), //
+				config.getKeepAliveUnit(), //
 				queue, //
 				factoryBuilder.build(), //
 				new AbortPolicy());
