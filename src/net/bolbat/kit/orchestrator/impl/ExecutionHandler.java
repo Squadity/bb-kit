@@ -13,8 +13,6 @@ import net.bolbat.kit.orchestrator.annotation.Orchestrate;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationExecutor;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationLimits;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
-import net.bolbat.kit.orchestrator.impl.ExecutionInfo.Source;
-import net.bolbat.kit.orchestrator.impl.ExecutionInfo.State;
 import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 import net.bolbat.utils.concurrency.lock.SafeIdBasedLockManager;
@@ -127,24 +125,19 @@ public class ExecutionHandler implements InvocationHandler {
 			info = new ExecutionInfo();
 			info.setId(instanceId);
 			info.setName(implType.getSimpleName());
-			info.setSource(Source.CLASS);
 
 			final Orchestrate orchestrate = implType.getAnnotation(Orchestrate.class);
-			if (orchestrate == null)
-				info.setState(State.NO_CONFIGURATION);
+			final OrchestrationLimits limits = implType.getAnnotation(OrchestrationLimits.class);
+			final OrchestrationExecutor executor = implType.getAnnotation(OrchestrationExecutor.class);
 
-			// try to resolve from interfaces???
+			info.setDisabled(orchestrate != null && !orchestrate.value());
+			info.setOwnScope(orchestrate != null);
+			info.setOwnLimits(limits != null);
+			info.setOwnExecutor(executor != null);
 
-			final OrchestrationLimits methodLimits = implType.getAnnotation(OrchestrationLimits.class);
-			final OrchestrationExecutor methodExecutor = implType.getAnnotation(OrchestrationExecutor.class);
-			if (orchestrate != null) {
-				info.setState(orchestrate.value() ? State.ORCHESTRATED : State.NOT_ORCHESTRATED);
+			info.setConfig(OrchestrationConfig.configure(orchestrate, limits, executor));
 
-				final OrchestrationConfig config = OrchestrationConfig.configure(orchestrate, methodLimits, methodExecutor);
-				info.setConfig(config);
-				info.registerForConfigurationChanges();
-			}
-
+			info.initActualConfiguration();
 			ExecutionCaches.cacheInfo(instanceId, info);
 			return info;
 		} finally {
@@ -192,28 +185,20 @@ public class ExecutionHandler implements InvocationHandler {
 			info = new ExecutionInfo();
 			info.setId(instanceMethodId);
 			info.setName(implType.getSimpleName() + "." + ToStringUtils.toMethodName(implMethod));
-			info.setSource(Source.METHOD);
 			info.setClassInfo(classInfo);
 
 			final Orchestrate orchestrate = implMethod.getAnnotation(Orchestrate.class);
-			if (orchestrate == null)
-				info.setState(State.NO_CONFIGURATION);
+			final OrchestrationLimits limits = implMethod.getAnnotation(OrchestrationLimits.class);
+			final OrchestrationExecutor executor = implMethod.getAnnotation(OrchestrationExecutor.class);
 
-			// try to resolve from interfaces???
+			info.setDisabled(orchestrate != null && !orchestrate.value());
+			info.setOwnScope(orchestrate != null);
+			info.setOwnLimits(limits != null);
+			info.setOwnExecutor(executor != null);
 
-			final OrchestrationLimits methodLimits = implMethod.getAnnotation(OrchestrationLimits.class);
-			final OrchestrationExecutor methodExecutor = implMethod.getAnnotation(OrchestrationExecutor.class);
-			if (orchestrate != null) {
-				info.setState(orchestrate.value() ? State.ORCHESTRATED : State.NOT_ORCHESTRATED);
+			info.setConfig(OrchestrationConfig.configure(orchestrate, limits, executor));
 
-				final OrchestrationConfig config = OrchestrationConfig.configure(orchestrate, methodLimits, methodExecutor);
-				info.setConfig(config);
-				info.registerForConfigurationChanges();
-			}
-
-			info.setLimitsSource(orchestrate != null || methodLimits != null ? Source.METHOD : Source.CLASS);
-			info.setExecutorSource(orchestrate != null || methodExecutor != null ? Source.METHOD : Source.CLASS);
-
+			info.initActualConfiguration();
 			ExecutionCaches.cacheInfo(instanceMethodId, info);
 			return info;
 		} finally {

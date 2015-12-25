@@ -1,7 +1,6 @@
 package net.bolbat.kit.orchestrator;
 
 import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
-import static net.bolbat.utils.lang.Validations.checkArgument;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
@@ -89,10 +88,8 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	 * @return {@link OrchestrationConfig}
 	 */
 	public static OrchestrationConfig configure(final Orchestrate orchestrate, final OrchestrationLimits limits, final OrchestrationExecutor executor) {
-		checkArgument(orchestrate != null, "orchestrate argument is null");
-
 		OrchestrationConfig config = null;
-		if (isNotEmpty(orchestrate.configName())) {
+		if (orchestrate != null && isNotEmpty(orchestrate.configName())) {
 			config = ConfigurationManager.getInstanceForConf(OrchestrationConfig.class, orchestrate.configName());
 		} else {
 			config = new OrchestrationConfig();

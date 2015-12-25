@@ -16,6 +16,7 @@ import net.bolbat.kit.service.ServiceRuntimeException;
  * @author Alexandr Bolbat
  */
 @Orchestrate
+@OrchestrationLimits(concurrent = 100, time = 1, timeUnit = TimeUnit.SECONDS)
 public class CallableServiceImpl implements CallableService {
 
 	@Override
@@ -39,6 +40,20 @@ public class CallableServiceImpl implements CallableService {
 	@Orchestrate
 	@OrchestrationExecutor(factory = SystemExecutorServiceFactory.class)
 	public String callOrchestratedBySystemExecutor() {
+		return Thread.currentThread().getName();
+	}
+
+	@Override
+	@OrchestrationLimits(concurrent = 1, time = 5, timeUnit = TimeUnit.MILLISECONDS)
+	public String callWithMethodLimitsAndClassExecutor(final long time, final TimeUnit timeUnit) {
+		sleep(time, timeUnit);
+		return Thread.currentThread().getName();
+	}
+
+	@Override
+	@OrchestrationExecutor(maxSize = 1, queueSize = 1)
+	public String callWithMethodExecutor(final long time, final TimeUnit timeUnit) {
+		sleep(time, timeUnit);
 		return Thread.currentThread().getName();
 	}
 

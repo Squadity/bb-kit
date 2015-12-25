@@ -157,7 +157,7 @@ public final class ExecutionUtils {
 		Future<T> future = null;
 		try {
 			future = executor.submit(callable);
-			return time != 0 ? future.get(time, timeUnit) : future.get();
+			return time > 0 ? future.get(time, timeUnit) : future.get();
 		} catch (final RejectedExecutionException | InterruptedException | TimeoutException e) {
 			if (future != null)
 				future.cancel(true);

@@ -7,7 +7,6 @@ import net.bolbat.kit.config.ConfigurationListener;
 import net.bolbat.kit.orchestrator.OrchestrationConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.LimitsConfig;
-import net.bolbat.kit.orchestrator.annotation.Orchestrate;
 import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 import net.bolbat.utils.concurrency.lock.SafeIdBasedLockManager;
@@ -24,23 +23,85 @@ public class ExecutionInfo implements ConfigurationListener {
 	 */
 	private static final IdBasedLockManager<String> LOCK_MANAGER = new SafeIdBasedLockManager<>();
 
+	/**
+	 * Execution unique identifier.
+	 */
 	private String id;
 
+	/**
+	 * Execution name.
+	 */
 	private String name;
 
-	private Source source = Source.CLASS;
-
-	private State state = State.NOT_ORCHESTRATED;
-
+	/**
+	 * Class {@link ExecutionInfo}, not <code>null</code> for {@link ExecutionInfo} based on method scope.
+	 */
 	private ExecutionInfo classInfo;
 
-	private Source limitsSource = Source.CLASS;
+	/**
+	 * Disable orchestration.
+	 */
+	private boolean disabled = true;
 
-	private Source executorSource = Source.CLASS;
+	/**
+	 * Execution should work in own isolated scope.
+	 */
+	private boolean ownScope = false;
 
+	/**
+	 * Execution should use own limits configuration.
+	 */
+	private boolean ownLimits = false;
+
+	/**
+	 * Execution should use own executor configuration.
+	 */
+	private boolean ownExecutor = false;
+
+	/**
+	 * Execution {@link OrchestrationConfig}, <code>null</code> if no any orchestration configuration.
+	 */
 	private OrchestrationConfig config;
 
-	private final transient AtomicInteger executions = new AtomicInteger(0);
+	/**
+	 * Current executions amount.
+	 */
+	private final AtomicInteger executions = new AtomicInteger(0);
+
+	/**
+	 * Actual configuration: is orchestration enabled.
+	 */
+	private transient boolean isOrchestrated;
+
+	/**
+	 * Actual configuration: {@link OrchestrationConfig}.
+	 */
+	private transient OrchestrationConfig actualConfig;
+
+	/**
+	 * Actual configuration: {@link LimitsConfig}.
+	 */
+	private transient LimitsConfig actualLimitsConfig;
+
+	/**
+	 * Actual configuration: {@link ExecutorConfig}.
+	 */
+	private transient ExecutorConfig actualExecutorConfig;
+
+	/**
+	 * Actual configuration: executor identifier.
+	 */
+	private transient String actualExecutorId;
+
+	/**
+	 * Actual configuration: executor name.
+	 */
+	private transient String actualExecutorName;
+
+	/**
+	 * Actual configuration: current executions.
+	 */
+	private transient AtomicInteger actualExecutions;
 
 	public String getId() {
 		return id;
@@ -58,22 +119,6 @@ public class ExecutionInfo implements ConfigurationListener {
 		this.name = aName;
 	}
 
-	public Source getSource() {
-		return source;
-	}
-
-	public void setSource(final Source aSource) {
-		this.source = aSource;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState(final State aState) {
-		this.state = aState;
-	}
-
 	public ExecutionInfo getClassInfo() {
 		return classInfo;
 	}
@@ -82,20 +127,36 @@ public class ExecutionInfo implements ConfigurationListener {
 		this.classInfo = aClassInfo;
 	}
 
-	public Source getLimitsSource() {
-		return limitsSource;
+	public boolean isDisabled() {
+		return disabled;
 	}
 
-	public void setLimitsSource(final Source aLimitsSource) {
-		this.limitsSource = aLimitsSource;
+	public void setDisabled(final boolean aDisabled) {
+		this.disabled = aDisabled;
 	}
 
-	public Source getExecutorSource() {
-		return executorSource;
+	public boolean isOwnScope() {
+		return ownScope;
 	}
 
-	public void setExecutorSource(final Source aExecutorSource) {
-		this.executorSource = aExecutorSource;
+	public void setOwnScope(final boolean aOwnScope) {
+		this.ownScope = aOwnScope;
+	}
+
+	public boolean isOwnLimits() {
+		return ownLimits;
+	}
+
+	public void setOwnLimits(final boolean aOwnLimits) {
+		this.ownLimits = aOwnLimits;
+	}
+
+	public boolean isOwnExecutor() {
+		return ownExecutor;
+	}
+
+	public void setOwnExecutor(final boolean aOwnExecutor) {
+		this.ownExecutor = aOwnExecutor;
 	}
 
 	public OrchestrationConfig getConfig() {
@@ -110,50 +171,78 @@ public class ExecutionInfo implements ConfigurationListener {
 		return executions;
 	}
 
+	/**
+	 * Is orchestration enabled for current {@link ExecutionInfo}.
+	 * 
+	 * @return <code>true</code> if orchestrated or <code>false</code>
+	 */
 	public boolean isOrchestrated() {
-		if (source == Source.METHOD && State.NO_CONFIGURATION == state)
-			return classInfo.isOrchestrated();
-
-		return State.ORCHESTRATED == state;
-	}
-
-	public OrchestrationConfig getActualConfig() {
-		if (source == Source.METHOD && limitsSource == Source.CLASS)
-			return classInfo.getConfig();
-
-		return config;
-	}
-
-	public LimitsConfig getActualLimitsConfig() {
-		if (source == Source.METHOD && limitsSource == Source.CLASS)
-			return classInfo.getConfig().getLimitsConfig();
-
-		return config.getLimitsConfig();
-	}
-
-	public ExecutorConfig getActualExecutorConfig() {
-		if (source == Source.METHOD && executorSource == Source.CLASS)
-			return classInfo.getConfig().getExecutorConfig();
-
-		return config.getExecutorConfig();
-	}
-
-	public String getActualExecutorId() {
-		if (source == Source.METHOD && executorSource == Source.CLASS)
-			return classInfo.getId();
-
-		return id;
-	}
-
-	public String getActualExecutorName() {
-		if (source == Source.METHOD && executorSource == Source.CLASS)
-			return classInfo.getName();
-
-		return name;
+		return isOrchestrated;
 	}
 
 	/**
-	 * Get actual {@link ExecutorService} instance.
+	 * Get 'actual' {@link OrchestrationConfig}.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link OrchestrationConfig}
+	 */
+	public OrchestrationConfig getActualConfig() {
+		return actualConfig;
+	}
+
+	/**
+	 * Get 'actual' {@link LimitsConfig}.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link LimitsConfig}
+	 */
+	public LimitsConfig getActualLimitsConfig() {
+		return actualLimitsConfig;
+	}
+
+	/**
+	 * Get 'actual' {@link ExecutorConfig}.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link ExecutorConfig}
+	 */
+	public ExecutorConfig getActualExecutorConfig() {
+		return actualExecutorConfig;
+	}
+
+	/**
+	 * Get 'actual' executor identifier (the same as execution identifier).<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link String}
+	 */
+	public String getActualExecutorId() {
+		return actualExecutorId;
+	}
+
+	/**
+	 * Get 'actual' executor name.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link String}
+	 */
+	public String getActualExecutorName() {
+		return actualExecutorName;
+	}
+
+	/**
+	 * Get 'actual' executions amount.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
+	 * 
+	 * @return {@link AtomicInteger}
+	 */
+	public AtomicInteger getActualExecutions() {
+		return actualExecutions;
+	}
+
+	/**
+	 * Get 'actual' {@link ExecutorService} instance.<br>
+	 * Based on current method and class configuration including annotation overriding rules.
 	 * 
 	 * @return {@link ExecutorService}
 	 */
@@ -178,23 +267,41 @@ public class ExecutionInfo implements ConfigurationListener {
 		}
 	}
 
-	public AtomicInteger getActualExecutions() {
-		if (source == Source.METHOD && executorSource == Source.CLASS)
-			return classInfo.getExecutions();
+	/**
+	 * Initialize actual configuration.
+	 */
+	public void initActualConfiguration() {
+		isOrchestrated = !disabled;
+		isOrchestrated = isOrchestrated && (ownScope || (classInfo != null && classInfo.isOrchestrated()));
+		actualConfig = ownScope ? config : classInfo.getConfig();
+		actualLimitsConfig = ownScope || ownLimits ? config.getLimitsConfig() : classInfo.getConfig().getLimitsConfig();
+		actualExecutorConfig = ownScope || ownExecutor ? config.getExecutorConfig() : classInfo.getConfig().getExecutorConfig();
+		actualExecutorId = ownScope || ownExecutor ? id : classInfo.getId();
+		actualExecutorName = ownScope || ownExecutor ? name : classInfo.getName();
+		actualExecutions = ownScope || ownExecutor ? executions : classInfo.getExecutions();
 
-		return executions;
+		registerForConfigurationChanges();
 	}
 
+	/**
+	 * Register for listening configuration changes.
+	 */
 	public void registerForConfigurationChanges() {
 		if (config != null && config.getSource() == OrchestrationConfig.Source.CONFIGURE_ME)
 			config.registerListener(this);
 	}
 
+	/**
+	 * Unregister from listening configuration changes.
+	 */
 	public void unregisterFromConfigurationChanges() {
 		if (config != null && config.getSource() == OrchestrationConfig.Source.CONFIGURE_ME)
 			config.unregisterListener(this);
 	}
 
+	/**
+	 * Action what should be executed if configuration is changed.
+	 */
 	@Override
 	public void configurationChanged() {
 		ExecutionCaches.shutdownExecutor(getActualExecutorId());
@@ -223,49 +330,6 @@ public class ExecutionInfo implements ConfigurationListener {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	/**
-	 * Info sources.
-	 * 
-	 * @author Alexandr Bolbat
-	 */
-	public enum Source {
-
-		/**
-		 * Configured from class.
-		 */
-		CLASS,
-
-		/**
-		 * Configured from method.
-		 */
-		METHOD;
-
-	}
-
-	/**
-	 * Info status.
-	 * 
-	 * @author Alexandr Bolbat
-	 */
-	public enum State {
-
-		/**
-		 * Orchestration is enabled.
-		 */
-		ORCHESTRATED,
-
-		/**
-		 * Orchestration is disabled.
-		 */
-		NOT_ORCHESTRATED,
-
-		/**
-		 * {@link Orchestrate} annotation is not present.
-		 */
-		NO_CONFIGURATION;
-
 	}
 
 }

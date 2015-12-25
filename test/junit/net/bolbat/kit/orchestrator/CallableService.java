@@ -20,6 +20,10 @@ public interface CallableService extends Service {
 
 	String callOrchestratedBySystemExecutor();
 
+	String callWithMethodLimitsAndClassExecutor(long time, TimeUnit timeUnit);
+
+	String callWithMethodExecutor(long time, TimeUnit timeUnit);
+
 	void callOrchestratedByClassWithServiceException() throws ServiceException;
 
 	void callOrchestratedByClassWithServiceRuntimeException();
