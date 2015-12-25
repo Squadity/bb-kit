@@ -85,15 +85,17 @@ public class ExecutionHandler implements InvocationHandler {
 	/**
 	 * Resolve method unique identifier (use cache).
 	 * 
-	 * @param method
-	 *            {@link Method}
+	 * @param aInstance
+	 *            instance
+	 * @param aMethod
+	 *            instance method
 	 * @return {@link String}
 	 */
-	public String resolveId(final Object instance, final Method method) {
-		String id = methodIds.get(method);
+	public String resolveId(final Object aInstance, final Method aMethod) {
+		String id = methodIds.get(aMethod);
 		if (id == null) {
-			id = ExecutionUtils.methodId(instance, method);
-			methodIds.put(method, id);
+			id = ExecutionUtils.methodId(aInstance, aMethod);
+			methodIds.put(aMethod, id);
 		}
 
 		return id;

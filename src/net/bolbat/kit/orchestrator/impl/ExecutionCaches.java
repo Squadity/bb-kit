@@ -89,7 +89,6 @@ public final class ExecutionCaches {
 	 *            execution identifier
 	 * @param service
 	 *            {@link ExecutorService} instance
-	 * @return old {@link ExecutorService} instance or <code>null</code>
 	 */
 	public static void cacheExecutor(final String id, final ExecutorService service) {
 		checkArgument(id != null, "id argument is null");

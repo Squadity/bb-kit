@@ -247,7 +247,6 @@ public class ExecutionInfo implements ConfigurationListener {
 	 * @return {@link ExecutorService}
 	 */
 	public ExecutorService getActualExecutor() {
-		final String actualExecutorId = getActualExecutorId();
 		ExecutorService service = ExecutionCaches.getExecutor(actualExecutorId);
 		if (service != null)
 			return service;
@@ -271,8 +270,7 @@ public class ExecutionInfo implements ConfigurationListener {
 	 * Initialize actual configuration.
 	 */
 	public void initActualConfiguration() {
-		isOrchestrated = !disabled;
-		isOrchestrated = isOrchestrated && (ownScope || (classInfo != null && classInfo.isOrchestrated()));
+		isOrchestrated = !disabled && (ownScope || classInfo != null && classInfo.isOrchestrated());
 		actualConfig = ownScope ? config : classInfo.getConfig();
 		actualLimitsConfig = ownScope || ownLimits ? config.getLimitsConfig() : classInfo.getConfig().getLimitsConfig();
 		actualExecutorConfig = ownScope || ownExecutor ? config.getExecutorConfig() : classInfo.getConfig().getExecutorConfig();
