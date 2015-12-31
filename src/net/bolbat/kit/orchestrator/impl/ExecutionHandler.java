@@ -70,16 +70,20 @@ public class ExecutionHandler implements InvocationHandler {
 		this.instanceId = ExecutionUtils.objectId(aInstance);
 	}
 
+	public Object getInstance() {
+		return instance;
+	}
+
 	@Override
 	// CHECKSTYLE:OFF
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 		// CHECKSTYLE:ON
-		final String executionId = resolveId(instance, method);
-		final ExecutionInfo info = resolveInstanceMethodInfo(instanceId, instance, executionId, method);
+		final String executionId = resolveId(getInstance(), method);
+		final ExecutionInfo info = resolveInstanceMethodInfo(instanceId, getInstance(), executionId, method);
 		if (info.isOrchestrated())
-			return ExecutionUtils.invoke(instance, method, args, info);
+			return ExecutionUtils.invoke(getInstance(), method, args, info);
 
-		return method.invoke(instance, args);
+		return method.invoke(getInstance(), args);
 	}
 
 	/**
