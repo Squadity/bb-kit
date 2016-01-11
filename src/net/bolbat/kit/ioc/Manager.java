@@ -289,7 +289,7 @@ public final class Manager implements Module {
 			// execute post-construct
 			for (final Object instance : instances)
 				try {
-					ClassUtils.executePostConstruct(instance);
+					ClassUtils.executePostConstruct(instance, true);
 					// CHECKSTYLE:OFF
 				} catch (final RuntimeException e) {
 					// CHECKSTYLE:ON
@@ -322,7 +322,7 @@ public final class Manager implements Module {
 			// execute post-construct
 			for (final Object instance : instances)
 				try {
-					ClassUtils.executePostConstruct(instance);
+					ClassUtils.executePostConstruct(instance, true);
 					// CHECKSTYLE:OFF
 				} catch (final RuntimeException e) {
 					// CHECKSTYLE:ON
@@ -344,7 +344,7 @@ public final class Manager implements Module {
 			// execute pre-destroy
 			for (final ScopeConfiguration<?, ?> conf : values)
 				if (conf.getInstance() != null)
-					ClassUtils.executePreDestroy(conf.getInstance());
+					ClassUtils.executePreDestroy(conf.getInstance(), true);
 		}
 	}
 
@@ -368,7 +368,7 @@ public final class Manager implements Module {
 
 				// executing services pre-destroy
 				if (conf.getInstance() != null)
-					ClassUtils.executePreDestroy(conf.getInstance());
+					ClassUtils.executePreDestroy(conf.getInstance(), true);
 			}
 
 			// clearing services links

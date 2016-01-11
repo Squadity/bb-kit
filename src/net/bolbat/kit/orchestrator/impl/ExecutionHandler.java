@@ -1,6 +1,5 @@
 package net.bolbat.kit.orchestrator.impl;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,13 +16,14 @@ import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 import net.bolbat.utils.concurrency.lock.SafeIdBasedLockManager;
 import net.bolbat.utils.lang.ToStringUtils;
+import net.bolbat.utils.reflect.proxy.AdvisedHandler;
 
 /**
  * Orchestration execution handler implementation.
  * 
  * @author Alexandr Bolbat
  */
-public class ExecutionHandler implements InvocationHandler {
+public class ExecutionHandler extends AdvisedHandler {
 
 	/**
 	 * {@link Logger} instance.
@@ -41,17 +41,6 @@ public class ExecutionHandler implements InvocationHandler {
 	private final ConcurrentMap<Method, String> methodIds = new ConcurrentHashMap<>();
 
 	/**
-	 * Supported interfaces (reserved for the future).
-	 */
-	@SuppressWarnings("unused")
-	private final Class<?>[] interfaces;
-
-	/**
-	 * Implementation instance.
-	 */
-	private final Object instance;
-
-	/**
 	 * Execution identifier for implementation instance.
 	 */
 	private final String instanceId;
@@ -59,31 +48,26 @@ public class ExecutionHandler implements InvocationHandler {
 	/**
 	 * Default constructor.
 	 * 
-	 * @param aInstance
-	 *            implementation instance
+	 * @param aTarget
+	 *            proxied target
 	 * @param aInterfaces
-	 *            supported interfaces
+	 *            proxied interfaces
 	 */
-	public ExecutionHandler(final Object aInstance, final Class<?>[] aInterfaces) {
-		this.instance = aInstance;
-		this.interfaces = aInterfaces.clone();
-		this.instanceId = ExecutionUtils.objectId(aInstance);
-	}
-
-	public Object getInstance() {
-		return instance;
+	public ExecutionHandler(final Object aTarget, final Class<?>[] aInterfaces) {
+		super(aTarget, aInterfaces);
+		this.instanceId = ExecutionUtils.objectId(getProxiedTarget());
 	}
 
 	@Override
 	// CHECKSTYLE:OFF
 	public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
 		// CHECKSTYLE:ON
-		final String executionId = resolveId(getInstance(), method);
-		final ExecutionInfo info = resolveInstanceMethodInfo(instanceId, getInstance(), executionId, method);
+		final String executionId = resolveId(getProxiedTarget(), method);
+		final ExecutionInfo info = resolveInstanceMethodInfo(instanceId, getProxiedTarget(), executionId, method);
 		if (info.isOrchestrated())
-			return ExecutionUtils.invoke(getInstance(), method, args, info);
+			return ExecutionUtils.invoke(getProxiedTarget(), method, args, info);
 
-		return method.invoke(getInstance(), args);
+		return method.invoke(getProxiedTarget(), args);
 	}
 
 	/**
