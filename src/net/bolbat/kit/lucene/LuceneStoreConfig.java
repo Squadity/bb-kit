@@ -1,14 +1,14 @@
 package net.bolbat.kit.lucene;
 
-import net.bolbat.kit.config.AbstractConfiguration;
-import net.bolbat.utils.test.TestUtils;
-
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 import org.configureme.annotations.DontConfigure;
+
+import net.bolbat.kit.config.AbstractConfiguration;
+import net.bolbat.utils.io.FSUtils;
 
 /**
  * {@link LuceneStore} configuration.
@@ -58,7 +58,7 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	 * Configured directory path.
 	 */
 	@Configure
-	private String directoryPath = TestUtils.getTemporaryFolder(LuceneStoreConfig.class) + System.currentTimeMillis();
+	private String directoryPath = FSUtils.getTmpFolder(LuceneStoreConfig.class) + System.currentTimeMillis();
 
 	public String getVersion() {
 		return version;
