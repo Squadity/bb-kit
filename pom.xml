@@ -99,9 +99,9 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</connection>
-		<developerConnection>scm:git:ssh://git@stash.infra.bolbat.net:9074/BBKIT/main.git</developerConnection>
-		<url>http://stash.infra.bolbat.net/scm/BBKIT/main.git</url>
+		<connection>scm:git:ssh://git@bitbucket.infra.bolbat.net:9074/BBKIT/main.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.infra.bolbat.net:9074/BBKIT/main.git</developerConnection>
+		<url>http://bitbucket.infra.bolbat.net/scm/BBKIT/main.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
