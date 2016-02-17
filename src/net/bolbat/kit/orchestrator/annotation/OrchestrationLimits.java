@@ -23,16 +23,22 @@ public @interface OrchestrationLimits {
 
 	/**
 	 * Execution time limit.
+	 * 
+	 * @return <code>int</code>
 	 */
 	int time() default OrchestrationConstants.TIME_LIMIT;
 
 	/**
 	 * Execution time limit unit.
+	 * 
+	 * @return {@link TimeUnit}
 	 */
 	TimeUnit timeUnit() default TimeUnit.MILLISECONDS; // couldn't use from CallConstants due to annotations restrictions
 
 	/**
 	 * Concurrent executions limit.
+	 * 
+	 * @return <code>int</code>
 	 */
 	int concurrent() default OrchestrationConstants.CONCURRENT_LIMIT;
 

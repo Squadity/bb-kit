@@ -164,6 +164,9 @@ public final class ConfigurationManager {
 	 * Configuration key.
 	 * 
 	 * @author Alexandr Bolbat
+	 * 
+	 * @param <T>
+	 *            configuration type
 	 */
 	private static class Key<T> implements Serializable {
 

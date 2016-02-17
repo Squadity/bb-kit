@@ -40,7 +40,7 @@ public enum TypeScope implements Scope {
 	/**
 	 * Private constructor.
 	 */
-	private TypeScope() {
+	TypeScope() {
 		this.id = name();
 	}
 

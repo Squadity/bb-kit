@@ -1,6 +1,5 @@
 package net.bolbat.kit.ioc.scope;
 
-
 /**
  * Service distribution scope.
  * 
@@ -31,7 +30,7 @@ public enum DistributionScope implements Scope {
 	/**
 	 * Private constructor.
 	 */
-	private DistributionScope() {
+	DistributionScope() {
 		this.id = name();
 	}
 

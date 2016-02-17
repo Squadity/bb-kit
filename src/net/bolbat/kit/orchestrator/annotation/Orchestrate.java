@@ -24,11 +24,15 @@ public @interface Orchestrate {
 
 	/**
 	 * Is orchestration enabled.
+	 * 
+	 * @return <code>boolean</code>
 	 */
 	boolean value() default true;
 
 	/**
 	 * Configuration file name, overrides {@link Orchestrator} annotations values.
+	 * 
+	 * @return {@link String}
 	 */
 	String configName() default EMPTY;
 

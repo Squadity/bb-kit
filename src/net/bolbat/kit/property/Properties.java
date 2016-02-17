@@ -67,7 +67,7 @@ public enum Properties {
 	 * @param aPropertyClass
 	 *            property class
 	 */
-	private Properties(final Class<?> aPropertyClass, final Class<?> aPropertyValueClass) {
+	Properties(final Class<?> aPropertyClass, final Class<?> aPropertyValueClass) {
 		this.propertyClass = aPropertyClass;
 		this.propertyValueClass = aPropertyValueClass;
 	}
