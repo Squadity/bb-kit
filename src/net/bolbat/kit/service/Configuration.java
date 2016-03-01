@@ -19,6 +19,11 @@ public final class Configuration implements Serializable {
 	private static final long serialVersionUID = -5686326471213987349L;
 
 	/**
+	 * Empty configuration.
+	 */
+	public static final Configuration EMPTY = new Configuration();
+
+	/**
 	 * Configuration parameters store.
 	 */
 	private final Map<String, Serializable> parameters = new HashMap<>();

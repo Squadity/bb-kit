@@ -7,6 +7,12 @@ import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import net.bolbat.kit.ioc.Manager.Feature;
 import net.bolbat.kit.ioc.scope.CompositeScope;
 import net.bolbat.kit.ioc.scope.CustomScope;
 import net.bolbat.kit.ioc.scope.Scope;
@@ -20,17 +26,13 @@ import net.bolbat.kit.service.SampleServiceRemoteImpl;
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 /**
  * {@link Manager} module test.
  * 
  * @author Alexandr Bolbat
  */
-// TODO Implement service based warmUp and tearDown test cases
+// TODO Implement 'warmUp/tearDown' test cases
+// TODO Implement 'Feature.AUTO_IMPL_DISCOVERY' test cases
 public class ManagerTest {
 
 	/**
@@ -56,10 +58,13 @@ public class ManagerTest {
 	public void complexTest() {
 		// checking clean configuration
 		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
 
 		// configuring local service
@@ -100,26 +105,35 @@ public class ManagerTest {
 
 		// checking clean configuration, default scope
 		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
 
 		// checking clean configuration, local scope
 		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 			Manager.get(SampleService.class, SERVICE, null, LOCAL);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
 
 		// checking clean configuration, remote scope
 		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 			Manager.get(SampleService.class, SERVICE, REMOTE, null, customScope);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
 	}
 
@@ -138,10 +152,13 @@ public class ManagerTest {
 		}
 
 		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
 			Assert.assertTrue("Right exception instance should be there.", e instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
 
 		Manager.link(SampleService.class, SERVICE);
