@@ -32,7 +32,7 @@ public @interface OrchestrationMode {
 	 * 
 	 * @author Alexandr Bolbat
 	 */
-	public enum Mode {
+	enum Mode {
 
 		/**
 		 * Synchronous.

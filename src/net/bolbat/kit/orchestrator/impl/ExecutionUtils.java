@@ -173,7 +173,9 @@ public final class ExecutionUtils {
 			public void run() {
 				try {
 					ExecutionUtils.invoke(callable, time, timeUnit, executor);
+					// CHECKSTYLE:OFF
 				} catch (final Exception e) {
+					// CHECKSTYLE:ON
 					LOGGER.error("invokeAsync(callable, " + time + ", " + timeUnit + ", executor) error", e);
 				}
 			}
