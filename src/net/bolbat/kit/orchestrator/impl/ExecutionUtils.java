@@ -18,10 +18,12 @@ import org.slf4j.LoggerFactory;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.LimitsConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConstants;
+import net.bolbat.kit.orchestrator.annotation.OrchestrationMode.Mode;
 import net.bolbat.kit.orchestrator.exception.ConcurrentOverflowException;
 import net.bolbat.kit.orchestrator.exception.ExecutionTimeoutException;
 import net.bolbat.kit.orchestrator.exception.ExecutorOverflowException;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
+import net.bolbat.kit.orchestrator.impl.executor.AsyncExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.DefaultExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.ExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.SystemExecutorServiceFactory;
@@ -37,6 +39,11 @@ public final class ExecutionUtils {
 	 * {@link Logger} instance.
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionUtils.class);
+
+	/**
+	 * Executor for 'ASYNC' executions.
+	 */
+	private static final ExecutorService ASYNC_EXECUTOR = AsyncExecutorServiceFactory.getInstance().create(null);
 
 	/**
 	 * Default constructor with preventing instantiations of this class.
@@ -113,15 +120,30 @@ public final class ExecutionUtils {
 	 * @throws Exception
 	 */
 	public static Object invoke(final Object instance, final Method method, final Object[] args, final ExecutionInfo info) throws Exception {
-		final Callable<Object> callable = ExecutionCaches.getCallable(instance, method, args);
 		final LimitsConfig limitsConf = info.getActualLimitsConfig();
-
 		final boolean controlConcurrency = limitsConf.getConcurrent() != OrchestrationConstants.CONCURRENT_LIMIT;
 		try {
 			if (controlConcurrency && limitsConf.getConcurrent() < info.getActualExecutions().incrementAndGet())
 				throw new ConcurrentOverflowException(info);
 
-			return ExecutionUtils.invoke(callable, limitsConf.getTime(), limitsConf.getTimeUnit(), info.getActualExecutor());
+			final Callable<Object> callable = ExecutionCaches.getCallable(instance, method, args);
+			final Mode mode = info.getConfig().getModeConfig().getMode();
+
+			// mode 'SYNC'
+			if (mode == Mode.SYNC)
+				return ExecutionUtils.invoke(callable, limitsConf.getTime(), limitsConf.getTimeUnit(), info.getActualExecutor());
+
+			// this restriction will be removed when ASYNC support will be implemented for methods with any return type
+			if (method.getReturnType() != void.class) {
+				final StringBuilder sb = new StringBuilder("ASYNC mode currently supported only for 'void' methods");
+				sb.append(", invoking in SYNC mode method[").append(method).append("] from[").append(instance.getClass()).append("]");
+				LOGGER.warn(sb.toString());
+				return ExecutionUtils.invoke(callable, limitsConf.getTime(), limitsConf.getTimeUnit(), info.getActualExecutor());
+			}
+
+			// mode 'ASYNC'
+			ExecutionUtils.invokeAsync(callable, limitsConf.getTime(), limitsConf.getTimeUnit(), info.getActualExecutor());
+			return null;
 		} catch (final RejectedExecutionException e) {
 			throw new ExecutorOverflowException(info);
 		} catch (final TimeoutException e) {
@@ -130,6 +152,32 @@ public final class ExecutionUtils {
 			if (controlConcurrency)
 				info.getActualExecutions().decrementAndGet();
 		}
+	}
+
+	/**
+	 * Invoke callable on {@link ExecutorService} in 'ASYNC' thread without blocking current thread.<br>
+	 * All exceptions would be logged with error log level.
+	 * 
+	 * @param callable
+	 *            {@link Callable}
+	 * @param time
+	 *            maximum execution time
+	 * @param timeUnit
+	 *            maximum execution time unit
+	 * @param executor
+	 *            {@link ExecutorService}
+	 */
+	public static <T> void invokeAsync(final Callable<T> callable, final int time, final TimeUnit timeUnit, final ExecutorService executor) {
+		ASYNC_EXECUTOR.submit(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					ExecutionUtils.invoke(callable, time, timeUnit, executor);
+				} catch (final Exception e) {
+					LOGGER.error("invokeAsync(callable, " + time + ", " + timeUnit + ", executor) error", e);
+				}
+			}
+		});
 	}
 
 	/**
@@ -189,7 +237,10 @@ public final class ExecutionUtils {
 			return DefaultExecutorServiceFactory.getInstance().create(config, nameFormatArgs);
 
 		if (SystemExecutorServiceFactory.class == factory)
-			return SystemExecutorServiceFactory.getInstance().create(config, nameFormatArgs);
+			return SystemExecutorServiceFactory.getInstance().create(null); // config is ignored
+
+		if (AsyncExecutorServiceFactory.class == factory)
+			return AsyncExecutorServiceFactory.getInstance().create(null); // config is ignored
 
 		try {
 			return factory.newInstance().create(config, nameFormatArgs); // additional factory instance caching can be implemented here

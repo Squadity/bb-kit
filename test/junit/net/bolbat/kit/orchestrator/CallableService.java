@@ -28,10 +28,24 @@ public interface CallableService extends Service {
 
 	void callOrchestratedByClassWithServiceRuntimeException();
 
-	void executeWithTimeOut(long time, TimeUnit timeUnit);
+	void callWithTimeOut(long time, TimeUnit timeUnit);
 
-	void executeWithTimeOutOnSmallQueue(long time, TimeUnit timeUnit);
+	void callWithTimeOutOnSmallQueue(long time, TimeUnit timeUnit);
 
-	void executeWithTimeOutAndConcurrentLimit(long time, TimeUnit timeUnit);
+	void callWithTimeOutAndConcurrentLimit(long time, TimeUnit timeUnit);
+
+	void callAsyncVoid(long time, TimeUnit timeUnit);
+
+	String callAsyncNotVoid(long time, TimeUnit timeUnit);
+
+	void callAsyncWithTimeOut(long time, TimeUnit timeUnit);
+
+	void callAsyncWithTimeOutOnSmallQueue(long time, TimeUnit timeUnit);
+
+	void callAsyncWithTimeOutAndConcurrentLimit(long time, TimeUnit timeUnit);
+
+	CallResponce getCallResponce();
+
+	void resetCallResponce();
 
 }

@@ -7,12 +7,12 @@ import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.impl.ExecutionUtils;
 
 /**
- * {@link ExecutorServiceFactory} system implementation.<br>
+ * {@link ExecutorServiceFactory} implementation for 'ASYNC' executions.<br>
  * They use system {@link OrchestrationConfig}.
  * 
  * @author Alexandr Bolbat
  */
-public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
+public class AsyncExecutorServiceFactory implements ExecutorServiceFactory {
 
 	/**
 	 * System {@link ExecutorService} core pool size.
@@ -27,12 +27,12 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	 * - thread number.<br>
 	 * Example: Orchestrator[system]-thread[1].
 	 */
-	public static final String THREAD_NAME_FORMAT = "Orchestrator[system]-thread[%1$d]";
+	public static final String THREAD_NAME_FORMAT = "Orchestrator[async]-thread[%1$d]";
 
 	/**
-	 * {@link SystemExecutorServiceFactory} instance.
+	 * {@link AsyncExecutorServiceFactory} instance.
 	 */
-	private static final SystemExecutorServiceFactory INSTANCE = new SystemExecutorServiceFactory();
+	private static final AsyncExecutorServiceFactory INSTANCE = new AsyncExecutorServiceFactory();
 
 	/**
 	 * System {@link ExecutorConfig}.
@@ -49,7 +49,7 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	 */
 	static {
 		CONFIG = new ExecutorConfig();
-		CONFIG.setFactory(SystemExecutorServiceFactory.class);
+		CONFIG.setFactory(AsyncExecutorServiceFactory.class);
 		CONFIG.setCoreSize(POOL_CORE_SIZE);
 		CONFIG.setNameFormat(THREAD_NAME_FORMAT);
 		// other custom settings should be there
@@ -58,7 +58,7 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	/**
 	 * Private constructor.
 	 */
-	private SystemExecutorServiceFactory() {
+	private AsyncExecutorServiceFactory() {
 	}
 
 	@Override
@@ -73,11 +73,11 @@ public class SystemExecutorServiceFactory implements ExecutorServiceFactory {
 	}
 
 	/**
-	 * Get {@link SystemExecutorServiceFactory} instance.
+	 * Get {@link AsyncExecutorServiceFactory} instance.
 	 * 
-	 * @return {@link SystemExecutorServiceFactory}
+	 * @return {@link AsyncExecutorServiceFactory}
 	 */
-	public static SystemExecutorServiceFactory getInstance() {
+	public static AsyncExecutorServiceFactory getInstance() {
 		return INSTANCE;
 	}
 

@@ -11,6 +11,7 @@ import net.bolbat.kit.orchestrator.OrchestrationConfig;
 import net.bolbat.kit.orchestrator.annotation.Orchestrate;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationExecutor;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationLimits;
+import net.bolbat.kit.orchestrator.annotation.OrchestrationMode;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
 import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
@@ -180,13 +181,14 @@ public class ExecutionHandler extends AdvisedHandler {
 			final Orchestrate orchestrate = implMethod.getAnnotation(Orchestrate.class);
 			final OrchestrationLimits limits = implMethod.getAnnotation(OrchestrationLimits.class);
 			final OrchestrationExecutor executor = implMethod.getAnnotation(OrchestrationExecutor.class);
+			final OrchestrationMode mode = implMethod.getAnnotation(OrchestrationMode.class);
 
 			info.setDisabled(orchestrate != null && !orchestrate.value());
 			info.setOwnScope(orchestrate != null);
 			info.setOwnLimits(limits != null);
 			info.setOwnExecutor(executor != null);
 
-			info.setConfig(OrchestrationConfig.configure(orchestrate, limits, executor));
+			info.setConfig(OrchestrationConfig.configure(orchestrate, mode, limits, executor));
 
 			info.initActualConfiguration();
 			ExecutionCaches.cacheInfo(instanceMethodId, info);

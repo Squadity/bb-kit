@@ -16,6 +16,8 @@ import net.bolbat.kit.config.ConfigurationManager;
 import net.bolbat.kit.orchestrator.annotation.Orchestrate;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationExecutor;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationLimits;
+import net.bolbat.kit.orchestrator.annotation.OrchestrationMode;
+import net.bolbat.kit.orchestrator.annotation.OrchestrationMode.Mode;
 import net.bolbat.kit.orchestrator.impl.executor.DefaultExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.ExecutorServiceFactory;
 import net.bolbat.utils.annotation.Mark.ToDo;
@@ -41,6 +43,12 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	private Source source = Source.ANNOTATIONS;
 
 	/**
+	 * Mode configuration.
+	 */
+	@Configure
+	private ModeConfig modeConfig = new ModeConfig();
+
+	/**
 	 * Limits configuration.
 	 */
 	@Configure
@@ -58,6 +66,14 @@ public class OrchestrationConfig extends AbstractConfiguration {
 
 	private void setSource(final Source aSource) {
 		this.source = aSource;
+	}
+
+	public ModeConfig getModeConfig() {
+		return modeConfig;
+	}
+
+	public void setModeConfig(final ModeConfig aModeConfig) {
+		this.modeConfig = aModeConfig != null ? aModeConfig : new ModeConfig();
 	}
 
 	public LimitsConfig getLimitsConfig() {
@@ -88,12 +104,33 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	 * @return {@link OrchestrationConfig}
 	 */
 	public static OrchestrationConfig configure(final Orchestrate orchestrate, final OrchestrationLimits limits, final OrchestrationExecutor executor) {
+		return configure(orchestrate, null, limits, executor);
+	}
+
+	/**
+	 * Configure.
+	 * 
+	 * @param orchestrate
+	 *            {@link Orchestrate}
+	 * @param mode
+	 *            {@link OrchestrationMode}
+	 * @param limits
+	 *            {@link OrchestrationLimits}
+	 * @param executor
+	 *            {@link OrchestrationExecutor}
+	 * @return {@link OrchestrationConfig}
+	 */
+	public static OrchestrationConfig configure( //
+			final Orchestrate orchestrate, //
+			final OrchestrationMode mode, //
+			final OrchestrationLimits limits, //
+			final OrchestrationExecutor executor) {
 		OrchestrationConfig config = null;
 		if (orchestrate != null && isNotEmpty(orchestrate.configName())) {
 			config = ConfigurationManager.getInstanceForConf(OrchestrationConfig.class, orchestrate.configName());
 		} else {
 			config = new OrchestrationConfig();
-			config.configure(limits, executor);
+			config.configure(mode, limits, executor);
 		}
 		return config;
 	}
@@ -101,13 +138,18 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	/**
 	 * Configure from annotations values.
 	 * 
+	 * @param mode
+	 *            {@link OrchestrationMode}
 	 * @param limits
 	 *            {@link OrchestrationLimits}
 	 * @param executor
 	 *            {@link OrchestrationExecutor}
 	 */
-	public void configure(final OrchestrationLimits limits, final OrchestrationExecutor executor) {
+	public void configure(final OrchestrationMode mode, final OrchestrationLimits limits, final OrchestrationExecutor executor) {
 		setSource(Source.ANNOTATIONS);
+		if (mode != null) {
+			getModeConfig().setMode(mode.value());
+		}
 		if (limits != null) {
 			getLimitsConfig().setTime(limits.time());
 			getLimitsConfig().setTimeUnit(limits.timeUnit());
@@ -137,10 +179,47 @@ public class OrchestrationConfig extends AbstractConfiguration {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
 		builder.append(" [source=").append(source);
+		builder.append(", modeConfig=[").append(getModeConfig()).append("]");
 		builder.append(", limitsConfig=[").append(limitsConfig).append("]");
 		builder.append(", executorConfig=[").append(executorConfig).append("]");
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * Orchestration mode configuration.
+	 * 
+	 * @author Alexandr Bolbat
+	 */
+	@ConfigureMe(allfields = false)
+	public static class ModeConfig implements Serializable {
+
+		/**
+		 * Generated SerialVersionUID.
+		 */
+		private static final long serialVersionUID = -4263680889324891991L;
+
+		/**
+		 * Execution mode.
+		 */
+		@Configure
+		private Mode mode = Mode.DEFAULT;
+
+		public Mode getMode() {
+			return mode;
+		}
+
+		public void setMode(final Mode aMode) {
+			this.mode = aMode;
+		}
+
+		@Override
+		public String toString() {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("mode=").append(mode);
+			return builder.toString();
+		}
+
 	}
 
 	/**

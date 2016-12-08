@@ -9,10 +9,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -35,16 +38,25 @@ public class OrchestratorTest {
 
 	private static CallableService service;
 
-	private static boolean verbose = false; // make me configurable somehow in the future
-
 	@BeforeClass
 	public static void beforeClass() {
 		service = OrchestratorFactory.getDefault().init(new CallableServiceImpl());
+		service.callAsyncVoid(0, TimeUnit.MILLISECONDS); // warmup async executor
 	}
 
 	@AfterClass
 	public static void afterClass() {
 		OrchestratorFactory.tearDown();
+	}
+
+	@Before
+	public void before() {
+		after();
+	}
+
+	@After
+	public void after() {
+		service.resetCallResponce();
 	}
 
 	@Test
@@ -125,9 +137,10 @@ public class OrchestratorTest {
 			service.callWithMethodLimitsAndClassExecutor(10, TimeUnit.MILLISECONDS);
 			Assert.fail();
 		} catch (final ExecutionTimeoutException e) {
-			if (verbose)
+			final boolean checkResult = e.getMessage().endsWith("message[timeout is reached]");
+			Assert.assertTrue(checkResult);
+			if (!checkResult) // debug logging
 				System.out.println("DEBUG: " + e);
-			Assert.assertTrue(e.getMessage().endsWith("message[timeout is reached]"));
 		}
 	}
 
@@ -196,21 +209,22 @@ public class OrchestratorTest {
 	}
 
 	@Test
-	public void executionTimeOut() {
-		service.executeWithTimeOut(1, TimeUnit.MILLISECONDS);
+	public void callTimeOut() {
+		service.callWithTimeOut(1, TimeUnit.MILLISECONDS);
 
 		try {
-			service.executeWithTimeOut(10, TimeUnit.MILLISECONDS);
+			service.callWithTimeOut(10, TimeUnit.MILLISECONDS);
 			Assert.fail();
 		} catch (final ExecutionTimeoutException e) {
-			if (verbose)
+			final boolean checkResult = e.getMessage().endsWith("message[timeout is reached]");
+			Assert.assertTrue(checkResult);
+			if (!checkResult) // debug logging
 				System.out.println("DEBUG: " + e);
-			Assert.assertTrue(e.getMessage().endsWith("message[timeout is reached]"));
 		}
 	}
 
 	@Test
-	public void executionOnSmallQueue() throws Exception {
+	public void callOnSmallQueue() throws Exception {
 		final CountDownLatch startLatch = new CountDownLatch(1);
 		final CountDownLatch finishLatch = new CountDownLatch(2);
 
@@ -218,7 +232,7 @@ public class OrchestratorTest {
 		final CallTask task = new CallTask(startLatch, finishLatch, new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				service.executeWithTimeOutOnSmallQueue(5, TimeUnit.MILLISECONDS);
+				service.callWithTimeOutOnSmallQueue(5, TimeUnit.MILLISECONDS);
 				return null;
 			}
 		});
@@ -247,7 +261,7 @@ public class OrchestratorTest {
 	}
 
 	@Test
-	public void executionOnConcurrentLimit() throws Exception {
+	public void callOnConcurrentLimit() throws Exception {
 		final CountDownLatch startLatch = new CountDownLatch(1);
 		final CountDownLatch finishLatch = new CountDownLatch(2);
 
@@ -255,7 +269,7 @@ public class OrchestratorTest {
 		final CallTask task = new CallTask(startLatch, finishLatch, new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				service.executeWithTimeOutAndConcurrentLimit(5, TimeUnit.MILLISECONDS);
+				service.callWithTimeOutAndConcurrentLimit(5, TimeUnit.MILLISECONDS);
 				return null;
 			}
 		});
@@ -281,6 +295,77 @@ public class OrchestratorTest {
 		Assert.assertEquals(true, task.call());
 
 		executor.shutdownNow();
+	}
+
+	@Test
+	public void callAsyncVoid() {
+		service.callAsyncVoid(5, TimeUnit.MILLISECONDS);
+
+		sleep(1, TimeUnit.MILLISECONDS);
+
+		CallResponce resp = service.getCallResponce();
+		Assert.assertEquals(CallResponce.State.INITIATED, resp.getState());
+
+		sleep(5, TimeUnit.MILLISECONDS);
+
+		resp = service.getCallResponce();
+		Assert.assertEquals(CallResponce.State.EXECUTED, resp.getState());
+		Assert.assertTrue("response: " + resp, resp.getThreadName().startsWith("Orchestrator["));
+		Assert.assertTrue("response: " + resp, resp.getThreadName().contains("]-n[CallableServiceImpl]-"));
+	}
+
+	@Test
+	public void callAsyncNotVoid() {
+		service.callAsyncNotVoid(5, TimeUnit.MILLISECONDS);
+
+		final CallResponce resp = service.getCallResponce();
+		Assert.assertEquals(CallResponce.State.EXECUTED, resp.getState());
+		Assert.assertTrue("response: " + resp, resp.getThreadName().startsWith("Orchestrator["));
+		Assert.assertTrue("response: " + resp, resp.getThreadName().contains("]-n[CallableServiceImpl]-"));
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithNotReachedTimeOut() {
+		Assert.fail("Implement me");
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithReachedTimeOut() {
+		Assert.fail("Implement me");
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithNotReachedQueueLimit() {
+		Assert.fail("Implement me");
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithReachedQueueLimit() {
+		Assert.fail("Implement me");
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithNotReachedConcurrentLimit() {
+		Assert.fail("Implement me");
+	}
+
+	@Test
+	@Ignore
+	public void callAsyncWithReachedConcurrentLimit() {
+		Assert.fail("Implement me");
+	}
+
+	private static void sleep(final long time, final TimeUnit timeUnit) {
+		try {
+			Thread.sleep(timeUnit.toMillis(time));
+		} catch (final InterruptedException e) {
+			throw new RuntimeException("execution is interrupted", e);
+		}
 	}
 
 	private static class CallTask implements Callable<Boolean> {
@@ -307,14 +392,18 @@ public class OrchestratorTest {
 				call.call();
 				return true;
 			} catch (final ConcurrentOverflowException e) {
-				if (verbose)
+				final boolean checkResult = e.getMessage().endsWith("message[concurrent executions limit is reached]");
+				Assert.assertTrue(checkResult);
+				if (!checkResult) // debug logging
 					System.out.println("DEBUG: " + e);
-				Assert.assertTrue(e.getMessage().endsWith("message[concurrent executions limit is reached]"));
+
 				return false;
 			} catch (final ExecutorOverflowException e) {
-				if (verbose)
+				final boolean checkResult = e.getMessage().endsWith("message[executor queue is full]");
+				Assert.assertTrue(checkResult);
+				if (!checkResult) // debug logging
 					System.out.println("DEBUG: " + e);
-				Assert.assertTrue(e.getMessage().endsWith("message[executor queue is full]"));
+
 				return false;
 			} finally {
 				finishLatch.countDown();
