@@ -10,7 +10,9 @@ import javax.annotation.PreDestroy;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import net.bolbat.kit.ioc.Manager.Feature;
 import net.bolbat.kit.ioc.scope.CompositeScope;
@@ -25,14 +27,15 @@ import net.bolbat.kit.service.SampleServiceRemoteFactory;
 import net.bolbat.kit.service.SampleServiceRemoteImpl;
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
+import net.bolbat.utils.annotation.Mark.ToDo;
 
 /**
  * {@link Manager} module test.
  * 
  * @author Alexandr Bolbat
  */
-// TODO Implement 'warmUp/tearDown' test cases
-// TODO Implement 'Feature.AUTO_IMPL_DISCOVERY' test cases
+@ToDo({ "Implement", "warmUp/tearDown", "Feature.AUTO_IMPL_DISCOVERY", "test cases" })
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ManagerTest {
 
 	/**
@@ -135,6 +138,27 @@ public class ManagerTest {
 		} finally {
 			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
+	}
+
+	@Test
+	public void getFast() {
+		// not configured
+		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+			Manager.getFast(SampleService.class);
+			Assert.fail("Exception shold be thrown before this step");
+		} catch (ManagerRuntimeException e) {
+			Assert.assertNotNull("Right exception instance should be there", e.getCause());
+			Assert.assertTrue("Right exception instance should be there", e.getCause() instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
+		}
+
+		// automatically resolved
+		Manager.register(SampleService.class, SampleServiceFactory.class, SERVICE);
+		Manager.link(SampleService.class, SERVICE);
+		final SampleService service = Manager.getFast(SampleService.class);
+		Assert.assertNotNull("Service instance should be found", service);
 	}
 
 	/**

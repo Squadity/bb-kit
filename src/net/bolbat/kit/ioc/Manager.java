@@ -205,6 +205,25 @@ public final class Manager implements Module {
 
 	/**
 	 * Get service.<br>
+	 * Logic the same as for <code>get</code> method but with {@link ManagerRuntimeException} instead of {@link ManagerException}.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 * @return service instance
+	 */
+	public static <S extends Service> S getFast(final Class<S> service, final Scope... scopes) {
+		try {
+			return get(service, scopes);
+		} catch (final ManagerException e) {
+			final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
+			throw new ManagerRuntimeException("getFast(" + service + ", " + ToStringUtils.toString(scopesArray) + ") failed to obtain service instance", e);
+		}
+	}
+
+	/**
+	 * Get service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon resolving.
 	 * 
 	 * @param service
