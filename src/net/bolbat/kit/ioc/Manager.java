@@ -95,9 +95,6 @@ public final class Manager implements Module {
 	 *            target scope, can be {@link CompositeScope}
 	 */
 	public static <S extends Service> void link(final Class<S> service, final Scope target) {
-		checkArgument(service != null, "service argument is null");
-		checkArgument(target != null, "target argument is null");
-
 		link(service, DEFAULT_SCOPE, target);
 	}
 
@@ -147,7 +144,7 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Scope... scopes) {
-		register(service, factory, null, scopes);
+		register(service, factory, Configuration.EMPTY, scopes);
 	}
 
 	/**
@@ -191,7 +188,7 @@ public final class Manager implements Module {
 	 *            service factory instance
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory) {
-		register(service, factory, (Configuration) null, DEFAULT_SCOPE);
+		register(service, factory, Configuration.EMPTY, DEFAULT_SCOPE);
 	}
 
 	/**
@@ -206,7 +203,7 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Scope... scopes) {
-		register(service, factory, (Configuration) null, scopes);
+		register(service, factory, Configuration.EMPTY, scopes);
 	}
 
 	/**
@@ -443,9 +440,9 @@ public final class Manager implements Module {
 		try {
 			final Class<S> implClass = CastUtils.cast(Class.forName(implClassName));
 			final DynamicServiceFactory<S> implClassFactory = new DynamicServiceFactory<>(implClass);
-			final ScopeConfiguration<S> serviceConfiguration = new ScopeConfiguration<>(service, implClassFactory, Configuration.EMPTY, scopes);
+			final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, implClassFactory, Configuration.EMPTY, scopes);
 			synchronized (LOCK) {
-				STORAGE.put(serviceConfiguration.toKey(), serviceConfiguration);
+				STORAGE.put(sConfig.toKey(), sConfig);
 			}
 			return; // exiting on successful step
 		} catch (final ClassNotFoundException e) {
