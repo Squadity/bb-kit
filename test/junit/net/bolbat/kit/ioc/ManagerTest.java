@@ -4,6 +4,8 @@ import static net.bolbat.kit.ioc.scope.DistributionScope.LOCAL;
 import static net.bolbat.kit.ioc.scope.DistributionScope.REMOTE;
 import static net.bolbat.kit.ioc.scope.TypeScope.SERVICE;
 
+import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -17,7 +19,9 @@ import org.junit.runners.MethodSorters;
 import net.bolbat.kit.ioc.Manager.Feature;
 import net.bolbat.kit.ioc.scope.CompositeScope;
 import net.bolbat.kit.ioc.scope.CustomScope;
+import net.bolbat.kit.ioc.scope.DistributionScope;
 import net.bolbat.kit.ioc.scope.Scope;
+import net.bolbat.kit.ioc.scope.TypeScope;
 import net.bolbat.kit.service.Configuration;
 import net.bolbat.kit.service.SampleService;
 import net.bolbat.kit.service.SampleServiceException;
@@ -43,7 +47,7 @@ public class ManagerTest {
 	 */
 	@Before
 	public void before() {
-		Manager.tearDown();
+		after();
 	}
 
 	/**
@@ -138,6 +142,34 @@ public class ManagerTest {
 		} finally {
 			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
 		}
+	}
+
+	@Test
+	public void registerByInstance() throws SampleServiceException {
+		Manager.register(SampleService.class, SampleServiceImpl.createBy(this.getClass().getSimpleName()));
+		final SampleService service = Manager.getFast(SampleService.class);
+		Assert.assertNotNull(service);
+		Assert.assertEquals("CREATED BY: " + this.getClass().getSimpleName(), service.getCreationMethod());
+	}
+
+	@Test
+	public void registerByInstanceWithScopes() throws SampleServiceException {
+		final CompositeScope scope = CompositeScope.get(TypeScope.API_EXTERNAL, DistributionScope.LOCAL, CustomScope.get(UUID.randomUUID().toString()));
+		Manager.register(SampleService.class, SampleServiceImpl.createBy(this.getClass().getSimpleName()), scope);
+
+		try {
+			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+			Manager.getFast(SampleService.class);
+			Assert.fail();
+		} catch (final ManagerRuntimeException e) {
+			Assert.assertTrue("Right exception instance should be there.", e.getCause() instanceof ConfigurationNotFoundException);
+		} finally {
+			Manager.Features.enable(Feature.AUTO_IMPL_DISCOVERY);
+		}
+
+		final SampleService service = Manager.getFast(SampleService.class, scope);
+		Assert.assertNotNull(service);
+		Assert.assertEquals("CREATED BY: " + this.getClass().getSimpleName(), service.getCreationMethod());
 	}
 
 	@Test

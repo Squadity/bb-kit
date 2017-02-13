@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,6 +183,47 @@ public final class Manager implements Module {
 	}
 
 	/**
+	 * Register service.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param factory
+	 *            service factory instance
+	 */
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory) {
+		register(service, factory, (Configuration) null, DEFAULT_SCOPE);
+	}
+
+	/**
+	 * Register service.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param factory
+	 *            service factory instance
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 */
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Scope... scopes) {
+		register(service, factory, (Configuration) null, scopes);
+	}
+
+	/**
+	 * Register service.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param factory
+	 *            service factory instance
+	 * @param conf
+	 *            service factory configuration, can be <code>null</code>
+	 */
+	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Configuration conf) {
+		register(service, factory, conf, DEFAULT_SCOPE);
+	}
+
+	/**
 	 * Register service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.
 	 * 
@@ -197,9 +241,46 @@ public final class Manager implements Module {
 		checkArgument(service != null, "service argument is null");
 		checkArgument(factory != null, "serviceFactory argument is null");
 
-		final ScopeConfiguration<S> serviceConfiguration = new ScopeConfiguration<>(service, factory, conf, ScopeUtil.scopesToArray(true, scopes));
+		final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, factory, conf, ScopeUtil.scopesToArray(true, scopes));
 		synchronized (LOCK) {
-			STORAGE.put(serviceConfiguration.toKey(), serviceConfiguration);
+			STORAGE.put(sConfig.toKey(), sConfig);
+		}
+	}
+
+	/**
+	 * Register service.<br>
+	 * {@link PostConstruct} will be ignored.<br>
+	 * {@link PreDestroy} will be executed during <code>tearDown</code>.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param instance
+	 *            service instance
+	 */
+	public static <S extends Service, SI extends S> void register(final Class<S> service, final SI instance) {
+		register(service, instance, DEFAULT_SCOPE);
+	}
+
+	/**
+	 * Register service.<br>
+	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.<br>
+	 * {@link PostConstruct} will be ignored.<br>
+	 * {@link PreDestroy} will be executed during <code>tearDown</code>.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param instance
+	 *            service instance
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 */
+	public static <S extends Service, SI extends S> void register(final Class<S> service, final SI instance, final Scope... scopes) {
+		checkArgument(service != null, "service argument is null");
+		checkArgument(instance != null, "instance argument is null");
+
+		final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, instance, ScopeUtil.scopesToArray(true, scopes));
+		synchronized (LOCK) {
+			STORAGE.put(sConfig.toKey(), sConfig);
 		}
 	}
 
@@ -524,7 +605,7 @@ public final class Manager implements Module {
 		private S instance;
 
 		/**
-		 * Default constructor.
+		 * Protected constructor.
 		 * 
 		 * @param aService
 		 *            service interface
@@ -540,6 +621,24 @@ public final class Manager implements Module {
 			this.factory = aFactory;
 			this.factoryConf = aFactoryConf != null ? aFactoryConf : Configuration.EMPTY;
 			this.scopes = aScopes;
+		}
+
+		/**
+		 * Protected constructor.
+		 * 
+		 * @param aService
+		 *            service interface
+		 * @param aInstance
+		 *            service instance
+		 * @param aScopes
+		 *            service scopes
+		 */
+		protected ScopeConfiguration(final Class<S> aService, final S aInstance, final Scope[] aScopes) {
+			this.service = aService;
+			this.factory = null;
+			this.factoryConf = Configuration.EMPTY;
+			this.scopes = aScopes;
+			this.instance = aInstance;
 		}
 
 		public Class<S> getService() {
@@ -661,7 +760,8 @@ public final class Manager implements Module {
 		 * Automatic implementation discovery.<br>
 		 * Currently expected to work only for 'Manager.DEFAULT_SCOPE'.
 		 */
-		@Evolving AUTO_IMPL_DISCOVERY;
+		@Evolving
+		AUTO_IMPL_DISCOVERY;
 
 	}
 

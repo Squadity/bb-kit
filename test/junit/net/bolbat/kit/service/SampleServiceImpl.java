@@ -1,5 +1,8 @@
 package net.bolbat.kit.service;
 
+import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
+import static net.bolbat.utils.lang.Validations.checkArgument;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +28,7 @@ public class SampleServiceImpl implements SampleService {
 	/**
 	 * Service creation method string.
 	 */
-	protected final String creationMethod;
+	protected String creationMethod;
 
 	/**
 	 * Default constructor.
@@ -47,6 +50,21 @@ public class SampleServiceImpl implements SampleService {
 	@Override
 	public String getCreationMethod() {
 		return creationMethod;
+	}
+
+	/**
+	 * Create service instance directly (without factory).
+	 * 
+	 * @param source
+	 *            creation source
+	 * @return {@link SampleServiceImpl}
+	 */
+	public static SampleServiceImpl createBy(final String source) {
+		checkArgument(isNotEmpty(source), "source argument is empty");
+
+		final SampleServiceImpl result = new SampleServiceImpl();
+		result.creationMethod += " BY: " + source;
+		return result;
 	}
 
 	/**
