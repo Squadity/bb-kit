@@ -254,7 +254,7 @@ public final class Manager implements Module {
 	 * @param instance
 	 *            service instance
 	 */
-	public static <S extends Service, SI extends S> void register(final Class<S> service, final SI instance) {
+	public static <S extends Service> void register(final Class<S> service, final S instance) {
 		register(service, instance, DEFAULT_SCOPE);
 	}
 
@@ -271,7 +271,7 @@ public final class Manager implements Module {
 	 * @param scopes
 	 *            service scopes, default scopes will be selected if no one given
 	 */
-	public static <S extends Service, SI extends S> void register(final Class<S> service, final SI instance, final Scope... scopes) {
+	public static <S extends Service> void register(final Class<S> service, final S instance, final Scope... scopes) {
 		checkArgument(service != null, "service argument is null");
 		checkArgument(instance != null, "instance argument is null");
 
