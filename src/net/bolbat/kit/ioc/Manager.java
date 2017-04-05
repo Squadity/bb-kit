@@ -73,13 +73,6 @@ public final class Manager implements Module {
 	public static final Scope DEFAULT_SCOPE = CustomScope.get("SYSTEM_DEFAULT_SCOPE");
 
 	/**
-	 * Static initialization.
-	 */
-	static {
-		Features.enable(Feature.AUTO_IMPL_DISCOVERY);
-	}
-
-	/**
 	 * Private constructor for preventing class instantiation.
 	 */
 	private Manager() {
@@ -692,6 +685,13 @@ public final class Manager implements Module {
 		 * Configuration storage.
 		 */
 		private static transient Map<Feature, Boolean> features = new EnumMap<>(Feature.class);
+
+		/**
+		 * Static initialization with default configuration.
+		 */
+		static {
+			Features.enable(Feature.AUTO_IMPL_DISCOVERY);
+		}
 
 		/**
 		 * Enable features.
