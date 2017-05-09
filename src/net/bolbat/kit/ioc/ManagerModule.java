@@ -47,7 +47,7 @@ public final class ManagerModule implements Module {
 	/**
 	 * Synchronization lock.
 	 */
-	private final Object LOCK = new Object();
+	private final Object lock = new Object();
 
 	/**
 	 * Features configuration.
@@ -183,7 +183,7 @@ public final class ManagerModule implements Module {
 		if (conf.getInstance() != null) // returning fast as possible if instance already initialized
 			return conf.getInstance();
 
-		synchronized (LOCK) {
+		synchronized (lock) {
 			if (conf.getInstance() != null)
 				return conf.getInstance();
 
@@ -244,7 +244,7 @@ public final class ManagerModule implements Module {
 	 * For registered and not instantiated services 'post-construct' will be processed.
 	 */
 	public void warmUp() {
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final List<Object> instances = new ArrayList<>();
 			for (final ServiceConfiguration<?> conf : services().getAll()) {
 				if (conf.getInstance() != null)
@@ -277,7 +277,7 @@ public final class ManagerModule implements Module {
 	 *            service interface
 	 */
 	public <S extends Service> void warmUp(final Class<S> service) {
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final List<Object> instances = new ArrayList<>();
 			for (final ServiceConfiguration<?> conf : services().getAll()) {
 				if (!conf.getService().equals(service) || conf.getInstance() != null)
@@ -307,7 +307,7 @@ public final class ManagerModule implements Module {
 	 * For registered and instantiated services 'pre-destroy' will be processed.
 	 */
 	public void tearDown() {
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final List<ServiceConfiguration<?>> values = new ArrayList<>(services().getAll());
 			services().clear();
 			links().clear();
@@ -327,7 +327,7 @@ public final class ManagerModule implements Module {
 	 *            service interface
 	 */
 	public <S extends Service> void tearDown(final Class<S> service) {
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final List<ServiceConfiguration<?>> instances = new ArrayList<>();
 			for (final ServiceConfiguration<?> conf : services().getAll())
 				if (conf.getService().equals(service))

@@ -42,7 +42,7 @@ public final class ManagerUtils {
 	 * 
 	 * @param service
 	 *            service
-	 * @param scopes
+	 * @param scope
 	 *            scopes
 	 * @return {@link String} key
 	 */

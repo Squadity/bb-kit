@@ -15,7 +15,7 @@ public class FeaturesImpl implements Features {
 	/**
 	 * Synchronization lock.
 	 */
-	private final Object LOCK = new Object();
+	private final Object lock = new Object();
 
 	/**
 	 * Configuration storage.
@@ -40,7 +40,7 @@ public class FeaturesImpl implements Features {
 		if (toEnable == null || toEnable.length == 0)
 			return;
 
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final Map<Feature, Boolean> newConfiguration = new EnumMap<>(features);
 			for (final Feature feature : toEnable)
 				if (feature != null)
@@ -61,7 +61,7 @@ public class FeaturesImpl implements Features {
 		if (toDisable == null || toDisable.length == 0)
 			return;
 
-		synchronized (LOCK) {
+		synchronized (lock) {
 			final Map<Feature, Boolean> newConfiguration = new EnumMap<>(features);
 			for (final Feature feature : toDisable)
 				if (feature != null)
@@ -80,7 +80,7 @@ public class FeaturesImpl implements Features {
 	 */
 	@Override
 	public boolean isEnabled(final Feature feature) {
-		return Boolean.TRUE == features.get(feature);
+		return Boolean.TRUE.equals(features.get(feature));
 	}
 
 }

@@ -357,7 +357,7 @@ public final class Manager implements Module {
 		 * @param toEnable
 		 *            {@link Feature} array
 		 */
-		public static final void enable(final Feature... toEnable) {
+		public static void enable(final Feature... toEnable) {
 			defaultModule().features().enable(toEnable);
 		}
 
@@ -367,7 +367,7 @@ public final class Manager implements Module {
 		 * @param toDisable
 		 *            {@link Feature} array
 		 */
-		public static final void disable(final Feature... toDisable) {
+		public static void disable(final Feature... toDisable) {
 			defaultModule().features().disable(toDisable);
 		}
 

@@ -99,6 +99,11 @@ public class ServiceConfiguration<S extends Service> {
 		this.instance = aInstance;
 	}
 
+	/**
+	 * Get configuration key.
+	 * 
+	 * @return {@link String}
+	 */
 	public String toKey() {
 		return ManagerUtils.resolveKey(service, scopes);
 	}
