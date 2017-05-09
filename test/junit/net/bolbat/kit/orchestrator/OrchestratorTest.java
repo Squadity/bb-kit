@@ -299,14 +299,14 @@ public class OrchestratorTest {
 
 	@Test
 	public void callAsyncVoid() {
-		service.callAsyncVoid(5, TimeUnit.MILLISECONDS);
+		service.callAsyncVoid(20, TimeUnit.MILLISECONDS);
 
-		sleep(1, TimeUnit.MILLISECONDS);
+		sleep(5, TimeUnit.MILLISECONDS);
 
 		CallResponce resp = service.getCallResponce();
 		Assert.assertEquals(CallResponce.State.INITIATED, resp.getState());
 
-		sleep(5, TimeUnit.MILLISECONDS);
+		sleep(20, TimeUnit.MILLISECONDS);
 
 		resp = service.getCallResponce();
 		Assert.assertEquals(CallResponce.State.EXECUTED, resp.getState());
