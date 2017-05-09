@@ -38,7 +38,7 @@ import net.bolbat.utils.annotation.Mark.ToDo;
  * 
  * @author Alexandr Bolbat
  */
-@ToDo({ "Implement", "warmUp/tearDown", "Feature.AUTO_IMPL_DISCOVERY", "test cases" })
+@ToDo({ "Implement", "warmUp/tearDown", "Feature.AUTO_IMPL_DISCOVERY", "test cases", "multi-module configuration" })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ManagerTest {
 

@@ -1,38 +1,27 @@
 package net.bolbat.kit.ioc;
 
+import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
 import static net.bolbat.utils.lang.Validations.checkArgument;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.bolbat.kit.Module;
 import net.bolbat.kit.ioc.scope.CompositeScope;
 import net.bolbat.kit.ioc.scope.CustomScope;
 import net.bolbat.kit.ioc.scope.Scope;
-import net.bolbat.kit.ioc.scope.ScopeUtil;
 import net.bolbat.kit.service.Configuration;
-import net.bolbat.kit.service.DynamicServiceFactory;
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceFactory;
 import net.bolbat.utils.annotation.Mark.ToDo;
 import net.bolbat.utils.annotation.Stability.Evolving;
 import net.bolbat.utils.annotation.Stability.Stable;
-import net.bolbat.utils.lang.CastUtils;
-import net.bolbat.utils.lang.ToStringUtils;
-import net.bolbat.utils.logging.LoggingUtils;
-import net.bolbat.utils.reflect.ClassUtils;
-import net.bolbat.utils.reflect.Instantiator;
+import net.bolbat.utils.concurrency.lock.ConcurrentIdBasedLockManager;
+import net.bolbat.utils.concurrency.lock.IdBasedLock;
+import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 
 /**
  * Module for managing services configuration.
@@ -43,34 +32,24 @@ import net.bolbat.utils.reflect.Instantiator;
 public final class Manager implements Module {
 
 	/**
-	 * {@link Logger} instance.
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(Manager.class);
-
-	/**
-	 * Synchronization lock.
-	 */
-	private static final Object LOCK = new Object();
-
-	/**
-	 * Services configuration storage.
-	 */
-	private static final ConcurrentMap<String, ScopeConfiguration<?>> STORAGE = new ConcurrentHashMap<>();
-
-	/**
-	 * Scopes links configuration storage.
-	 */
-	private static final ConcurrentMap<String, Scope[]> LINKS = new ConcurrentHashMap<>();
-
-	/**
-	 * Key delimiter.
-	 */
-	private static final String DELIMITER = "_";
-
-	/**
 	 * Default scope.
 	 */
 	public static final Scope DEFAULT_SCOPE = CustomScope.get("SYSTEM_DEFAULT_SCOPE");
+
+	/**
+	 * Default module name.
+	 */
+	public static final String DEFAULT_MODULE = "DEFAULT";
+
+	/**
+	 * Modules storage.
+	 */
+	private static final ConcurrentMap<String, ManagerModule> MODULES = new ConcurrentHashMap<>();
+
+	/**
+	 * {@link IdBasedLockManager}.
+	 */
+	private static final IdBasedLockManager<String> LOCK_MANAGER = new ConcurrentIdBasedLockManager<>();
 
 	/**
 	 * Private constructor for preventing class instantiation.
@@ -80,7 +59,53 @@ public final class Manager implements Module {
 	}
 
 	/**
-	 * Make link between default and target scope.
+	 * Get default module instance.
+	 * 
+	 * @return {@link ManagerModule}
+	 */
+	public static ManagerModule defaultModule() {
+		return moduleInternally(DEFAULT_MODULE);
+	}
+
+	/**
+	 * Get module instance.
+	 * 
+	 * @param name
+	 *            module name
+	 * @return {@link ManagerModule}
+	 */
+	public static ManagerModule module(final String name) {
+		checkArgument(isNotEmpty(name), "name argument is empty");
+		return moduleInternally(name);
+	}
+
+	/**
+	 * Get module instance internally (without argument validation).
+	 * 
+	 * @param name
+	 *            module name
+	 * @return {@link ManagerModule}
+	 */
+	private static ManagerModule moduleInternally(final String name) {
+		ManagerModule defaultModule = MODULES.get(name);
+		if (defaultModule == null) {
+			final IdBasedLock<String> lock = LOCK_MANAGER.obtainLock(name);
+			lock.lock();
+			try {
+				defaultModule = MODULES.get(name);
+				if (defaultModule == null) {
+					defaultModule = new ManagerModule();
+					MODULES.put(name, defaultModule);
+				}
+			} finally {
+				lock.unlock();
+			}
+		}
+		return defaultModule;
+	}
+
+	/**
+	 * Make default module link between default and target scope.
 	 * 
 	 * @param service
 	 *            service
@@ -88,11 +113,11 @@ public final class Manager implements Module {
 	 *            target scope, can be {@link CompositeScope}
 	 */
 	public static <S extends Service> void link(final Class<S> service, final Scope target) {
-		link(service, DEFAULT_SCOPE, target);
+		defaultModule().links().link(service, target);
 	}
 
 	/**
-	 * Make link between scopes.
+	 * Make default module link between scopes.
 	 * 
 	 * @param service
 	 *            service
@@ -102,20 +127,11 @@ public final class Manager implements Module {
 	 *            target scope, can be {@link CompositeScope}
 	 */
 	public static <S extends Service> void link(final Class<S> service, final Scope source, final Scope target) {
-		checkArgument(service != null, "service argument is null");
-		checkArgument(source != null, "source argument is null");
-		checkArgument(target != null, "target argument is null");
-		checkArgument(!source.getId().equalsIgnoreCase(target.getId()), "source[" + source + "] and target[" + target + "] scopes is equal.");
-
-		final String sourceKey = resolveKey(service, source);
-		final Scope[] targetScopes = target instanceof CompositeScope ? CompositeScope.class.cast(target).getScopes() : new Scope[] { target };
-		synchronized (LOCK) {
-			LINKS.put(sourceKey, targetScopes);
-		}
+		defaultModule().links().link(service, source, target);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -123,11 +139,11 @@ public final class Manager implements Module {
 	 *            service factory
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory) {
-		register(service, factory, DEFAULT_SCOPE);
+		defaultModule().services().register(service, factory);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -137,11 +153,11 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Scope... scopes) {
-		register(service, factory, Configuration.EMPTY, scopes);
+		defaultModule().services().register(service, factory, scopes);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -151,11 +167,11 @@ public final class Manager implements Module {
 	 *            service factory configuration, can be <code>null</code>
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf) {
-		register(service, factory, conf, DEFAULT_SCOPE);
+		defaultModule().services().register(service, factory, conf);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -168,12 +184,11 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final Class<SF> factory, final Configuration conf,
 			final Scope... scopes) {
-		final SF instance = Instantiator.instantiate(factory);
-		register(service, instance, conf, scopes);
+		defaultModule().services().register(service, factory, conf, scopes);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -181,11 +196,11 @@ public final class Manager implements Module {
 	 *            service factory instance
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory) {
-		register(service, factory, Configuration.EMPTY, DEFAULT_SCOPE);
+		defaultModule().services().register(service, factory);
 	}
 
 	/**
-	 * Register service.<br>
+	 * Register default module service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.
 	 * 
 	 * @param service
@@ -196,11 +211,11 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Scope... scopes) {
-		register(service, factory, Configuration.EMPTY, scopes);
+		defaultModule().services().register(service, factory, scopes);
 	}
 
 	/**
-	 * Register service.
+	 * Register default module service.
 	 * 
 	 * @param service
 	 *            service interface
@@ -210,11 +225,11 @@ public final class Manager implements Module {
 	 *            service factory configuration, can be <code>null</code>
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Configuration conf) {
-		register(service, factory, conf, DEFAULT_SCOPE);
+		defaultModule().services().register(service, factory, conf);
 	}
 
 	/**
-	 * Register service.<br>
+	 * Register default module service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.
 	 * 
 	 * @param service
@@ -228,17 +243,11 @@ public final class Manager implements Module {
 	 */
 	public static <S extends Service, SF extends ServiceFactory<S>> void register(final Class<S> service, final SF factory, final Configuration conf,
 			final Scope... scopes) {
-		checkArgument(service != null, "service argument is null");
-		checkArgument(factory != null, "serviceFactory argument is null");
-
-		final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, factory, conf, ScopeUtil.scopesToArray(true, scopes));
-		synchronized (LOCK) {
-			STORAGE.put(sConfig.toKey(), sConfig);
-		}
+		defaultModule().services().register(service, factory, conf, scopes);
 	}
 
 	/**
-	 * Register service.<br>
+	 * Register default module service.<br>
 	 * {@link PostConstruct} will be ignored.<br>
 	 * {@link PreDestroy} will be executed during <code>tearDown</code>.
 	 * 
@@ -248,11 +257,11 @@ public final class Manager implements Module {
 	 *            service instance
 	 */
 	public static <S extends Service> void register(final Class<S> service, final S instance) {
-		register(service, instance, DEFAULT_SCOPE);
+		defaultModule().services().register(service, instance);
 	}
 
 	/**
-	 * Register service.<br>
+	 * Register default module service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon registration.<br>
 	 * {@link PostConstruct} will be ignored.<br>
 	 * {@link PreDestroy} will be executed during <code>tearDown</code>.
@@ -265,17 +274,11 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 */
 	public static <S extends Service> void register(final Class<S> service, final S instance, final Scope... scopes) {
-		checkArgument(service != null, "service argument is null");
-		checkArgument(instance != null, "instance argument is null");
-
-		final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, instance, ScopeUtil.scopesToArray(true, scopes));
-		synchronized (LOCK) {
-			STORAGE.put(sConfig.toKey(), sConfig);
-		}
+		defaultModule().services().register(service, instance, scopes);
 	}
 
 	/**
-	 * Get service.<br>
+	 * Get default module service.<br>
 	 * Logic the same as for <code>get</code> method but with {@link ManagerRuntimeException} instead of {@link ManagerException}.
 	 * 
 	 * @param service
@@ -285,16 +288,11 @@ public final class Manager implements Module {
 	 * @return service instance
 	 */
 	public static <S extends Service> S getFast(final Class<S> service, final Scope... scopes) {
-		try {
-			return get(service, scopes);
-		} catch (final ManagerException e) {
-			final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
-			throw new ManagerRuntimeException("getFast(" + service + ", " + ToStringUtils.toString(scopesArray) + ") failed to obtain service instance", e);
-		}
+		return defaultModule().getFast(service, scopes);
 	}
 
 	/**
-	 * Get service.<br>
+	 * Get default module service.<br>
 	 * Uses <code>ScopeUtil.scopesToArray(true,scopes)</code> upon resolving.
 	 * 
 	 * @param service
@@ -305,393 +303,53 @@ public final class Manager implements Module {
 	 * @throws ManagerException
 	 */
 	public static <S extends Service> S get(final Class<S> service, final Scope... scopes) throws ManagerException {
-		checkArgument(service != null, "service argument is null");
-
-		final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
-		ScopeConfiguration<S> conf = resolveConfiguration(service, scopesArray);
-
-		// try to use 'Feature.AUTO_IMPL_DISCOVERY'
-		if (conf == null && Features.isEnabled(Feature.AUTO_IMPL_DISCOVERY)) {
-			featureAutoImplDiscovery(service, scopesArray);
-			conf = resolveConfiguration(service, scopesArray);
-		}
-
-		// configuration is not found
-		if (conf == null)
-			throw new ConfigurationNotFoundException();
-
-		return getInstance(conf, true);
+		return defaultModule().get(service, scopes);
 	}
 
 	/**
-	 * Resolve service configuration.
-	 * 
-	 * @param service
-	 *            service
-	 * @param scopes
-	 *            scopes
-	 * @return {@link ScopeConfiguration} or <code>null</code>
-	 */
-	private static <S extends Service> ScopeConfiguration<S> resolveConfiguration(final Class<S> service, final Scope... scopes) {
-		final String key = resolveKey(service, scopes);
-		final ScopeConfiguration<S> conf = CastUtils.cast(STORAGE.get(key));
-		if (conf != null)
-			return conf;
-
-		// resolving by links
-		final Scope[] scope = LINKS.get(key);
-		if (scope != null)
-			return resolveConfiguration(service, scope);
-
-		return null;
-	}
-
-	/**
-	 * Resolve service key.
-	 * 
-	 * @param service
-	 *            service
-	 * @param scopes
-	 *            scopes
-	 * @return {@link String} key
-	 */
-	private static <S extends Service> String resolveKey(final Class<S> service, final Scope... scopes) {
-		return service.getName() + DELIMITER + ScopeUtil.scopesToString(scopes);
-	}
-
-	/**
-	 * Resolve service key.
-	 * 
-	 * @param service
-	 *            service
-	 * @param scopes
-	 *            scopes
-	 * @return {@link String} key
-	 */
-	private static <S extends Service> String resolveKey(final Class<S> service, final Scope scope) {
-		final String id = scope instanceof CompositeScope ? scope.getId() : ScopeUtil.scopesToString(scope);
-		return service.getName() + DELIMITER + id;
-	}
-
-	/**
-	 * Get service instance.
-	 * 
-	 * @param conf
-	 *            service scope configuration
-	 * @param postConstruct
-	 *            is post-construct should be executed
-	 * @return service instance
-	 * @throws ManagerException
-	 */
-	private static <S extends Service> S getInstance(final ScopeConfiguration<S> conf, final boolean postConstruct) throws ManagerException {
-		if (conf.getInstance() != null) // returning fast as possible if instance already initialized
-			return conf.getInstance();
-
-		synchronized (LOCK) {
-			if (conf.getInstance() != null)
-				return conf.getInstance();
-
-			final ServiceFactory<S> factory = conf.getFactory();
-
-			try {
-				final S instance = factory.create(conf.getFactoryConf());
-
-				// updating scope configuration with already obtained service instance
-				conf.setInstance(instance);
-
-				// execute post-construct
-				if (postConstruct)
-					ClassUtils.executePostConstruct(instance);
-
-				return instance;
-				// CHECKSTYLE:OFF
-			} catch (final RuntimeException e) {
-				// CHECKSTYLE:ON
-				throw new ManagerException("Can't instantiate service", e);
-			}
-		}
-	}
-
-	/**
-	 * Implementation of 'Feature.AUTO_IMPL_DISCOVERY'.
-	 * 
-	 * @param service
-	 *            service
-	 * @param scopes
-	 *            scopes
-	 */
-	@ToDo("Improve way how features support work inside manager, and implement other steps")
-	private static <S extends Service> void featureAutoImplDiscovery(final Class<S> service, final Scope... scopes) {
-		if (scopes.length != 1 && scopes[0] != Manager.DEFAULT_SCOPE)
-			return;
-
-		// Step[1]
-		// resolving by implementation full class name, preparing by naming convention from service name
-		// example: service[some.pkg.HelloWorldService] -> implementation[some.pkg.HelloWorldServiceImpl]
-		final String serviceClassName = service.getName();
-		final String implClassName = serviceClassName + "Impl";
-		try {
-			final Class<S> implClass = CastUtils.cast(Class.forName(implClassName));
-			final DynamicServiceFactory<S> implClassFactory = new DynamicServiceFactory<>(implClass);
-			final ScopeConfiguration<S> sConfig = new ScopeConfiguration<>(service, implClassFactory, Configuration.EMPTY, scopes);
-			synchronized (LOCK) {
-				STORAGE.put(sConfig.toKey(), sConfig);
-			}
-			return; // exiting on successful step
-		} catch (final ClassNotFoundException e) {
-			LoggingUtils.debug(LOGGER, "Step[1]: service[" + serviceClassName + "] implementation[" + implClassName + "] class is not found");
-		}
-
-		// Step[2]
-		// Step[3]
-		// Step[etc]
-	}
-
-	/**
-	 * Warm up {@link Manager} state.<br>
+	 * Warm up {@link Manager} default module state.<br>
 	 * For registered and not instantiated services 'post-construct' will be processed.
 	 */
 	public static void warmUp() {
-		synchronized (LOCK) {
-			final List<Object> instances = new ArrayList<>();
-			for (final ScopeConfiguration<?> conf : STORAGE.values()) {
-				if (conf.getInstance() != null)
-					continue;
-
-				try {
-					instances.add(getInstance(conf, false));
-				} catch (final ManagerException e) {
-					throw new ManagerRuntimeException("Can't warm up", e);
-				}
-			}
-
-			// execute post-construct
-			for (final Object instance : instances)
-				try {
-					ClassUtils.executePostConstruct(instance, true);
-					// CHECKSTYLE:OFF
-				} catch (final RuntimeException e) {
-					// CHECKSTYLE:ON
-					throw new ManagerRuntimeException("Can't warm up", e);
-				}
-		}
+		defaultModule().warmUp();
 	}
 
 	/**
-	 * Warm up {@link Manager} state for given service.<br>
+	 * Warm up {@link Manager} default module state for given service.<br>
 	 * For registered and not instantiated services 'post-construct' will be processed.
 	 * 
 	 * @param service
 	 *            service interface
 	 */
 	public static <S extends Service> void warmUp(final Class<S> service) {
-		synchronized (LOCK) {
-			final List<Object> instances = new ArrayList<>();
-			for (final ScopeConfiguration<?> conf : STORAGE.values()) {
-				if (!conf.getService().equals(service) || conf.getInstance() != null)
-					continue;
-
-				try {
-					instances.add(getInstance(conf, false));
-				} catch (final ManagerException e) {
-					throw new ManagerRuntimeException("Can't warm up", e);
-				}
-			}
-
-			// execute post-construct
-			for (final Object instance : instances)
-				try {
-					ClassUtils.executePostConstruct(instance, true);
-					// CHECKSTYLE:OFF
-				} catch (final RuntimeException e) {
-					// CHECKSTYLE:ON
-					throw new ManagerRuntimeException("Can't warm up", e);
-				}
-		}
+		defaultModule().warmUp(service);
 	}
 
 	/**
-	 * Tear down {@link Manager} state.<br>
+	 * Tear down {@link Manager} default module state.<br>
 	 * For registered and instantiated services 'pre-destroy' will be processed.
 	 */
 	public static void tearDown() {
-		synchronized (LOCK) {
-			final List<ScopeConfiguration<?>> values = new ArrayList<>(STORAGE.values());
-			STORAGE.clear();
-			LINKS.clear();
-
-			// execute pre-destroy
-			for (final ScopeConfiguration<?> conf : values)
-				if (conf.getInstance() != null)
-					ClassUtils.executePreDestroy(conf.getInstance(), true);
-		}
+		defaultModule().tearDown();
 	}
 
 	/**
-	 * Tear down {@link Manager} state for given service.<br>
+	 * Tear down {@link Manager} default module state for given service.<br>
 	 * For registered and instantiated services 'pre-destroy' will be processed.
 	 * 
 	 * @param service
 	 *            service interface
 	 */
 	public static <S extends Service> void tearDown(final Class<S> service) {
-		synchronized (LOCK) {
-			final List<ScopeConfiguration<?>> instances = new ArrayList<>();
-			for (final ScopeConfiguration<?> conf : STORAGE.values())
-				if (conf.getService().equals(service))
-					instances.add(conf);
-
-			// clearing services configuration
-			for (final ScopeConfiguration<?> conf : instances) {
-				STORAGE.remove(conf.toKey());
-
-				// executing services pre-destroy
-				if (conf.getInstance() != null)
-					ClassUtils.executePreDestroy(conf.getInstance(), true);
-			}
-
-			// clearing services links
-			final String serviceLinkPrefix = service.getName() + DELIMITER;
-			for (final Entry<String, Scope[]> linkEntry : LINKS.entrySet()) {
-				if (linkEntry.getKey().startsWith(serviceLinkPrefix))
-					LINKS.remove(linkEntry.getKey());
-			}
-		}
+		defaultModule().tearDown(service);
 	}
 
 	/**
-	 * Service scope configuration.
-	 * 
-	 * @author Alexandr Bolbat
-	 * 
-	 * @param <S>
-	 *            service
-	 */
-	private static class ScopeConfiguration<S extends Service> {
-
-		/**
-		 * Service interface.
-		 */
-		private final Class<S> service;
-
-		/**
-		 * Service factory.
-		 */
-		private final ServiceFactory<S> factory;
-
-		/**
-		 * Service factory configuration.
-		 */
-		private final Configuration factoryConf;
-
-		/**
-		 * Service scopes.
-		 */
-		private final Scope[] scopes;
-
-		/**
-		 * Service instance.
-		 */
-		private S instance;
-
-		/**
-		 * Protected constructor.
-		 * 
-		 * @param aService
-		 *            service interface
-		 * @param aFactory
-		 *            service factory
-		 * @param aFactoryConf
-		 *            service factory configuration, can be <code>null</code>
-		 * @param aScopes
-		 *            service scopes
-		 */
-		protected ScopeConfiguration(final Class<S> aService, final ServiceFactory<S> aFactory, final Configuration aFactoryConf, final Scope[] aScopes) {
-			this.service = aService;
-			this.factory = aFactory;
-			this.factoryConf = aFactoryConf != null ? aFactoryConf : Configuration.EMPTY;
-			this.scopes = aScopes;
-		}
-
-		/**
-		 * Protected constructor.
-		 * 
-		 * @param aService
-		 *            service interface
-		 * @param aInstance
-		 *            service instance
-		 * @param aScopes
-		 *            service scopes
-		 */
-		protected ScopeConfiguration(final Class<S> aService, final S aInstance, final Scope[] aScopes) {
-			this.service = aService;
-			this.factory = null;
-			this.factoryConf = Configuration.EMPTY;
-			this.scopes = aScopes;
-			this.instance = aInstance;
-		}
-
-		public Class<S> getService() {
-			return service;
-		}
-
-		public ServiceFactory<S> getFactory() {
-			return factory;
-		}
-
-		public Configuration getFactoryConf() {
-			return factoryConf;
-		}
-
-		public S getInstance() {
-			return instance;
-		}
-
-		public void setInstance(final S aInstance) {
-			this.instance = aInstance;
-		}
-
-		public String toKey() {
-			return resolveKey(service, scopes);
-		}
-
-		@Override
-		public String toString() {
-			final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
-			builder.append(" [service=").append(service);
-			builder.append(", factory=").append(factory);
-			builder.append(", factoryConf=").append(factoryConf);
-			builder.append(", scopes=").append(ToStringUtils.toString(scopes));
-			builder.append(", instance=").append(instance != null ? instance.getClass().getName() : null);
-			builder.append("]");
-			return builder.toString();
-		}
-
-	}
-
-	/**
-	 * Manager features configuration.
+	 * Manager default module features configuration.
 	 * 
 	 * @author Alexandr Bolbat
 	 */
 	public static class Features {
-
-		/**
-		 * Synchronization lock.
-		 */
-		private static final Object LOCK = new Object();
-
-		/**
-		 * Configuration storage.
-		 */
-		private static transient Map<Feature, Boolean> features = new EnumMap<>(Feature.class);
-
-		/**
-		 * Static initialization with default configuration.
-		 */
-		static {
-			Features.enable(Feature.AUTO_IMPL_DISCOVERY);
-		}
 
 		/**
 		 * Enable features.
@@ -700,17 +358,7 @@ public final class Manager implements Module {
 		 *            {@link Feature} array
 		 */
 		public static final void enable(final Feature... toEnable) {
-			if (toEnable == null || toEnable.length == 0)
-				return;
-
-			synchronized (LOCK) {
-				final Map<Feature, Boolean> newConfiguration = new EnumMap<>(features);
-				for (final Feature feature : toEnable)
-					if (feature != null)
-						newConfiguration.put(feature, Boolean.TRUE);
-
-				features = newConfiguration;
-			}
+			defaultModule().features().enable(toEnable);
 		}
 
 		/**
@@ -720,17 +368,7 @@ public final class Manager implements Module {
 		 *            {@link Feature} array
 		 */
 		public static final void disable(final Feature... toDisable) {
-			if (toDisable == null || toDisable.length == 0)
-				return;
-
-			synchronized (LOCK) {
-				final Map<Feature, Boolean> newConfiguration = new EnumMap<>(features);
-				for (final Feature feature : toDisable)
-					if (feature != null)
-						newConfiguration.put(feature, Boolean.FALSE);
-
-				features = newConfiguration;
-			}
+			defaultModule().features().disable(toDisable);
 		}
 
 		/**
@@ -741,7 +379,7 @@ public final class Manager implements Module {
 		 * @return <code>true</code> if enabled or <code>false</code>
 		 */
 		public static boolean isEnabled(final Feature feature) {
-			return Boolean.TRUE == features.get(feature);
+			return defaultModule().features().isEnabled(feature);
 		}
 
 	}
@@ -751,6 +389,7 @@ public final class Manager implements Module {
 	 * 
 	 * @author Alexandr Bolbat
 	 */
+	@ToDo("Better to move this enumeration to 'net.bolbat.kit.ioc.features' package")
 	public enum Feature {
 
 		/**
