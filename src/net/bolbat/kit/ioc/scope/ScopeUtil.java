@@ -1,5 +1,6 @@
 package net.bolbat.kit.ioc.scope;
 
+import static net.bolbat.kit.ioc.Manager.DEFAULT_SCOPE;
 import static net.bolbat.utils.lang.StringUtils.EMPTY;
 import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
 
@@ -8,8 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import net.bolbat.kit.ioc.Manager;
 
 /**
  * {@link Scope} related utility.
@@ -104,7 +103,7 @@ public final class ScopeUtil {
 
 		// handle default scope
 		if (aScopesList.isEmpty() && addDefault)
-			aScopesList.add(Manager.DEFAULT_SCOPE);
+			aScopesList.add(DEFAULT_SCOPE);
 
 		return aScopesList.toArray(new Scope[aScopesList.size()]);
 	}
