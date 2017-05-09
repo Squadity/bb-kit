@@ -134,7 +134,7 @@ public final class ManagerModule implements Module {
 		ServiceConfiguration<S> conf = resolveConfiguration(service, scopesArray);
 
 		// try to use 'Feature.AUTO_IMPL_DISCOVERY'
-		if (conf == null && features.isEnabled(Feature.AUTO_IMPL_DISCOVERY)) {
+		if (conf == null && features().isEnabled(Feature.AUTO_IMPL_DISCOVERY)) {
 			featureAutoImplDiscovery(service, scopesArray);
 			conf = resolveConfiguration(service, scopesArray);
 		}
@@ -228,7 +228,7 @@ public final class ManagerModule implements Module {
 		final String implClassName = serviceClassName + "Impl";
 		try {
 			final Class<S> implClass = CastUtils.cast(Class.forName(implClassName));
-			services.register(service, new DynamicServiceFactory<>(implClass), Configuration.EMPTY, scopes);
+			services().register(service, new DynamicServiceFactory<>(implClass), Configuration.EMPTY, scopes);
 			return; // exiting on successful step
 		} catch (final ClassNotFoundException e) {
 			LoggingUtils.debug(LOGGER, "Step[1]: service[" + serviceClassName + "] implementation[" + implClassName + "] class is not found");
@@ -310,7 +310,7 @@ public final class ManagerModule implements Module {
 		synchronized (LOCK) {
 			final List<ServiceConfiguration<?>> values = new ArrayList<>(services().getAll());
 			services().clear();
-			links.clear();
+			links().clear();
 
 			// execute pre-destroy
 			for (final ServiceConfiguration<?> conf : values)
@@ -335,7 +335,7 @@ public final class ManagerModule implements Module {
 
 			// clearing services configuration
 			for (final ServiceConfiguration<?> conf : instances) {
-				services.clear(conf.toKey());
+				services().clear(conf.toKey());
 
 				// executing services pre-destroy
 				if (conf.getInstance() != null)
