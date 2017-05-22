@@ -50,4 +50,20 @@ public class ServiceInstantiationException extends ServiceRuntimeException {
 		super(message, cause);
 	}
 
+	/**
+	 * Public constructor.
+	 * 
+	 * @param message
+	 *            exception message
+	 * @param cause
+	 *            exception cause
+	 * @param enableSuppression
+	 *            whether or not suppression is enabled or disabled
+	 * @param writableStackTrace
+	 *            whether or not the stack trace should be writable
+	 */
+	public ServiceInstantiationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
 }

@@ -50,4 +50,20 @@ public class ServiceException extends Exception {
 		super(message, cause);
 	}
 
+	/**
+	 * Public constructor.
+	 * 
+	 * @param message
+	 *            exception message
+	 * @param cause
+	 *            exception cause
+	 * @param enableSuppression
+	 *            whether or not suppression is enabled or disabled
+	 * @param writableStackTrace
+	 *            whether or not the stack trace should be writable
+	 */
+	public ServiceException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
 }
