@@ -55,7 +55,11 @@ public class ManagerTest {
 	 */
 	@After
 	public void after() {
-		Manager.tearDown();
+		try {
+			Manager.tearDown();
+		} catch (final RuntimeException e) {
+			Assert.assertEquals("Just for check.", e.getCause().getMessage());
+		}
 	}
 
 	/**
@@ -108,7 +112,11 @@ public class ManagerTest {
 		}
 
 		// resetting manager configuration
-		Manager.tearDown();
+		try {
+			Manager.tearDown();
+		} catch (final RuntimeException e) {
+			Assert.assertEquals("Just for check.", e.getCause().getMessage());
+		}
 
 		// checking clean configuration, default scope
 		try {
@@ -291,7 +299,11 @@ public class ManagerTest {
 
 		Manager.register(SampleService.class, SampleServiceFactory.class);
 		Manager.get(SampleService.class); // force initialization
-		Manager.tearDown();
+		try {
+			Manager.tearDown();
+		} catch (final RuntimeException e) {
+			Assert.assertEquals("Just for check.", e.getCause().getMessage());
+		}
 		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPreDestroyedAcount());
 	}
 
