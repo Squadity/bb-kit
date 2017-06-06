@@ -7,6 +7,9 @@ import net.bolbat.kit.config.ConfigurationListener;
 import net.bolbat.kit.orchestrator.OrchestrationConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.ExecutorConfig;
 import net.bolbat.kit.orchestrator.OrchestrationConfig.LimitsConfig;
+import net.bolbat.kit.orchestrator.exception.OrchestrationException;
+import net.bolbat.kit.orchestrator.impl.callable.CallableFactory;
+import net.bolbat.kit.orchestrator.impl.callable.DefaultCallableFactory;
 import net.bolbat.utils.concurrency.lock.IdBasedLock;
 import net.bolbat.utils.concurrency.lock.IdBasedLockManager;
 import net.bolbat.utils.concurrency.lock.SafeIdBasedLockManager;
@@ -102,6 +105,11 @@ public class ExecutionInfo implements ConfigurationListener {
 	 * Actual configuration: current executions.
 	 */
 	private transient AtomicInteger actualExecutions;
+
+	/**
+	 * Actual instance: {@link CallableFactory}.
+	 */
+	private transient CallableFactory actualCallableFactory;
 
 	public String getId() {
 		return id;
@@ -261,6 +269,31 @@ public class ExecutionInfo implements ConfigurationListener {
 			service = ExecutionUtils.create(getActualExecutorConfig(), getActualExecutorId(), getActualExecutorName());
 			ExecutionCaches.cacheExecutor(actualExecutorId, service);
 			return service;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public CallableFactory getActualCallableFactory() {
+		if (actualCallableFactory != null)
+			return actualCallableFactory;
+
+		final Class<? extends CallableFactory> factory = getActualExecutorConfig().getCallableFactory();
+		final IdBasedLock<String> lock = LOCK_MANAGER.obtainLock(actualExecutorId);
+		lock.lock();
+		try {
+			if (actualCallableFactory != null)
+				return actualCallableFactory;
+
+			if (DefaultCallableFactory.class == factory) {
+				actualCallableFactory = DefaultCallableFactory.getInstance();
+				return actualCallableFactory;
+			}
+
+			actualCallableFactory = factory.newInstance();
+			return actualCallableFactory;
+		} catch (final InstantiationException | IllegalAccessException e) {
+			throw new OrchestrationException("Couldn't instantiate CallableFactory[" + factory + "]", e);
 		} finally {
 			lock.unlock();
 		}

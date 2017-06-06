@@ -126,7 +126,7 @@ public final class ExecutionUtils {
 			if (controlConcurrency && limitsConf.getConcurrent() < info.getActualExecutions().incrementAndGet())
 				throw new ConcurrentOverflowException(info);
 
-			final Callable<Object> callable = ExecutionCaches.getCallable(instance, method, args);
+			final Callable<Object> callable = info.getActualCallableFactory().create(instance, method, args);
 			final Mode mode = info.getConfig().getModeConfig().getMode();
 
 			// mode 'SYNC'

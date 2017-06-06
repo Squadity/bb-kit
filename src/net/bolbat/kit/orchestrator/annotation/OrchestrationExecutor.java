@@ -4,10 +4,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import net.bolbat.kit.orchestrator.OrchestrationConstants;
+import net.bolbat.kit.orchestrator.impl.callable.CallableFactory;
+import net.bolbat.kit.orchestrator.impl.callable.DefaultCallableFactory;
 import net.bolbat.kit.orchestrator.impl.executor.DefaultExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.ExecutorServiceFactory;
 import net.bolbat.utils.annotation.Audience;
@@ -30,6 +33,13 @@ public @interface OrchestrationExecutor {
 	 * @return {@link ExecutorServiceFactory} implementation
 	 */
 	Class<? extends ExecutorServiceFactory> factory() default DefaultExecutorServiceFactory.class;
+
+	/**
+	 * {@link Callable} factory class.
+	 * 
+	 * @return {@link CallableFactory} implementation
+	 */
+	Class<? extends CallableFactory> callableFactory() default DefaultCallableFactory.class;
 
 	/**
 	 * {@link ExecutorService} core pool size.

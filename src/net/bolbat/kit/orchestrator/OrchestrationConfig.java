@@ -3,6 +3,7 @@ package net.bolbat.kit.orchestrator;
 import static net.bolbat.utils.lang.StringUtils.isNotEmpty;
 
 import java.io.Serializable;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +19,8 @@ import net.bolbat.kit.orchestrator.annotation.OrchestrationExecutor;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationLimits;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationMode;
 import net.bolbat.kit.orchestrator.annotation.OrchestrationMode.Mode;
+import net.bolbat.kit.orchestrator.impl.callable.CallableFactory;
+import net.bolbat.kit.orchestrator.impl.callable.DefaultCallableFactory;
 import net.bolbat.kit.orchestrator.impl.executor.DefaultExecutorServiceFactory;
 import net.bolbat.kit.orchestrator.impl.executor.ExecutorServiceFactory;
 import net.bolbat.utils.annotation.Mark.ToDo;
@@ -157,6 +160,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		}
 		if (executor != null) {
 			getExecutorConfig().setFactory(executor.factory());
+			getExecutorConfig().setCallableFactory(executor.callableFactory());
 			getExecutorConfig().setCoreSize(executor.coreSize());
 			getExecutorConfig().setMaxSize(executor.maxSize());
 			getExecutorConfig().setQueueSize(executor.queueSize());
@@ -311,6 +315,12 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		private Class<? extends ExecutorServiceFactory> factory = DefaultExecutorServiceFactory.class;
 
 		/**
+		 * {@link Callable} factory class.
+		 */
+		@DontConfigure
+		private Class<? extends CallableFactory> callableFactory = DefaultCallableFactory.class;
+
+		/**
 		 * Core pool size.
 		 */
 		@Configure
@@ -353,6 +363,14 @@ public class OrchestrationConfig extends AbstractConfiguration {
 
 		public void setFactory(final Class<? extends ExecutorServiceFactory> aFactory) {
 			this.factory = aFactory;
+		}
+
+		public Class<? extends CallableFactory> getCallableFactory() {
+			return callableFactory;
+		}
+
+		public void setCallableFactory(final Class<? extends CallableFactory> aCallableFactory) {
+			this.callableFactory = aCallableFactory;
 		}
 
 		public int getCoreSize() {
@@ -407,6 +425,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		public String toString() {
 			final StringBuilder builder = new StringBuilder();
 			builder.append("factory=").append(factory);
+			builder.append(", callableFactory=").append(callableFactory);
 			builder.append(", coreSize=").append(coreSize);
 			builder.append(", maxSize=").append(maxSize == OrchestrationConstants.POOL_MAX_SIZE ? OrchestrationConstants.UNLIMITED : maxSize);
 			builder.append(", queueSize=").append(queueSize == OrchestrationConstants.POOL_QUEUE_SIZE ? OrchestrationConstants.UNLIMITED : queueSize);
