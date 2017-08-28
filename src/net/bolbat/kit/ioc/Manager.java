@@ -307,7 +307,7 @@ public final class Manager implements Module {
 	}
 
 	/**
-	 * Is service configured, doesn't initiate warmUp.
+	 * Is service registered, doesn't initiate warmUp.
 	 * 
 	 * @param service
 	 *            service interface
@@ -315,8 +315,8 @@ public final class Manager implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 * @return <code>true</code> if configured, or <code>false</code>
 	 */
-	public static <S extends Service> boolean isConfigured(final Class<S> service, final Scope... scopes) {
-		return defaultModule().isConfigured(service, scopes);
+	public static <S extends Service> boolean isRegistered(final Class<S> service, final Scope... scopes) {
+		return defaultModule().isRegistered(service, scopes);
 	}
 
 	/**

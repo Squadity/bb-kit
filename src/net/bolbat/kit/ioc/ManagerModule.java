@@ -141,7 +141,7 @@ public final class ManagerModule implements Module {
 	}
 
 	/**
-	 * Is service configured, doesn't initiate warmUp.
+	 * Is service registered, doesn't initiate warmUp.
 	 * 
 	 * @param service
 	 *            service interface
@@ -149,7 +149,7 @@ public final class ManagerModule implements Module {
 	 *            service scopes, default scopes will be selected if no one given
 	 * @return <code>true</code> if configured, or <code>false</code>
 	 */
-	public <S extends Service> boolean isConfigured(final Class<S> service, final Scope... scopes) {
+	public <S extends Service> boolean isRegistered(final Class<S> service, final Scope... scopes) {
 		final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
 		return resolveConfigurationWithFeatures(service, scopesArray) != null;
 	}

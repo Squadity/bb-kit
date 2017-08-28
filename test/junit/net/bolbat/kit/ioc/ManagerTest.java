@@ -71,7 +71,7 @@ public class ManagerTest {
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 
-			Assert.assertFalse(Manager.isConfigured(SampleService.class));
+			Assert.assertFalse(Manager.isRegistered(SampleService.class));
 
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
@@ -94,7 +94,7 @@ public class ManagerTest {
 
 		// checking local service
 		try {
-			Assert.assertTrue(Manager.isConfigured(SampleService.class, SERVICE, LOCAL, null));
+			Assert.assertTrue(Manager.isRegistered(SampleService.class, SERVICE, LOCAL, null));
 
 			SampleService localInstance = Manager.get(SampleService.class, SERVICE, LOCAL, null);
 			Assert.assertTrue(localInstance instanceof SampleServiceImpl);
@@ -107,7 +107,7 @@ public class ManagerTest {
 
 		// checking remote service
 		try {
-			Assert.assertTrue(Manager.isConfigured(SampleService.class, SERVICE, null, customScope, REMOTE));
+			Assert.assertTrue(Manager.isRegistered(SampleService.class, SERVICE, null, customScope, REMOTE));
 
 			SampleService remoteInstance = Manager.get(SampleService.class, SERVICE, null, customScope, REMOTE);
 			Assert.assertTrue(remoteInstance instanceof SampleServiceRemoteImpl);
@@ -128,7 +128,7 @@ public class ManagerTest {
 		// checking clean configuration, default scope
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
-			Assert.assertFalse(Manager.isConfigured(SampleService.class));
+			Assert.assertFalse(Manager.isRegistered(SampleService.class));
 
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
@@ -142,7 +142,7 @@ public class ManagerTest {
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 
-			Assert.assertFalse(Manager.isConfigured(SampleService.class, SERVICE, null, LOCAL));
+			Assert.assertFalse(Manager.isRegistered(SampleService.class, SERVICE, null, LOCAL));
 
 			Manager.get(SampleService.class, SERVICE, null, LOCAL);
 			Assert.fail("Exception shold be thrown before this step.");
@@ -156,7 +156,7 @@ public class ManagerTest {
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
 
-			Assert.assertFalse(Manager.isConfigured(SampleService.class, SERVICE, REMOTE, null, customScope));
+			Assert.assertFalse(Manager.isRegistered(SampleService.class, SERVICE, REMOTE, null, customScope));
 
 			Manager.get(SampleService.class, SERVICE, REMOTE, null, customScope);
 			Assert.fail("Exception shold be thrown before this step.");
@@ -213,7 +213,7 @@ public class ManagerTest {
 		Manager.register(SampleService.class, SampleServiceFactory.class, SERVICE);
 		Manager.link(SampleService.class, SERVICE);
 
-		Assert.assertTrue(Manager.isConfigured(SampleService.class));
+		Assert.assertTrue(Manager.isRegistered(SampleService.class));
 
 		final SampleService service = Manager.getFast(SampleService.class);
 		Assert.assertNotNull("Service instance should be found", service);
