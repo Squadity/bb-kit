@@ -70,6 +70,9 @@ public class ManagerTest {
 		// checking clean configuration
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+
+			Assert.assertFalse(Manager.isConfigured(SampleService.class));
+
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
@@ -91,6 +94,8 @@ public class ManagerTest {
 
 		// checking local service
 		try {
+			Assert.assertTrue(Manager.isConfigured(SampleService.class, SERVICE, LOCAL, null));
+
 			SampleService localInstance = Manager.get(SampleService.class, SERVICE, LOCAL, null);
 			Assert.assertTrue(localInstance instanceof SampleServiceImpl);
 			Assert.assertEquals("CREATED", localInstance.getCreationMethod());
@@ -102,6 +107,8 @@ public class ManagerTest {
 
 		// checking remote service
 		try {
+			Assert.assertTrue(Manager.isConfigured(SampleService.class, SERVICE, null, customScope, REMOTE));
+
 			SampleService remoteInstance = Manager.get(SampleService.class, SERVICE, null, customScope, REMOTE);
 			Assert.assertTrue(remoteInstance instanceof SampleServiceRemoteImpl);
 			Assert.assertEquals("LOCATED. PARAMETER: configured parameter", remoteInstance.getCreationMethod());
@@ -121,6 +128,8 @@ public class ManagerTest {
 		// checking clean configuration, default scope
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+			Assert.assertFalse(Manager.isConfigured(SampleService.class));
+
 			Manager.get(SampleService.class);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
@@ -132,6 +141,9 @@ public class ManagerTest {
 		// checking clean configuration, local scope
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+
+			Assert.assertFalse(Manager.isConfigured(SampleService.class, SERVICE, null, LOCAL));
+
 			Manager.get(SampleService.class, SERVICE, null, LOCAL);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
@@ -143,6 +155,9 @@ public class ManagerTest {
 		// checking clean configuration, remote scope
 		try {
 			Manager.Features.disable(Feature.AUTO_IMPL_DISCOVERY);
+
+			Assert.assertFalse(Manager.isConfigured(SampleService.class, SERVICE, REMOTE, null, customScope));
+
 			Manager.get(SampleService.class, SERVICE, REMOTE, null, customScope);
 			Assert.fail("Exception shold be thrown before this step.");
 		} catch (ManagerException e) {
@@ -197,6 +212,9 @@ public class ManagerTest {
 		// automatically resolved
 		Manager.register(SampleService.class, SampleServiceFactory.class, SERVICE);
 		Manager.link(SampleService.class, SERVICE);
+
+		Assert.assertTrue(Manager.isConfigured(SampleService.class));
+
 		final SampleService service = Manager.getFast(SampleService.class);
 		Assert.assertNotNull("Service instance should be found", service);
 	}

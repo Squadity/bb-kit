@@ -307,6 +307,19 @@ public final class Manager implements Module {
 	}
 
 	/**
+	 * Is service configured, doesn't initiate warmUp.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 * @return <code>true</code> if configured, or <code>false</code>
+	 */
+	public static <S extends Service> boolean isConfigured(final Class<S> service, final Scope... scopes) {
+		return defaultModule().isConfigured(service, scopes);
+	}
+
+	/**
 	 * Warm up {@link Manager} default module state.<br>
 	 * For registered and not instantiated services 'post-construct' will be processed.
 	 */

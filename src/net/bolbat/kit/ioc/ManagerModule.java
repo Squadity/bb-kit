@@ -131,19 +131,48 @@ public final class ManagerModule implements Module {
 		checkArgument(service != null, "service argument is null");
 
 		final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
-		ServiceConfiguration<S> conf = resolveConfiguration(service, scopesArray);
-
-		// try to use 'Feature.AUTO_IMPL_DISCOVERY'
-		if (conf == null && features().isEnabled(Feature.AUTO_IMPL_DISCOVERY)) {
-			featureAutoImplDiscovery(service, scopesArray);
-			conf = resolveConfiguration(service, scopesArray);
-		}
+		final ServiceConfiguration<S> conf = resolveConfigurationWithFeatures(service, scopesArray);
 
 		// configuration is not found
 		if (conf == null)
 			throw new ConfigurationNotFoundException();
 
 		return getInstance(conf, true);
+	}
+
+	/**
+	 * Is service configured, doesn't initiate warmUp.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @param scopes
+	 *            service scopes, default scopes will be selected if no one given
+	 * @return <code>true</code> if configured, or <code>false</code>
+	 */
+	public <S extends Service> boolean isConfigured(final Class<S> service, final Scope... scopes) {
+		final Scope[] scopesArray = ScopeUtil.scopesToArray(true, scopes);
+		return resolveConfigurationWithFeatures(service, scopesArray) != null;
+	}
+
+	/**
+	 * Resolve service configuration with different features.
+	 * 
+	 * @param service
+	 *            service
+	 * @param scopes
+	 *            scopes
+	 * @return {@link ScopeConfiguration} or <code>null</code>
+	 */
+	private <S extends Service> ServiceConfiguration<S> resolveConfigurationWithFeatures(final Class<S> service, final Scope... scopes) {
+		ServiceConfiguration<S> conf = resolveConfiguration(service, scopes);
+
+		// try to use 'Feature.AUTO_IMPL_DISCOVERY'
+		if (conf == null && features().isEnabled(Feature.AUTO_IMPL_DISCOVERY)) {
+			featureAutoImplDiscovery(service, scopes);
+			conf = resolveConfiguration(service, scopes);
+		}
+
+		return conf;
 	}
 
 	/**
