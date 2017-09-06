@@ -20,21 +20,17 @@ public class FeaturesImpl implements Features {
 	/**
 	 * Configuration storage.
 	 */
-	private transient Map<Feature, Boolean> features = new EnumMap<>(Feature.class);
+	private transient Map<Feature, Boolean> features;
 
 	/**
-	 * Package protected constructor.
+	 * Public constructor.
 	 */
 	public FeaturesImpl() {
-		enable(Feature.AUTO_IMPL_DISCOVERY);
+		this.features = new EnumMap<>(Feature.class);
+
+		configureToDefaults();
 	}
 
-	/**
-	 * Enable features.
-	 * 
-	 * @param toEnable
-	 *            {@link Feature} array
-	 */
 	@Override
 	public void enable(final Feature... toEnable) {
 		if (toEnable == null || toEnable.length == 0)
@@ -50,12 +46,6 @@ public class FeaturesImpl implements Features {
 		}
 	}
 
-	/**
-	 * Disable features.
-	 * 
-	 * @param toDisable
-	 *            {@link Feature} array
-	 */
 	@Override
 	public void disable(final Feature... toDisable) {
 		if (toDisable == null || toDisable.length == 0)
@@ -71,16 +61,29 @@ public class FeaturesImpl implements Features {
 		}
 	}
 
-	/**
-	 * Is feature enabled.
-	 * 
-	 * @param feature
-	 *            {@link Feature}
-	 * @return <code>true</code> if enabled or <code>false</code>
-	 */
 	@Override
 	public boolean isEnabled(final Feature feature) {
 		return Boolean.TRUE.equals(features.get(feature));
+	}
+
+	@Override
+	public void clear() {
+		features = new EnumMap<>(Feature.class);
+
+		configureToDefaults();
+	}
+
+	/**
+	 * Configure features to defaults.
+	 */
+	private void configureToDefaults() {
+		for (final Feature feature : Feature.values()) {
+			if (feature.isEnabledByDefault()) {
+				enable(feature);
+			} else {
+				disable(feature);
+			}
+		}
 	}
 
 }

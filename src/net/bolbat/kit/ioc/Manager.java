@@ -410,7 +410,26 @@ public final class Manager implements Module {
 		 * Currently expected to work only for 'Manager.DEFAULT_SCOPE'.
 		 */
 		@Evolving
-		AUTO_IMPL_DISCOVERY;
+		AUTO_IMPL_DISCOVERY(true);
+
+		/**
+		 * Is feature enabled by default.
+		 */
+		private final boolean enabledByDefault;
+
+		/**
+		 * Private constructor.
+		 * 
+		 * @param aEnabledByDefault
+		 *            is feature enabled by default
+		 */
+		private Feature(final boolean aEnabledByDefault) {
+			this.enabledByDefault = aEnabledByDefault;
+		}
+
+		public boolean isEnabledByDefault() {
+			return enabledByDefault;
+		}
 
 	}
 

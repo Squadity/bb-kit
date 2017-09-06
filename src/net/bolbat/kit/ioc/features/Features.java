@@ -34,4 +34,9 @@ public interface Features {
 	 */
 	boolean isEnabled(Feature feature);
 
+	/**
+	 * Clear features configuration and configure to defaults.
+	 */
+	void clear();
+
 }

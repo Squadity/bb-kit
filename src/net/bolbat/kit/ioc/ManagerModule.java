@@ -340,6 +340,7 @@ public final class ManagerModule implements Module {
 			final List<ServiceConfiguration<?>> values = new ArrayList<>(services().getAll());
 			services().clear();
 			links().clear();
+			features().clear();
 
 			// execute pre-destroy
 			for (final ServiceConfiguration<?> conf : values)
