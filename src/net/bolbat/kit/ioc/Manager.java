@@ -423,7 +423,7 @@ public final class Manager implements Module {
 		 * @param aEnabledByDefault
 		 *            is feature enabled by default
 		 */
-		private Feature(final boolean aEnabledByDefault) {
+		Feature(final boolean aEnabledByDefault) {
 			this.enabledByDefault = aEnabledByDefault;
 		}
 
