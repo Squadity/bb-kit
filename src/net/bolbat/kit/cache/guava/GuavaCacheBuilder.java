@@ -2,13 +2,14 @@ package net.bolbat.kit.cache.guava;
 
 import java.util.concurrent.TimeUnit;
 
+import org.configureme.ConfigurationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.bolbat.kit.cache.Cache;
 import net.bolbat.kit.cache.CacheBuilder;
 import net.bolbat.kit.cache.LoadFunction;
 import net.bolbat.utils.lang.StringUtils;
-import org.configureme.ConfigurationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link CacheBuilder} implementation for guava.
@@ -28,12 +29,12 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GuavaCacheBuilder.class);
 
 	/**
-	 * Initiate capacity for cache.
+	 * Initial capacity for cache.
 	 */
-	private int initiateCapacity;
+	private int initialCapacity;
 
 	/**
-	 * Maximum capacity fro cache.
+	 * Maximum capacity for cache.
 	 */
 	private long maximumCapacity;
 
@@ -63,15 +64,27 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	private LoadFunction<K, V> functionLoad;
 
 	/**
-	 * Set {@code initiateCapacity}.
+	 * Set {@code initialCapacity}.
 	 *
-	 * @param aInitiateCapacity
-	 *            initiate capacity.
+	 * @param aInitialCapacity
+	 *            initial capacity.
 	 * @return {@link GuavaCacheBuilder}
 	 */
-	public GuavaCacheBuilder<K, V> initiateCapacity(int aInitiateCapacity) {
-		this.initiateCapacity = aInitiateCapacity;
+	public GuavaCacheBuilder<K, V> initialCapacity(int aInitialCapacity) {
+		this.initialCapacity = aInitialCapacity;
 		return this;
+	}
+
+	/**
+	 * Set {@code initialCapacity}.
+	 *
+	 * @param aInitialCapacity
+	 *            initial capacity.
+	 * @return {@link GuavaCacheBuilder}
+	 */
+	@Deprecated
+	public GuavaCacheBuilder<K, V> initiateCapacity(int aInitialCapacity) {
+		return initialCapacity(aInitialCapacity);
 	}
 
 	/**
@@ -158,7 +171,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	 *            is configuration should be skipped
 	 */
 	private GuavaCache<K, V> build(final boolean skipConfiguration) {
-		return new GuavaCache<>(initiateCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit,
+		return new GuavaCache<>(initialCapacity, maximumCapacity, expireAfterAccess, expireAfterAccessTimeUnit, expireAfterWrite, expireAfterWriteTimeUnit,
 				functionLoad, skipConfiguration);
 	}
 
@@ -184,7 +197,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
-		sb.append("[initiateCapacity=").append(initiateCapacity);
+		sb.append("[initialCapacity=").append(initialCapacity);
 		sb.append(", maximumCapacity=").append(maximumCapacity);
 		sb.append(", expireAfterAccess=").append(expireAfterAccess);
 		sb.append(", expireAfterAccessTimeUnit=").append(expireAfterAccessTimeUnit);
