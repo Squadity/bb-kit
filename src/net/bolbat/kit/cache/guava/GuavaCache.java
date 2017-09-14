@@ -110,13 +110,18 @@ public class GuavaCache<K, V> implements Cache<K, V> {
 		this.originalCache = originalCache;
 	}
 
-	public void setInitialCapacity(int initialCapacity) {
-		this.initialCapacity = initialCapacity;
+	public void setInitialCapacity(int aInitialCapacity) {
+		this.initialCapacity = aInitialCapacity;
 	}
 
+	/**
+	 * Use <code>setInitialCapacity</code> instead.
+	 * 
+	 * @param aInitialCapacity
+	 */
 	@Deprecated
-	public void setInitiateCapacity(int initialCapacity) {
-		setInitialCapacity(initialCapacity);
+	public void setInitiateCapacity(int aInitialCapacity) {
+		setInitialCapacity(aInitialCapacity);
 	}
 
 	public void setMaximumCapacity(long maximumCapacity) {

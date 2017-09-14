@@ -106,7 +106,7 @@ public class OrchestratorTest {
 		final CallTask task = new CallTask(startLatch, finishLatch, new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				service.callWithMethodLimitsAndClassExecutor(2, TimeUnit.MILLISECONDS);
+				service.callWithMethodLimitsAndClassExecutor(1, TimeUnit.MILLISECONDS);
 				return null;
 			}
 		});
@@ -134,7 +134,7 @@ public class OrchestratorTest {
 		service.callWithMethodLimitsAndClassExecutor(1, TimeUnit.MILLISECONDS);
 
 		try {
-			service.callWithMethodLimitsAndClassExecutor(10, TimeUnit.MILLISECONDS);
+			service.callWithMethodLimitsAndClassExecutor(25, TimeUnit.MILLISECONDS);
 			Assert.fail();
 		} catch (final ExecutionTimeoutException e) {
 			final boolean checkResult = e.getMessage().endsWith("message[timeout is reached]");

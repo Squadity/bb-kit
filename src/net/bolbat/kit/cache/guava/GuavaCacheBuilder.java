@@ -76,7 +76,7 @@ public class GuavaCacheBuilder<K, V> implements CacheBuilder<K, V> {
 	}
 
 	/**
-	 * Set {@code initialCapacity}.
+	 * Use <code>setInitialCapacity</code> instead.
 	 *
 	 * @param aInitialCapacity
 	 *            initial capacity.
