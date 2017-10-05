@@ -226,7 +226,7 @@ public final class ManagerModule implements Module {
 
 				// execute post-construct
 				if (postConstruct)
-					ClassUtils.executePostConstruct(instance);
+					ClassUtils.executePostConstruct(instance, true);
 
 				return instance;
 				// CHECKSTYLE:OFF
