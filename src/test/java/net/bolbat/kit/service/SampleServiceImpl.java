@@ -72,7 +72,7 @@ public class SampleServiceImpl implements SampleService {
 	 * 
 	 * @return <code>int</code>
 	 */
-	public static final int getPostConstructedAcount() {
+	public static final int getPostConstructedAmount() {
 		return POSTCONSTRUCTED_AMOUNT.get();
 	}
 
@@ -81,7 +81,7 @@ public class SampleServiceImpl implements SampleService {
 	 * 
 	 * @return <code>int</code>
 	 */
-	public static final int getPreDestroyedAcount() {
+	public static final int getPreDestroyedAmount() {
 		return PREDESTROYED_AMOUNT.get();
 	}
 
