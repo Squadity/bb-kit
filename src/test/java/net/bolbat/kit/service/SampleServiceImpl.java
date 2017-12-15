@@ -18,12 +18,12 @@ public class SampleServiceImpl implements SampleService {
 	/**
 	 * Amount of post-construct executions.
 	 */
-	private static final AtomicInteger POSTCONSTRUCTED_AMOUNT = new AtomicInteger(0);
+	private final AtomicInteger postConstructedAmount = new AtomicInteger(0);
 
 	/**
 	 * Amount of pre-destroy executions.
 	 */
-	private static final AtomicInteger PREDESTROYED_AMOUNT = new AtomicInteger(0);
+	private final AtomicInteger preDestroyedAmount = new AtomicInteger(0);
 
 	/**
 	 * Service creation method string.
@@ -47,6 +47,26 @@ public class SampleServiceImpl implements SampleService {
 		this.creationMethod = "LOCATED. PARAMETER: " + aSomeParameter;
 	}
 
+	/**
+	 * Get amount of post-construct method executions.
+	 * 
+	 * @return <code>int</code>
+	 */
+	@Override
+	public int getPostConstructedAmount() {
+		return postConstructedAmount.get();
+	}
+
+	/**
+	 * Get amount of pre-destroy method executions.
+	 * 
+	 * @return <code>int</code>
+	 */
+	@Override
+	public int getPreDestroyedAmount() {
+		return preDestroyedAmount.get();
+	}
+
 	@Override
 	public String getCreationMethod() {
 		return creationMethod;
@@ -68,29 +88,11 @@ public class SampleServiceImpl implements SampleService {
 	}
 
 	/**
-	 * Get amount of post-construct method executions.
-	 * 
-	 * @return <code>int</code>
-	 */
-	public static final int getPostConstructedAmount() {
-		return POSTCONSTRUCTED_AMOUNT.get();
-	}
-
-	/**
-	 * Get amount of pre-destroy method executions.
-	 * 
-	 * @return <code>int</code>
-	 */
-	public static final int getPreDestroyedAmount() {
-		return PREDESTROYED_AMOUNT.get();
-	}
-
-	/**
 	 * Execute post-construct.
 	 */
 	@PostConstruct
 	private void postConstruct() {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+		postConstructedAmount.incrementAndGet();
 	}
 
 	/**
@@ -100,7 +102,7 @@ public class SampleServiceImpl implements SampleService {
 	 */
 	@PostConstruct
 	private void postConstructWithRuntimeException() throws RuntimeException {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+		postConstructedAmount.incrementAndGet();
 	}
 
 	/**
@@ -110,34 +112,8 @@ public class SampleServiceImpl implements SampleService {
 	 */
 	@PostConstruct
 	private Object postConstructNotVoid() {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
+		postConstructedAmount.incrementAndGet();
 		return new Object();
-	}
-
-	/**
-	 * Not valid post-construct.
-	 */
-	@PostConstruct
-	private static void postConstructWithParams(final Object parameter) {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
-	}
-
-	/**
-	 * Not valid post-construct.
-	 */
-	@PostConstruct
-	private static void postConstructStatic() {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
-	}
-
-	/**
-	 * Not valid post-construct.
-	 * 
-	 * @throws Exception
-	 */
-	@PostConstruct
-	private static void postConstructWithException() throws Exception {
-		POSTCONSTRUCTED_AMOUNT.incrementAndGet();
 	}
 
 	/**
@@ -145,7 +121,7 @@ public class SampleServiceImpl implements SampleService {
 	 */
 	@PreDestroy
 	private void preDestroy() {
-		PREDESTROYED_AMOUNT.incrementAndGet();
+		preDestroyedAmount.incrementAndGet();
 	}
 
 	/**
@@ -155,7 +131,7 @@ public class SampleServiceImpl implements SampleService {
 	 */
 	@PreDestroy
 	private void preDestroyWithRuntimeException() throws RuntimeException {
-		PREDESTROYED_AMOUNT.incrementAndGet();
+		preDestroyedAmount.incrementAndGet();
 		throw new RuntimeException("Just for check.");
 	}
 
@@ -166,34 +142,8 @@ public class SampleServiceImpl implements SampleService {
 	 */
 	@PreDestroy
 	private Object preDestroyNotVoid() {
-		PREDESTROYED_AMOUNT.incrementAndGet();
+		preDestroyedAmount.incrementAndGet();
 		return new Object();
-	}
-
-	/**
-	 * Not valid pre-destroy.
-	 */
-	@PreDestroy
-	private static void preDestroyWithParams(final Object parameter) {
-		PREDESTROYED_AMOUNT.incrementAndGet();
-	}
-
-	/**
-	 * Not valid pre-destroy.
-	 */
-	@PreDestroy
-	private static void preDestroyStatic() {
-		PREDESTROYED_AMOUNT.incrementAndGet();
-	}
-
-	/**
-	 * Not valid pre-destroy.
-	 * 
-	 * @throws Exception
-	 */
-	@PreDestroy
-	private static void preDestroyWithException() throws Exception {
-		PREDESTROYED_AMOUNT.incrementAndGet();
 	}
 
 }

@@ -303,12 +303,9 @@ public class ManagerTest {
 	 */
 	@Test
 	public void postConstructTest() throws ManagerException {
-		// saving initial state
-		final int currentValue = SampleServiceImpl.getPostConstructedAmount();
-
 		Manager.register(SampleService.class, SampleServiceFactory.class);
 		Manager.warmUp();
-		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPostConstructedAmount());
+		Assert.assertEquals(2, Manager.get(SampleService.class).getPostConstructedAmount());
 	}
 
 	/**
@@ -318,17 +315,14 @@ public class ManagerTest {
 	 */
 	@Test
 	public void preDestroyTest() throws ManagerException {
-		// saving initial state
-		final int currentValue = SampleServiceImpl.getPreDestroyedAmount();
-
 		Manager.register(SampleService.class, SampleServiceFactory.class);
-		Manager.get(SampleService.class); // force initialization
+		final SampleService service = Manager.get(SampleService.class);
 		try {
 			Manager.tearDown();
 		} catch (final RuntimeException e) {
 			Assert.assertEquals("Just for check.", e.getCause().getMessage());
 		}
-		Assert.assertEquals(currentValue + 2, SampleServiceImpl.getPreDestroyedAmount());
+		Assert.assertEquals(2, service.getPreDestroyedAmount());
 	}
 
 	/**

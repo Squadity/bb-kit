@@ -1,7 +1,5 @@
 package net.bolbat.kit.service;
 
-import net.bolbat.kit.service.Service;
-
 /**
  * Sample {@link Service}.
  * 
@@ -9,12 +7,10 @@ import net.bolbat.kit.service.Service;
  */
 public interface SampleService extends Service {
 
-	/**
-	 * Get creation method string.
-	 * 
-	 * @return {@link String}
-	 * @throws SampleServiceException
-	 */
+	int getPostConstructedAmount();
+
+	int getPreDestroyedAmount();
+
 	String getCreationMethod() throws SampleServiceException;
 
 }
