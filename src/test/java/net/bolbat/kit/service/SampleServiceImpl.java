@@ -91,17 +91,15 @@ public class SampleServiceImpl implements SampleService {
 	 * Execute post-construct.
 	 */
 	@PostConstruct
-	private void postConstruct() {
+	private void postFirstConstruct() {
 		postConstructedAmount.incrementAndGet();
 	}
 
 	/**
-	 * Execute post-construct from method with {@link RuntimeException}.
-	 * 
-	 * @throws RuntimeException
+	 * Execute post-construct.
 	 */
 	@PostConstruct
-	private void postConstructWithRuntimeException() throws RuntimeException {
+	private void postSecondConstruct() {
 		postConstructedAmount.incrementAndGet();
 	}
 
@@ -120,19 +118,16 @@ public class SampleServiceImpl implements SampleService {
 	 * Execute pre-destroy.
 	 */
 	@PreDestroy
-	private void preDestroy() {
+	private void preFirstDestroy() {
 		preDestroyedAmount.incrementAndGet();
 	}
 
 	/**
-	 * Execute pre-destroy from method with {@link RuntimeException}.
-	 * 
-	 * @throws RuntimeException
+	 * Execute pre-destroy.
 	 */
 	@PreDestroy
-	private void preDestroyWithRuntimeException() throws RuntimeException {
+	private void preSecondDestroy() {
 		preDestroyedAmount.incrementAndGet();
-		throw new RuntimeException("Just for check.");
 	}
 
 	/**
