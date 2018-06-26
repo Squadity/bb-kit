@@ -25,4 +25,5 @@ tmp/
 .idea/
 
 # Other temporary dir's/files
+.DS_Store
 logs/
