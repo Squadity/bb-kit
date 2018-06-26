@@ -23,7 +23,14 @@
 		<quartz-scheduler.version>2.2.2</quartz-scheduler.version>
 		<jackson.version>2.6.5</jackson.version>
 		<guava.version>19.0</guava.version>
-		<lucene.version>4.10.4</lucene.version>
+		<lucene.version>7.2.1</lucene.version>
+		
+		<!-- General configuration -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<javadoc.opts>-Xdoclint:none</javadoc.opts>
 	</properties>
 
 	<dependencies>

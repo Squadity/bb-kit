@@ -31,22 +31,10 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	public static final String DEFAULT_CONFIGURATION_NAME = "kit-lucene-store";
 
 	/**
-	 * Default lucene version.
-	 */
-	@DontConfigure
-	public static final String DEF_VERSION = "LUCENE_47";
-
-	/**
 	 * Default lucene directory type.
 	 */
 	@DontConfigure
 	public static final DirectoryType DEF_DIRECTORY_TYPE = DirectoryType.RAM;
-
-	/**
-	 * Configured version.
-	 */
-	@Configure
-	private String version = DEF_VERSION;
 
 	/**
 	 * Configured directory type.
@@ -59,14 +47,6 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	 */
 	@Configure
 	private String directoryPath = FSUtils.getTmpFolder(LuceneStoreConfig.class) + System.currentTimeMillis();
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(final String aVersion) {
-		this.version = aVersion;
-	}
 
 	public DirectoryType getDirectoryType() {
 		return directoryType;
@@ -87,8 +67,7 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder(this.getClass().getSimpleName());
-		builder.append(" [version=").append(version);
-		builder.append(", directoryType=").append(directoryType);
+		builder.append(" [directoryType=").append(directoryType);
 		builder.append(", directoryPath=").append(directoryPath);
 		builder.append("]");
 		return builder.toString();

@@ -45,8 +45,8 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
 				.setNameFormatArgs(nameFormatArgs);
 
 		final BlockingQueue<Runnable> queue = config.getQueueSize() == OrchestrationConstants.POOL_QUEUE_SIZE //
-				? new SynchronousQueue<Runnable>() //
-				: new ArrayBlockingQueue<Runnable>(config.getQueueSize());
+				? new SynchronousQueue<>() //
+				: new ArrayBlockingQueue<>(config.getQueueSize());
 
 		final int poolMaxSize = config.getMaxSize() == OrchestrationConstants.POOL_MAX_SIZE ? Integer.MAX_VALUE : config.getMaxSize();
 		final ExecutorService executor = new ThreadPoolExecutor( //
