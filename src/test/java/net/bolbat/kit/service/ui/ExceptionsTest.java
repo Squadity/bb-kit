@@ -1,10 +1,10 @@
 package net.bolbat.kit.service.ui;
 
-import net.bolbat.utils.test.CommonTester;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.bolbat.test.utils.CommonTester;
 
 /**
  * API package exceptions test.

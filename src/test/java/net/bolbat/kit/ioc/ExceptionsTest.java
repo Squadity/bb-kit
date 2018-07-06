@@ -1,12 +1,10 @@
 package net.bolbat.kit.ioc;
 
-import net.bolbat.kit.ioc.ConfigurationNotFoundException;
-import net.bolbat.kit.ioc.ManagerException;
-import net.bolbat.utils.test.CommonTester;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.bolbat.test.utils.CommonTester;
 
 /**
  * IoC package exceptions test.

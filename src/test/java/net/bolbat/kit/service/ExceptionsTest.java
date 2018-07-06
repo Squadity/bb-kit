@@ -1,12 +1,10 @@
 package net.bolbat.kit.service;
 
-import net.bolbat.kit.service.ServiceException;
-import net.bolbat.kit.service.ServiceInstantiationException;
-import net.bolbat.utils.test.CommonTester;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import net.bolbat.test.utils.CommonTester;
 
 /**
  * Service package exceptions test.
