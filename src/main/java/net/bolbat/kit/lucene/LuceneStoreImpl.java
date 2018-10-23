@@ -2,9 +2,9 @@ package net.bolbat.kit.lucene;
 
 import static net.bolbat.utils.lang.StringUtils.isEmpty;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,9 +30,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +62,6 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 	 * {@link LuceneStoreConfig} instance.
 	 */
 	private final LuceneStoreConfig config;
-
-	/**
-	 * {@link Version} instance.
-	 */
-	private final Version version;
 
 	/**
 	 * In-memory {@link Directory} instance.
@@ -141,25 +134,16 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		this.config = configuration;
 		LOGGER.info("Type[" + aBeanType + "], " + configuration.toString());
 		try {
-			// version
-			this.version = Version.parseLeniently(config.getVersion());
-
 			// directory
-			switch (config.getDirectoryType()) {
-				case FS:
-					this.directory = FSDirectory.open(new File(config.getDirectoryPath()));
-					break;
-				case RAM:
-				default:
-					this.directory = new RAMDirectory();
-			}
+			final Path path = Paths.get(config.getDirectoryPath());
+			this.directory = FSDirectory.open(path);
 
 			// analyzer
 			// TODO should be configurable somehow in future
 			this.analyzer = new StandardAnalyzer();
 
 			// writer config and writer
-			this.writerConfig = new IndexWriterConfig(version, analyzer);
+			this.writerConfig = new IndexWriterConfig(analyzer);
 			this.writer = new IndexWriter(directory, writerConfig);
 			writer.commit();
 
@@ -169,7 +153,7 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
 			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-		} catch (final IOException | ParseException e) {
+		} catch (final IOException e) {
 			throw new LuceneStoreRuntimeException(e);
 		}
 	}
@@ -227,8 +211,9 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 			throw new IllegalArgumentException("fieldValue argument is empty");
 		try {
 			final IndexSearcher localSearcher = getSearcher();
-			final BooleanQuery query = new BooleanQuery();
-			query.add(new TermQuery(new Term(fieldName, fieldValue)), BooleanClause.Occur.MUST);
+			final BooleanQuery query = new BooleanQuery.Builder() //
+					.add(new TermQuery(new Term(fieldName, fieldValue)), BooleanClause.Occur.MUST) //
+					.build();
 			final TopDocs topDocs = localSearcher.search(query, 1);
 			if (topDocs.scoreDocs.length == 0)
 				return null;
@@ -506,7 +491,6 @@ public class LuceneStoreImpl<S extends Storable> implements LuceneStore<S> {
 		LuceneUtils.close(analyzer);
 		LuceneUtils.close(writer);
 		LuceneUtils.close(directory);
-		LuceneUtils.unlock(directory);
 	}
 
 	/**
