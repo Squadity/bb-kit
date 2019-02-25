@@ -12,7 +12,7 @@ import net.bolbat.utils.io.FSUtils;
  * 
  * @author Alexandr Bolbat
  */
-@ConfigureMe
+@ConfigureMe(name = LuceneStoreConfig.DEFAULT_CONFIGURATION_NAME, allfields = false)
 public final class LuceneStoreConfig extends AbstractConfiguration {
 
 	/**
