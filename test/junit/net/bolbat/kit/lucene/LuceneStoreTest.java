@@ -44,6 +44,21 @@ public class LuceneStoreTest {
 	}
 
 	/**
+	 * Check that the same index directory can be used with runtime {@link LuceneStore} re-initialization.
+	 */
+	@Test
+	public void reInitAtRuntime() {
+		complexTest();
+		final LuceneStore<StorableVO> first = LuceneStoreManager.getStore(StorableVO.class);
+
+		after(); // full tearDown
+
+		complexTest();
+		final LuceneStore<StorableVO> second = LuceneStoreManager.getStore(StorableVO.class);
+		Assert.assertNotSame(first, second);
+	}
+
+	/**
 	 * {@link LuceneStore} basic operations test.
 	 */
 	@Test

@@ -15,7 +15,7 @@ import net.bolbat.utils.io.FSUtils;
  * 
  * @author Alexandr Bolbat
  */
-@ConfigureMe
+@ConfigureMe(name = LuceneStoreConfig.DEFAULT_CONFIGURATION_NAME, allfields = false)
 public final class LuceneStoreConfig extends AbstractConfiguration {
 
 	/**
@@ -34,7 +34,7 @@ public final class LuceneStoreConfig extends AbstractConfiguration {
 	 * Default lucene directory type.
 	 */
 	@DontConfigure
-	public static final DirectoryType DEF_DIRECTORY_TYPE = DirectoryType.RAM;
+	public static final DirectoryType DEF_DIRECTORY_TYPE = DirectoryType.FS;
 
 	/**
 	 * Configured directory type.
