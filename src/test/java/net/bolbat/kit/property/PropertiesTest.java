@@ -13,6 +13,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.bolbat.utils.annotation.Mark.ToDo;
+
 /**
  * {@link Properties} test.
  * 
@@ -455,6 +457,12 @@ public class PropertiesTest {
 		Assert.assertNull(Properties.resolveByPropertyClass(null));
 		Assert.assertNull(Properties.resolveByPropertyClass(WrongProperty.class));
 		Assert.assertNotNull(Properties.resolveByPropertyClass(IntegerProperty.class));
+	}
+
+	@ToDo("Implement me")
+	@Test
+	public void listPropertyTest() {
+		// TODO ListProperty test cases
 	}
 
 	/**

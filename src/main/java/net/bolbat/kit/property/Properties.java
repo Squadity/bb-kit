@@ -3,6 +3,7 @@ package net.bolbat.kit.property;
 import static net.bolbat.utils.lang.StringUtils.isEmpty;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Properties enumeration.
@@ -49,7 +50,12 @@ public enum Properties {
 	/**
 	 * {@link DateProperty}.
 	 */
-	DATE(DateProperty.class, Date.class);
+	DATE(DateProperty.class, Date.class),
+
+	/**
+	 * {@link ListProperty}.
+	 */
+	LIST(ListProperty.class, List.class);
 
 	/**
 	 * Property class.
