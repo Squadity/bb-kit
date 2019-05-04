@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bb-kit</artifactId>
 	<version>0.1.9-SNAPSHOT</version>
@@ -20,11 +21,11 @@
 		<configureme.version>2.3.0</configureme.version>
 
 		<!-- provided dependencies -->
-		<quartz-scheduler.version>2.2.2</quartz-scheduler.version>
-		<jackson.version>2.6.5</jackson.version>
 		<guava.version>19.0</guava.version>
+		<quartz-scheduler.version>2.3.1</quartz-scheduler.version>
+		<jackson.version>2.9.8</jackson.version>
 		<lucene.version>7.2.1</lucene.version>
-		
+
 		<!-- General configuration -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -50,6 +51,12 @@
 
 		<!-- provided dependencies -->
 		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>${quartz-scheduler.version}</version>
@@ -71,12 +78,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
