@@ -1,6 +1,6 @@
 # Common Kit
 
-Common Development Kit [documentation](http://confluence.infra.bolbat.net/display/BBKIT)
+Common Development Kit
 
 ## License
 

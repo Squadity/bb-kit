@@ -10,20 +10,42 @@
 	<parent>
 		<groupId>net.bolbat</groupId>
 		<artifactId>bb-parent</artifactId>
-		<version>14-SNAPSHOT</version>
+		<version>15</version>
 	</parent>
 
 	<properties>
+		<bb-logging-bom.version>0.1</bb-logging-bom.version>
+		<bb-commons-bom.version>0.1</bb-commons-bom.version>
+
 		<!-- Common dependencies -->
-		<bb-test.version>0.1.0-SNAPSHOT</bb-test.version>
-		<bb-utils.version>0.3.0-SNAPSHOT</bb-utils.version>
-		<configureme.version>2.3.0</configureme.version>
+		<bb-test.version>0.1.0</bb-test.version>
+		<bb-utils.version>0.3.0</bb-utils.version>
+		<configureme.version>2.4.0</configureme.version>
 
 		<!-- Provided dependencies -->
-		<quartz-scheduler.version>2.2.3</quartz-scheduler.version>
-		<jackson.version>2.9.7</jackson.version>
-		<lucene.version>7.5.0</lucene.version>
+		<quartz-scheduler.version>2.3.1</quartz-scheduler.version>
+		<jackson.version>2.9.8</jackson.version>
+		<lucene.version>7.7.1</lucene.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.bolbat</groupId>
+				<artifactId>bb-logging-bom</artifactId>
+				<version>${bb-logging-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.bolbat</groupId>
+				<artifactId>bb-commons-bom</artifactId>
+				<version>${bb-commons-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<!-- Common dependencies -->
