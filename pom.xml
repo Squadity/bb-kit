@@ -1,8 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bb-kit</artifactId>
-	<version>0.1.9-SNAPSHOT</version>
+	<version>0.1.9</version>
 	<name>Common Kit</name>
 	<description>Common Development Kit</description>
 	<url>http://confluence.infra.bolbat.net/display/BBKIT</url>
@@ -110,6 +109,7 @@
 		<connection>scm:git:ssh://git@bitbucket.infra.bolbat.net:9074/BBKIT/main.git</connection>
 		<developerConnection>scm:git:ssh://git@bitbucket.infra.bolbat.net:9074/BBKIT/main.git</developerConnection>
 		<url>http://bitbucket.infra.bolbat.net/scm/BBKIT/main.git</url>
-	</scm>
+	  <tag>bb-kit-0.1.9</tag>
+  </scm>
 
 </project>
