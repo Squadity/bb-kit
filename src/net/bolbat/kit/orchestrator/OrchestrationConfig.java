@@ -244,7 +244,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		 * Execution time limit.
 		 */
 		@Configure
-		private int time = OrchestrationConstants.TIME_LIMIT;
+		private long time = OrchestrationConstants.TIME_LIMIT;
 
 		/**
 		 * Execution time limit unit.
@@ -258,11 +258,11 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		@Configure
 		private int concurrent = OrchestrationConstants.CONCURRENT_LIMIT;
 
-		public int getTime() {
+		public long getTime() {
 			return time;
 		}
 
-		public void setTime(int time) {
+		public void setTime(long time) {
 			this.time = time;
 		}
 

@@ -26,7 +26,7 @@ public @interface OrchestrationLimits {
 	 * 
 	 * @return <code>int</code>
 	 */
-	int time() default OrchestrationConstants.TIME_LIMIT;
+	long time() default OrchestrationConstants.TIME_LIMIT;
 
 	/**
 	 * Execution time limit unit.

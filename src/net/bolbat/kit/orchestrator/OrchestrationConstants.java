@@ -13,7 +13,7 @@ public final class OrchestrationConstants {
 	/**
 	 * Default for: execution time limit, zero (unlimited) by default.
 	 */
-	public static final int TIME_LIMIT = 0;
+	public static final long TIME_LIMIT = 0;
 
 	/**
 	 * Default for: execution time limit unit.

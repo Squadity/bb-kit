@@ -167,7 +167,7 @@ public final class ExecutionUtils {
 	 * @param executor
 	 *            {@link ExecutorService}
 	 */
-	public static <T> void invokeAsync(final Callable<T> callable, final int time, final TimeUnit timeUnit, final ExecutorService executor) {
+	public static <T> void invokeAsync(final Callable<T> callable, final long time, final TimeUnit timeUnit, final ExecutorService executor) {
 		ASYNC_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {
@@ -199,7 +199,7 @@ public final class ExecutionUtils {
 	 * @return <T>
 	 * @throws Exception
 	 */
-	public static <T> T invoke(final Callable<T> callable, final int time, final TimeUnit timeUnit, final ExecutorService executor) throws Exception {
+	public static <T> T invoke(final Callable<T> callable, final long time, final TimeUnit timeUnit, final ExecutorService executor) throws Exception {
 		checkArgument(callable != null, "callable argument is null");
 		checkArgument(timeUnit != null, "timeUnit argument is null");
 		checkArgument(executor != null, "executor argument is null");
