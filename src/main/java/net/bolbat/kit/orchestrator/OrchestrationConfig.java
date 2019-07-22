@@ -244,7 +244,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		 * Execution time limit.
 		 */
 		@Configure
-		private int time = OrchestrationConstants.TIME_LIMIT;
+		private long time = OrchestrationConstants.TIME_LIMIT;
 
 		/**
 		 * Execution time limit unit.
@@ -258,11 +258,11 @@ public class OrchestrationConfig extends AbstractConfiguration {
 		@Configure
 		private int concurrent = OrchestrationConstants.CONCURRENT_LIMIT;
 
-		public int getTime() {
+		public long getTime() {
 			return time;
 		}
 
-		public void setTime(int time) {
+		public void setTime(final long time) {
 			this.time = time;
 		}
 
@@ -270,7 +270,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 			return timeUnit;
 		}
 
-		public void setTimeUnit(TimeUnit timeUnit) {
+		public void setTimeUnit(final TimeUnit timeUnit) {
 			this.timeUnit = timeUnit;
 		}
 
@@ -278,7 +278,7 @@ public class OrchestrationConfig extends AbstractConfiguration {
 			return concurrent;
 		}
 
-		public void setConcurrent(int concurrent) {
+		public void setConcurrent(final int concurrent) {
 			this.concurrent = concurrent;
 		}
 
@@ -377,48 +377,48 @@ public class OrchestrationConfig extends AbstractConfiguration {
 			return coreSize;
 		}
 
-		public void setCoreSize(int coreSize) {
-			this.coreSize = coreSize;
+		public void setCoreSize(final int aCoreSize) {
+			this.coreSize = aCoreSize;
 		}
 
 		public int getMaxSize() {
 			return maxSize;
 		}
 
-		public void setMaxSize(int maxSize) {
-			this.maxSize = maxSize;
+		public void setMaxSize(final int aMaxSize) {
+			this.maxSize = aMaxSize;
 		}
 
 		public int getQueueSize() {
 			return queueSize;
 		}
 
-		public void setQueueSize(int queueSize) {
-			this.queueSize = queueSize;
+		public void setQueueSize(final int aQueueSize) {
+			this.queueSize = aQueueSize;
 		}
 
 		public long getKeepAlive() {
 			return keepAlive;
 		}
 
-		public void setKeepAlive(long keepAlive) {
-			this.keepAlive = keepAlive;
+		public void setKeepAlive(final long aKeepAlive) {
+			this.keepAlive = aKeepAlive;
 		}
 
 		public TimeUnit getKeepAliveUnit() {
 			return keepAliveUnit;
 		}
 
-		public void setKeepAliveUnit(TimeUnit keepAliveUnit) {
-			this.keepAliveUnit = keepAliveUnit;
+		public void setKeepAliveUnit(final TimeUnit aKeepAliveUnit) {
+			this.keepAliveUnit = aKeepAliveUnit;
 		}
 
 		public String getNameFormat() {
 			return nameFormat;
 		}
 
-		public void setNameFormat(String nameFormat) {
-			this.nameFormat = nameFormat;
+		public void setNameFormat(final String aNameFormat) {
+			this.nameFormat = aNameFormat;
 		}
 
 		@Override

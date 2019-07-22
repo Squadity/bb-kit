@@ -1,6 +1,8 @@
 package net.bolbat.kit.orchestrator;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.bolbat.kit.service.Service;
 import net.bolbat.kit.service.ServiceException;
@@ -43,6 +45,8 @@ public interface CallableService extends Service {
 	void callAsyncWithTimeOutOnSmallQueue(long time, TimeUnit timeUnit);
 
 	void callAsyncWithTimeOutAndConcurrentLimit(long time, TimeUnit timeUnit);
+
+	void callOnMaxThreads(CountDownLatch latch, AtomicInteger counter);
 
 	CallResponce getCallResponce();
 

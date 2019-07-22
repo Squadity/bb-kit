@@ -1,6 +1,8 @@
 package net.bolbat.kit.orchestrator;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.bolbat.kit.orchestrator.CallResponce.State;
 import net.bolbat.kit.orchestrator.annotation.Orchestrate;
@@ -157,6 +159,20 @@ public class CallableServiceImpl implements CallableService {
 		callResponce = new CallResponce().setState(State.INITIATED);
 		sleep(time, timeUnit);
 		callResponce = new CallResponce().setState(State.EXECUTED);
+	}
+
+	@Override
+	@Orchestrate
+	@OrchestrationExecutor(coreSize = 2, maxSize = 4)
+	public void callOnMaxThreads(final CountDownLatch latch, final AtomicInteger counter) {
+		try {
+			counter.incrementAndGet();
+			latch.await();
+		} catch (final InterruptedException e) {
+			throw new OrchestrationException("execution is interrupted", e);
+		} finally {
+			counter.decrementAndGet();
+		}
 	}
 
 	private static void sleep(final long time, final TimeUnit timeUnit) {

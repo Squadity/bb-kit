@@ -1,5 +1,7 @@
 package net.bolbat.kit.orchestrator;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -8,7 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -23,6 +27,7 @@ import net.bolbat.kit.orchestrator.exception.ConcurrentOverflowException;
 import net.bolbat.kit.orchestrator.exception.ExecutionTimeoutException;
 import net.bolbat.kit.orchestrator.exception.ExecutorOverflowException;
 import net.bolbat.kit.orchestrator.exception.OrchestrationException;
+import net.bolbat.kit.orchestrator.impl.ExecutionUtils;
 import net.bolbat.kit.service.ServiceException;
 import net.bolbat.kit.service.ServiceRuntimeException;
 import net.bolbat.utils.annotation.Mark.ToDo;
@@ -359,6 +364,32 @@ public class OrchestratorTest {
 	@Ignore
 	public void callAsyncWithReachedConcurrentLimit() {
 		Assert.fail("Implement me");
+	}
+
+	@Test(timeout = 100L)
+	public void callOnMaxThreads() {
+		final AtomicInteger counter = new AtomicInteger();
+		final CountDownLatch latch = new CountDownLatch(1);
+
+		final int threads = 8;
+		final ExecutorService executor = Executors.newFixedThreadPool(threads);
+		try {
+			for (int i = 0; i < threads; i++) {
+				executor.submit(() -> {
+					service.callOnMaxThreads(latch, counter);
+				});
+			}
+
+			Awaitility.await()
+					.atLeast(5L, TimeUnit.MILLISECONDS)
+					.atMost(25L, TimeUnit.MILLISECONDS)
+					.pollDelay(5L, TimeUnit.MILLISECONDS)
+					.untilAtomic(counter, equalTo(4));
+
+			latch.countDown();
+		} finally {
+			ExecutionUtils.terminate(executor);
+		}
 	}
 
 	private static void sleep(final long time, final TimeUnit timeUnit) {
