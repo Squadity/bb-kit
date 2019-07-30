@@ -366,12 +366,12 @@ public class OrchestratorTest {
 		Assert.fail("Implement me");
 	}
 
-	@Test(timeout = 100L)
+	@Test(timeout = 1000L)
 	public void callOnMaxThreads() {
 		final AtomicInteger counter = new AtomicInteger();
 		final CountDownLatch latch = new CountDownLatch(1);
 
-		final int threads = 8;
+		final int threads = 4;
 		final ExecutorService executor = Executors.newFixedThreadPool(threads);
 		try {
 			for (int i = 0; i < threads; i++) {
@@ -382,9 +382,9 @@ public class OrchestratorTest {
 
 			Awaitility.await()
 					.atLeast(5L, TimeUnit.MILLISECONDS)
-					.atMost(25L, TimeUnit.MILLISECONDS)
-					.pollDelay(5L, TimeUnit.MILLISECONDS)
-					.untilAtomic(counter, equalTo(4));
+					.atMost(500L, TimeUnit.MILLISECONDS)
+					.pollDelay(1L, TimeUnit.MILLISECONDS)
+					.untilAtomic(counter, equalTo(2));
 
 			latch.countDown();
 		} finally {

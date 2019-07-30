@@ -163,7 +163,7 @@ public class CallableServiceImpl implements CallableService {
 
 	@Override
 	@Orchestrate
-	@OrchestrationExecutor(coreSize = 2, maxSize = 4)
+	@OrchestrationExecutor(coreSize = 1, maxSize = 2)
 	public void callOnMaxThreads(final CountDownLatch latch, final AtomicInteger counter) {
 		try {
 			counter.incrementAndGet();
