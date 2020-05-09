@@ -1,7 +1,5 @@
 package net.bolbat.kit.vo;
 
-import net.bolbat.kit.vo.AccountId;
-
 import org.junit.Assert;
 import org.junit.Test;
 
