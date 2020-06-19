@@ -1,7 +1,5 @@
 package net.bolbat.kit.service;
 
-import net.bolbat.kit.service.ServiceException;
-
 /**
  * {@link SampleService} exception.
  * 
