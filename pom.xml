@@ -22,7 +22,7 @@
 		<configureme.version>2.4.0</configureme.version>
 
 		<!-- Provided dependencies -->
-		<quartz-scheduler.version>2.3.1</quartz-scheduler.version>
+		<quartz-scheduler.version>2.3.2</quartz-scheduler.version>
 		<jackson.version>2.10.0.pr1</jackson.version>
 		<lucene.version>7.7.2</lucene.version>
 	</properties>
