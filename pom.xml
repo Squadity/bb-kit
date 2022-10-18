@@ -23,7 +23,7 @@
 
 		<!-- Provided dependencies -->
 		<quartz-scheduler.version>2.3.2</quartz-scheduler.version>
-		<jackson.version>2.11.1</jackson.version>
+		<jackson.version>2.13.4.1</jackson.version>
 		<lucene.version>7.7.3</lucene.version>
 	</properties>
 
